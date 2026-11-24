@@ -1,0 +1,9 @@
+{
+  "name": "lcu-approve",
+  "version": "0.6.0",
+  "description": "Native Genehmigung pro App für die Computer-Nutzung in der Claude-App und in Claude Code (Für dieses Gespräch erlauben, Immer erlauben, Ablehnen) sowie das Panel /computer-use-apps mit genehmigten Apps.",
+  "author": {
+    "name": "LCU"
+  },
+  "types": "./types/index.d.ts"
+}

@@ -1,0 +1,28 @@
+{
+  "de": {
+    "label": "Deutsch",
+    "file": "README.md",
+    "categories": {
+      "dashboards": "Dashboards und Nutzung",
+      "agents": "Agenten und Subagenten",
+      "productivity": "Produktivität und Kontext",
+      "rendering": "Darstellung und Vorschau",
+      "safety": "Sicherheit und Schutz",
+      "git": "Git, PRs und Deployment",
+      "fun": "Während du wartest"
+    },
+    "columns": [
+      "Mod",
+      "Funktion",
+      "Reichweite"
+    ],
+    "reach": {
+      "http": "Netzwerk",
+      "process": "Befehle ausführen",
+      "model": "Modellaufrufe",
+      "fs": "Dateien",
+      "mcp": "MCP"
+    },
+    "by": "von"
+  }
+}

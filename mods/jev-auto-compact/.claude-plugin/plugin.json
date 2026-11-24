@@ -1,0 +1,9 @@
+{
+  "name": "jev-auto-compact",
+  "version": "1.6.1",
+  "description": "Wortgetreue Komprimierung mit Jev: Sobald der Kontext 60 % erreicht, werden veraltete Tool-Aufrufe ohne Generierung entfernt. Wenn nichts entfernt werden kann, wird übersprungen (nie Rückfall auf den LLM-Zusammenfasser); Belege werden für learning.db gespeichert.",
+  "author": {
+    "name": "vexjoy-agent"
+  },
+  "license": "MIT"
+}

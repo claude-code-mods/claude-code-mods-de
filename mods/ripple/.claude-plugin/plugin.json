@@ -1,0 +1,11 @@
+{
+  "name": "ripple",
+  "displayName": "ClaudeRipple",
+  "version": "0.7.0",
+  "description": "Wählt für jede Eingabe den Denkaufwand und für jede delegierte Aufgabe den Worker, kann den Prompt-Cache warm halten und zeigt, wohin ClaudeRipple jede Anfrage gesendet hat.",
+  "author": {
+    "name": "ClaudeRipple"
+  },
+  "license": "GPL-3.0-only",
+  "types": "./types/index.d.ts"
+}

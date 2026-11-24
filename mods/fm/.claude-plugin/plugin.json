@@ -1,0 +1,9 @@
+{
+  "name": "fm",
+  "version": "1.0.0",
+  "description": "Firstmate Calm für Claude Code: die Segelboot-Animationsanzeige und eine nur für das Gespräch sichtbare Transkriptansicht, die die Einstellung config/calm pro Home-Verzeichnis mit der Pi-Calm-Erweiterung teilt. Sein Hooks-Modul kann über CLAUDE_CODE_ENABLE_FUNCTION_HOOKS oder Claude Codes Rollout-Flag tengu_plugin_hooks_modules geladen werden, aktiv wird es aber nur, wenn CLAUDE_CODE_ENABLE_FUNCTION_HOOKS genau 1 ist; andernfalls tut es nichts.",
+  "author": {
+    "name": "Firstmate",
+    "url": "https://github.com/kunchenguid/firstmate"
+  }
+}

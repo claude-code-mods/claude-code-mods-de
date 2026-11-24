@@ -1,0 +1,13 @@
+{
+  "name": "turbo",
+  "displayName": "Turbo",
+  "description": "Eine von Menschen kontrollierte agentische Software-Fabrik: Du entscheidest, was gebaut wird, und bewertest das Ergebnis, während Skills die Änderung gestalten, bauen, verfeinern und ausliefern und daraus lernen.",
+  "author": {
+    "name": "Tobias Hagemann",
+    "url": "https://github.com/tobihagemann"
+  },
+  "homepage": "https://github.com/tobihagemann/turbo",
+  "repository": "https://github.com/tobihagemann/turbo",
+  "license": "MIT",
+  "types": "./types/index.d.ts"
+}

@@ -1,0 +1,40 @@
+{
+  "name": "shared-session",
+  "displayName": "Shared Sessions",
+  "version": "0.11.53",
+  "description": "Teile eine Claude-Code-Sitzung per Link oder mit deinem Team. Teammitglieder steigen aus ihrem eigenen Claude Code ein und sprechen ihn an: Eine Sitzung erledigt die Arbeit, alle sehen jeden Zug live mit, und der Gastgeber genehmigt, was auf seinem Rechner ausgeführt wird. Melde dich mit GitHub oder Google an, um Teams zu nutzen: Live-Sitzungen deines Teams, mit einem Klick beitreten. Die Freigabe läuft über den öffentlichen Server dieses Projekts, sofern du keinen eigenen einrichtest (README: Datenschutz und der öffentliche Server).",
+  "author": {
+    "name": "scoootscooob",
+    "url": "https://github.com/scoootscooob"
+  },
+  "homepage": "https://github.com/Paradigm-Study/claude-share",
+  "repository": "https://github.com/Paradigm-Study/claude-share",
+  "license": "MIT",
+  "keywords": [
+    "collaboration",
+    "multiplayer",
+    "share",
+    "pair-programming",
+    "teams",
+    "sessions"
+  ],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "server": {
+      "type": "string",
+      "title": "Share server",
+      "description": "Leave empty to share through the public server. To use your own, its https address (README: \"Host a server\"). Joining a link always uses the server in that link."
+    }
+  },
+  "mcpServers": {
+    "traces": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/relay/traces-mcp.mts"
+      ],
+      "env": {
+        "SHARED_SESSION_OPTION_SERVER": "${user_config.server}"
+      }
+    }
+  }
+}

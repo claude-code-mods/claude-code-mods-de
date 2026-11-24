@@ -1,0 +1,8 @@
+{
+  "name": "agentctl",
+  "version": "0.3.1",
+  "description": "Steuerungsebene für eine Claude-Code-Sitzung: Aufgabenumfang, Belege, Übergabe. Eine Steuerung und eine Anzeige, keine Isolationsgrenze.",
+  "author": {
+    "name": "sd0xdev"
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "agent-usage-guard",
+  "description": "Ein Claude-Code-Mod, das Subagenten-Verzweigung, Eingaben mit umfangreichem Kontext und Wiederholungsschleifen zurückhält, bevor sie dein Nutzungsfenster verbrauchen. Es liest die Nutzung deines Tarifs, zählt Agenten über alle Sitzungen hinweg und fragt in Claude Codes eigenem Dialog nach.",
+  "version": "1.2.1",
+  "author": {
+    "name": "Riccardo Bartoli"
+  },
+  "homepage": "https://github.com/rbartoli/agent-usage-guard",
+  "repository": "https://github.com/rbartoli/agent-usage-guard",
+  "license": "MIT",
+  "icon": "./.claude-plugin/icon.png",
+  "types": "./types/index.d.ts",
+  "documentationUrl": "https://github.com/rbartoli/agent-usage-guard#readme",
+  "supportUrl": "https://github.com/rbartoli/agent-usage-guard/issues",
+  "privacyPolicyUrl": "https://github.com/rbartoli/agent-usage-guard#security-and-privacy",
+  "keywords": [
+    "mod",
+    "usage",
+    "rate-limit",
+    "subagents",
+    "context",
+    "guardrails",
+    "cost"
+  ]
+}

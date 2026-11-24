@@ -1,0 +1,162 @@
+{
+  "fm": {
+    "en": "The sailboat working animation and a conversation-only transcript, sharing a calm-mode preference across sessions.",
+    "de": "Die Segelboot-Animationsanzeige und eine nur für das Gespräch sichtbare Transkriptansicht, die eine Calm-Modus-Einstellung über Sitzungen hinweg teilt."
+  },
+  "terminal-browser": {
+    "en": "A browser inside Claude Code: preview sites and HTML, and let the agent drive the built-in browser.",
+    "de": "Ein Browser direkt in Claude Code: Websites und HTML ansehen und dem Agenten die Steuerung des integrierten Browsers erlauben."
+  },
+  "pebrel-prompt-suggestions": {
+    "en": "Native empty-composer prompt predictions through the Pebrel session bridge.",
+    "de": "Native Eingabevorschläge bei leerer Eingabe über die Pebrel-Sitzungsbrücke."
+  },
+  "token-optimizer": {
+    "en": "A token-optimizer status bar that shows where tokens go and how to spend less.",
+    "de": "Eine Token-Optimizer-Statusleiste, die zeigt, wohin Tokens fließen und wie du weniger verbrauchst."
+  },
+  "lcu-approve": {
+    "en": "Per-app approval for computer use: allow this conversation, always allow, or deny, plus a panel of approved apps.",
+    "de": "Genehmigung pro App für die Computer-Nutzung: für dieses Gespräch erlauben, immer erlauben oder ablehnen, plus ein Panel genehmigter Apps."
+  },
+  "fast-jev-compaction": {
+    "en": "Verbatim Jev-guided compaction for Claude Code sessions.",
+    "de": "Wortgetreue, Jev-gesteuerte Komprimierung von Claude-Code-Sitzungen."
+  },
+  "lot-map": {
+    "en": "A live map beside the chat: memory, files, shell, web, model, agents, skills and hooks light up as they are used.",
+    "de": "Eine Live-Karte neben dem Chat: Speicher, Dateien, Shell, Web, Modell, Agenten, Skills und Hooks leuchten auf, wenn sie genutzt werden."
+  },
+  "codex-attachment-manager": {
+    "en": "Sends earlier images as short placeholders and fetches originals back by ID, so long image sessions keep the prompt cache.",
+    "de": "Sendet frühere Bilder als kurze Platzhalter und holt die Originale per ID zurück, damit lange Bildsitzungen den Prompt-Cache behalten."
+  },
+  "storybloq": {
+    "en": "Project memory: tickets, issues, handovers and lessons kept in a .story/ folder in your repo.",
+    "de": "Projektgedächtnis: Tickets, Issues, Übergaben und Erkenntnisse in einem Ordner .story/ in deinem Repository."
+  },
+  "shared-session": {
+    "en": "Share a session with a link or your team; teammates join from their own Claude Code and watch every turn live.",
+    "de": "Teile eine Sitzung per Link oder mit deinem Team; Teammitglieder steigen aus ihrem eigenen Claude Code ein und sehen jeden Zug live mit."
+  },
+  "just-do-it": {
+    "en": "Continues authorized work through verification and delivery, and surfaces setup issues to repair.",
+    "de": "Führt autorisierte Arbeit durch Prüfung und Auslieferung weiter und zeigt behebbare Einrichtungsprobleme."
+  },
+  "prismantis": {
+    "en": "Colorful, themeable rendering for replies: tables, headings, code, numbers, paths and links.",
+    "de": "Farbenfrohe, anpassbare Darstellung von Antworten: Tabellen, Überschriften, Code, Zahlen, Pfade und Links."
+  },
+  "filetree": {
+    "en": "An IDE-style file tree that shows what Claude is doing and where in your files.",
+    "de": "Ein Dateibaum im IDE-Stil, der zeigt, was Claude tut und wo in deinen Dateien."
+  },
+  "jev-auto-compact": {
+    "en": "At 60% context, prunes stale tool calls with zero generation; skips instead of falling back to an LLM summary.",
+    "de": "Bei 60 % Kontext werden veraltete Tool-Aufrufe ohne Generierung entfernt; statt auf eine LLM-Zusammenfassung zurückzufallen, wird übersprungen."
+  },
+  "cache-tax": {
+    "en": "Keeps the one-hour prompt cache warm during breaks, asking before a cold send and showing the rewrite cost.",
+    "de": "Hält den einstündigen Prompt-Cache in Pausen warm, fragt vor dem Senden ohne Cache nach und zeigt die geschätzten Kosten der Neuerstellung."
+  },
+  "turbo": {
+    "en": "A human-gated agentic software factory: you decide what to build and judge the result, skills build and ship it.",
+    "de": "Eine von Menschen kontrollierte agentische Software-Fabrik: Du entscheidest, was gebaut wird, und bewertest das Ergebnis; Skills bauen und liefern es."
+  },
+  "agent-standup-band": {
+    "en": "A line above the prompt when another local session needs you, and a toast when one finishes.",
+    "de": "Eine Zeile über der Eingabe, wenn eine andere lokale Sitzung dich braucht, und eine Benachrichtigung, wenn sie ihren Zug beendet."
+  },
+  "flightdeck": {
+    "en": "A live agent dashboard: model vitals, an on-call architect, permission checks, subagent cards and a session log.",
+    "de": "Ein Live-Agenten-Dashboard: Modell-Vitalwerte, ein bereitschaftshabender Architekt, Berechtigungsprüfungen, Subagenten-Karten und ein Sitzungsprotokoll."
+  },
+  "caliber-jev-compaction": {
+    "en": "Verbatim Jev-guided compaction for Claude Code sessions.",
+    "de": "Wortgetreue, Jev-gesteuerte Komprimierung von Claude-Code-Sitzungen."
+  },
+  "mazyos": {
+    "en": "A Portuguese business OS plugin: your company memory in every session, brand identity on outputs, and 17 marketing/SEO skills.",
+    "de": "Ein portugiesisches Business-OS-Plugin: Das Gedächtnis deiner Firma in jeder Sitzung, Markenidentität in allen Ausgaben und 17 Marketing-/SEO-Skills."
+  },
+  "start": {
+    "en": "Workflow orchestration commands for agentic software development.",
+    "de": "Workflows-Orchestrierungsbefehle für agentische Softwareentwicklung."
+  },
+  "shunt": {
+    "en": "A usage band for the shunt gateway: each window's spend and reset time, plus a full /shunt:usage breakdown.",
+    "de": "Eine Nutzungsleiste für das Shunt-Gateway: Verbrauch und Zurücksetzungszeit pro Zeitfenster sowie eine vollständige /shunt:usage-Aufschlüsselung."
+  },
+  "operator": {
+    "en": "Durable project and user memory for agent-driven development.",
+    "de": "Beständiges Projekt- und Nutzergedächtnis für agentengesteuerte Entwicklung."
+  },
+  "agentctl": {
+    "en": "An agent control plane for a session: task scope, evidence and hand-over.",
+    "de": "Eine Steuerungsebene für eine Claude-Code-Sitzung: Aufgabenumfang, Belege und Übergabe."
+  },
+  "multi-core": {
+    "en": "Use ChatGPT, Cursor, OpenCode and Antigravity models inside one session, switching with /model.",
+    "de": "Nutze ChatGPT-, Cursor-, OpenCode- und Antigravity-Modelle in einer Sitzung und wechsle mit /model."
+  },
+  "work-mode": {
+    "en": "Session modes: auto (no mid-task questions), out (delegate batch work) and wrap (converge and finish).",
+    "de": "Sitzungsmodi: auto (keine Rückfragen mitten in der Aufgabe), out (Stapelarbeit delegieren) und wrap (zusammenführen und abschließen)."
+  },
+  "tokendoctor": {
+    "en": "Replays your past sessions to show what each change would have saved, then applies only what you pick.",
+    "de": "Spielt deine früheren Sitzungen ab, um zu zeigen, was jede Änderung gespart hätte, und wendet nur das an, was du auswählst."
+  },
+  "engineer": {
+    "en": "A disciplined agentic-engineering methodology kit: intake, AC discovery, spec, planning, implementation, verification, hardening.",
+    "de": "Ein strukturiertes Methoden-Set für agentische Softwareentwicklung: Aufnahme, Akzeptanzkriterien, Spezifikation, Planung, Implementierung, Prüfung und Härtung."
+  },
+  "skins": {
+    "en": "Skins and fifteen themes for the transcript, with rich cards and a usage band; /skin swaps them live.",
+    "de": "Skins und fünfzehn Themes für das Transkript, mit reichhaltigen Karten und einer Nutzungsleiste; /skin wechselt sie live."
+  },
+  "show-your-work": {
+    "en": "Shows finished work in the terminal: screenshots, click-through videos and synced before/after QA.",
+    "de": "Zeigt fertige Arbeit direkt im Terminal: Screenshots, Klick-durch-Videos und synchronisierte Qualitätsprüfungen vorher/nachher."
+  },
+  "jevmem-pane": {
+    "en": "A side pane showing what jevmem recalled, what its guard decided and what the last turn saved.",
+    "de": "Ein Seitenbereich, der zeigt, was jevmem abgerufen hat, was seine Schutzlogik entschieden hat und was der letzte Zug gespeichert hat."
+  },
+  "ctx-handoff": {
+    "en": "Turns what you teach Claude into project notes, catches common slips, keeps the cache warm and resumes long sessions.",
+    "de": "Verwandelt, was du Claude beibringst, in Projektnotizen, fängt typische Fehler ab, hält den Cache warm und setzt lange Sitzungen fort."
+  },
+  "inbox": {
+    "en": "Gathers the questions, tasks, findings and PRs waiting on you in a session.",
+    "de": "Sammelt die Fragen, Aufgaben, Erkenntnisse und PRs, die in einer Sitzung auf dich warten."
+  },
+  "lane-stack": {
+    "en": "A solo PM conveyor: orchestrator agents, lane playbooks, onboard and resume commands.",
+    "de": "Ein Solo-PM-Förderband für Claude Code: Orchestrator-Agenten, Lane-Playbooks sowie Befehle zum Einstieg und Fortsetzen."
+  },
+  "compact-adviser": {
+    "en": "Suggests or runs /compact at a completed checkpoint, judged by TypeSafe Jev.",
+    "de": "Schlägt /compact an einem abgeschlossenen Prüfpunkt vor (oder führt es auf Wunsch aus), bewertet von TypeSafe Jev."
+  },
+  "ripple": {
+    "en": "Picks reasoning effort per prompt and a worker per delegated task, keeps the cache warm and shows where each request went.",
+    "de": "Wählt pro Eingabe den Denkaufwand und pro delegierter Aufgabe den Worker, hält den Prompt-Cache warm und zeigt, wohin jede Anfrage ging."
+  },
+  "tavernweave-agent-skills": {
+    "en": "23 shared skills for rolecards, software work and bounded cloud tasks, plus a Soul mode switch above the prompt.",
+    "de": "23 gemeinsame Skills für Rollenkarten, Softwarearbeit und begrenzte Cloud-Aufgaben, plus ein Soul-Modus-Schalter über der Eingabe."
+  },
+  "agent-usage-guard": {
+    "en": "Holds subagent fan-out, heavy-context prompts and retry loops before they spend your usage window.",
+    "de": "Hält Subagenten-Verzweigung, umfangreiche Kontext-Eingaben und Wiederholungsschleifen zurück, bevor sie dein Nutzungsfenster verbrauchen."
+  },
+  "council": {
+    "en": "Consult several AI agents at once for diverse perspectives, with a streaming pane and an optional heads-up side check.",
+    "de": "Fragt mehrere KI-Agenten gleichzeitig für unterschiedliche Perspektiven ab, mit einem Streaming-Bereich und einer optionalen zusätzlichen Prüfung."
+  },
+  "carbon": {
+    "en": "Tracks the carbon footprint of your Claude Code sessions in the terminal and desktop app.",
+    "de": "Verfolgt den CO₂-Fußabdruck deiner Claude-Code-Sitzungen im Terminal und in der Desktop-App."
+  }
+}

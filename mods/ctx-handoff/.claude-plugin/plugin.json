@@ -1,0 +1,20 @@
+{
+  "name": "ctx-handoff",
+  "version": "0.8.2",
+  "description": "Verwandelt, was du Claude beibringst, in Projektnotizen, fängt seine üblichen Fehler ab, hält den Cache während deiner Abwesenheit warm und setzt lange Sitzungen wieder fort",
+  "author": {
+    "name": "CabLate",
+    "url": "https://github.com/cablate"
+  },
+  "homepage": "https://github.com/cablate/ctx-handoff-mod",
+  "repository": "https://github.com/cablate/ctx-handoff-mod",
+  "license": "MIT",
+  "keywords": [
+    "context",
+    "handoff",
+    "prompt-cache",
+    "memory",
+    "mod"
+  ],
+  "types": "./types/index.d.ts"
+}

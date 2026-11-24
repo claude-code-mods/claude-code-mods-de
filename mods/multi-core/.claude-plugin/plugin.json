@@ -1,0 +1,5 @@
+{
+  "name": "multi-core",
+  "description": "Nutze ChatGPT-, Cursor-, OpenCode- und Antigravity-Modelle in einer Claude-Code-Sitzung und wechsle mit /model.",
+  "version": "0.0.0"
+}

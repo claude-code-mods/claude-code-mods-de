@@ -1,0 +1,10 @@
+{
+  "name": "work-mode",
+  "version": "0.8.0",
+  "description": "/work-mode-Sitzungsmodi für Claude Code: auto (keine Rückfragen mitten in der Aufgabe), out (Stapelarbeit delegieren), wrap (zusammenführen und abschließen) sowie ein Hinweis zur Delegierung",
+  "types": "./types/index.d.ts",
+  "author": {
+    "name": "Dustin Yuchen Teng"
+  },
+  "license": "MIT"
+}

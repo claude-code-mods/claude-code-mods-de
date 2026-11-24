@@ -1,0 +1,19 @@
+{
+  "name": "tavernweave-agent-skills",
+  "version": "2.4.0",
+  "description": "TavernWeaveX 2.4.0: 23 gemeinsame Skills für Rollenkarten, Softwarearbeit und begrenzte Cloud-Aufgaben mit Fähigkeitsprüfungen und fortsetzbaren Übergaben; in Claude Code fügt es die Host Front Door ein, ergänzt den Agenten tavernweave und einen Soul-Modus-Schalter über der Eingabe. Die tatsächliche Ausführung hängt von Host-Werkzeugen und Berechtigungen ab.",
+  "author": {
+    "name": "LiarMTTT"
+  },
+  "homepage": "https://github.com/LiarMTTT/TavernWeave",
+  "repository": "https://github.com/LiarMTTT/TavernWeave",
+  "license": "PolyForm-Noncommercial-1.0.0",
+  "types": "./hooks/soul-switch-types.d.ts",
+  "keywords": [
+    "agent-skills",
+    "sillytavern",
+    "rolecard",
+    "mvu",
+    "code-quality"
+  ]
+}
