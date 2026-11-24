@@ -47,7 +47,7 @@ claude plugin marketplace update inbox
 claude plugin update inbox
 ```
 
-- Es führt nach jeder Antwort von Claude zwei Sonnet-Aufrufe aus, einen für die Zeilen und einen für den Status-Tab. Siehe [Kosten](#cost).
+- Es führt nach jeder Antwort von Claude zwei Sonnet-Aufrufe aus, einen für die Zeilen und einen für den Status-Tab. Siehe [Kosten](#kosten).
 - Es wurde mit Claude Code 2.1.300 entwickelt und getestet.
 
 ### Codex
@@ -134,7 +134,7 @@ Eine Aufgabe ist etwas wie das Anmelden oder das Hinzufügen eines API-Schlüsse
 
 ### Finds
 
-Fehler, Risiken und Ideen, die der Agent außerhalb seiner aktuellen Aufgabe bemerkt hat. Der Agent erfasst sie und arbeitet an seiner Aufgabe weiter; du entscheidest später, was du davon umsetzt. Fix bei einem Problem oder Do it bei einer Idee übergibt sie dem Agenten. File issue lässt den Agenten sie in deinem Issue-Tracker wie Linear oder GitHub erfassen oder verlinkt das Issue, das sie bereits abdeckt. Reply sendet deine eigenen Worte dazu. Explain lässt den Agenten sagen, warum es wichtig ist und was eine Behebung bedeuten würde, ohne zu handeln. Discuss bespricht es, und Dismiss verwirft es.
+Fehler, Risiken und Ideen, die der Agent außerhalb seiner aktuellen Aufgabe bemerkt hat. Der Agent erfasst sie und arbeitet an seiner Aufgabe weiter; du entscheidest später, was du davon umsetzt. Mit Fix bei einem Problem oder Do it bei einer Idee übergibst du sie dem Agenten. File issue lässt den Agenten sie in deinem Issue-Tracker wie Linear oder GitHub erfassen oder verlinkt das Issue, das sie bereits abdeckt. Reply sendet deine eigenen Worte dazu. Explain lässt den Agenten sagen, warum es wichtig ist und was eine Behebung bedeuten würde, ohne zu handeln. Discuss bespricht es, und Dismiss verwirft es.
 
 ### PRs
 
@@ -157,7 +157,7 @@ Help listet die Tasten und die Bedeutung jeder Markierung.
 - **Terminal:** Jede Aktion zeigt den Buchstaben, der sie ausführt. Die Zahlentasten wechseln die Tabs, und `j` und `k` bewegen nach oben und unten. Im Status bewegen sie zwischen den Zeilen mit einer Schaltfläche, und der Buchstabe neben einer Schaltfläche drückt sie. ctrl+x tab verschiebt den Fokus vom Eingabefeld auf die Zeile darüber, dann auf den Bereich und dann zurück zum Eingabefeld.
 - **Claude-Desktop-App:** Du klickst. Gib `/inbox` ein, um den Bereich zu öffnen. Klicks im Bereich wurden auf Claude-Code-Engine 2.1.309 und später geprüft. Bei 2.1.295 konnte ein Klick nach einem Druck dem Bereich nur wieder den Fokus geben.
 - **ChatGPT-App:** Du klickst oder drückst dieselben Tasten wie im Terminal. Der Tab zeigt keine Buchstaben.
-- **Herdr-App:** Siehe [Herdr-App-Bereich](#herdr-app-pane).
+- **Herdr-App:** Siehe [Herdr-App-Bereich](#herdr-app-bereich).
 - **omp:** `/inbox` öffnet das Panel über dem Gespräch, esc schließt es. Jede Aktion zeigt den Buchstaben, der sie ausführt; Reply ist `t`. Die Pfeiltasten bewegen zwischen Zeilen und zwischen den Schaltflächen einer Zeile, enter drückt die fokussierte Schaltfläche. Tab oder die Zahlentasten wechseln die Tabs. Im Status bewegen `j` und `k` zwischen den Zeilen mit einer Schaltfläche, und die Pfeile nach oben und unten scrollen die Seite.
 
 In Claude Code zählt eine Zeile über deinem Eingabefeld, was dich braucht, und die wartenden Funde, mit einer Schaltfläche zum Öffnen des Paneels. Wenn Claude wegen eines Fehlers stoppt, sagt eine zweite Zeile warum, nach einem API-Fehler mit einer Resume-Schaltfläche. Die ChatGPT-App hat keine solche Zeile. omp hat eine Zeile mit denselben Zahlen. Sie sagt, dass `/inbox` das Panel öffnet, und hat keine Stopp-Zeile.
@@ -218,7 +218,7 @@ Hier geht es um den Claude-Code-Mod. [codex/README.md](codex/README.md) beschrei
 
 **Was deinen Rechner verlässt.** Drei Dinge, sonst nichts:
 
-- Nach jeder Antwort von Claude sendet das Inbox zwei Sonnet-Anfragen über Claudes eigene Modellverbindung an Anthropic. Beide enthalten deine letzte Eingabe, Claudes Antwort, die offenen Einträge des Inbox und eine Zeile für jedes Werkzeug, das Claude ausgeführt hat. Eine Werkzeugzeile liest sich wie `ran: npm test` oder `edited src/app.ts`. [Kosten](#cost) nennt die Größe der Anfrage.
+- Nach jeder Antwort von Claude sendet das Inbox zwei Sonnet-Anfragen über Claudes eigene Modellverbindung an Anthropic. Beide enthalten deine letzte Eingabe, Claudes Antwort, die offenen Einträge des Inbox und eine Zeile für jedes Werkzeug, das Claude ausgeführt hat. Eine Werkzeugzeile liest sich wie `ran: npm test` oder `edited src/app.ts`. [Kosten](#kosten) nennt die Größe der Anfrage.
 - Wenn das Inbox eine Runde verpasst haben könnte, bittet es dasselbe Modell mit denselben zwei Aufrufen, sich aus dem gesamten Gespräch zu aktualisieren. Dafür forkt es das Gespräch oder liest nach einem Fortsetzen das Transkript.
 - Um den PR-Tab zu füllen, führt es schreibgeschützte `gh`-Abfragen aus: `gh pr view` und `gh api graphql` für Review-Threads. Sie erreichen GitHub unter deiner eigenen `gh`-Anmeldung. Das Inbox liest nie dein GitHub-Token.
 
