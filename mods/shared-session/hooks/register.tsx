@@ -391,7 +391,7 @@ class NetworkError extends Error {}
 let configuredServer = ''
 
 const NO_SERVER =
-  'Sharing needs a share server, and none is set up yet. Run your own (README: "Host a server"), then set it with `/plugin configure shared-session` or the SHARED_SESSION_SERVER environment variable. Joining a link someone sent you needs nothing.'
+  'Freigaben benötigen einen Freigabeserver, der noch nicht eingerichtet ist. Betreibe einen eigenen (README: "Host a server") und konfiguriere ihn mit `/plugin configure shared-session` oder der Umgebungsvariable SHARED_SESSION_SERVER. einem gesendeten Link beizutreten benötigt nichts.'
 
 // ---------------------------------------------------------------------------
 // Updates. The plugin says its version on every request: the server turns a
@@ -725,7 +725,7 @@ async function readUpdates($: $) {
   // marketplace's autoUpdate), or the folder named for them gone: in place now.
   const missing = named && dir ? !(await $.fs.exists(`${dir}/.claude-plugin/plugin.json`).catch(() => true)) : false
   if (on && (!named || missing) && !runsLive($) && (await enableLive($))) {
-    $.ui.log('Shared Sessions jetzt updates in place: von your nächste neu Sitzung on, a release loads ohne a neu starten.')
+    $.ui.log('Shared Sessions aktualisieren jetzt direkt: Ab deiner nächsten neuen Sitzung wird ein Release ohne Neustart geladen.')
   }
 }
 
@@ -738,7 +738,7 @@ async function writeUpdates($: $, on: boolean) {
   try {
     if (await $.fs.exists(path)) settings = JSON.parse(await $.fs.read(path))
   } catch {
-    $.ui.toast(`Couldn't lesen ${path}, so nothing changed`)
+    $.ui.toast(`${path} konnte nicht gelesen werden, daher wurde nichts geändert`)
     return
   }
   const known = (settings.extraKnownMarketplaces ?? {}) as Record<string, Record<string, unknown>>
@@ -747,17 +747,17 @@ async function writeUpdates($: $, on: boolean) {
   try {
     await $.fs.write(path, `${JSON.stringify(settings, null, 2)}\n`)
   } catch {
-    $.ui.toast("Couldn't ändern it here: verwenden /plugin → Marketplaces → claude-share")
+    $.ui.toast("Hier konnte keine Änderung vorgenommen werden: verwende /plugin → Marketplaces → claude-share")
     return
   }
   await update($, updatesA, () => on)
   if (on) {
     const live = await enableLive($)
-    $.ui.toast(live ? (runsLive($) ? 'Updates: automatic, in place' : 'Updates: automatic. New Sitzungen aktualisieren in place') : 'Updates: automatic')
+    $.ui.toast(live ? (runsLive($) ? 'Updates: automatisch, direkt' : 'Updates: automatisch. Neue Sitzungen aktualisieren direkt') : 'Updates: automatisch')
   } else {
     await nameLiveDir($, false)
     await update($, liveUpdatesA, () => (runsLive($) ? 'running' : null))
-    $.ui.toast(runsLive($) ? 'Updates: manuell, von your nächste neu Sitzung on' : 'Updates: manuell')
+    $.ui.toast(runsLive($) ? 'Updates: manuell, ab deiner nächsten neuen Sitzung' : 'Updates: manuell')
   }
 }
 
@@ -882,16 +882,16 @@ type RunWords = {
 }
 const SAY: Record<RunOwner, RunWords> = {
   listener: {
-    unreachable: (_host, port) => `Couldn't forward localhost:${port}. Press Open in the Room to try erneut.`,
-    busy: 'Preview connection oder request limit reached. Close unused preview tabs oder wait a minute, dann erneut versuchen.',
-    refused: 'Preview authorization was refused. Press Open in the Room to reconnect.',
-    connect: () => 'The letzte channel could nicht connect to the host target. Mapping retained; target unverified.',
+    unreachable: (_host, port) => `localhost:${port} konnte nicht weitergeleitet werden. Drücke im Raum auf Öffnen, um es erneut zu versuchen.`,
+    busy: 'Verbindungs- oder Anfragelimit der Vorschau erreicht. Schließe ungenutzte Vorschau-Tabs oder versuche es in einer Minute erneut.',
+    refused: 'Vorschau-Berechtigung wurde verweigert. Drücke im Raum auf Öffnen, um erneut zu verbinden.',
+    connect: () => 'Der letzte Kanal konnte keine Verbindung zum Host-Ziel herstellen. Die Zuordnung bleibt erhalten; das Ziel ist ungeprüft.',
   },
   window: {
-    unreachable: (host, port) => `Couldn't reach ${host}'s localhost:${port} for the preview Fenster. Press Open preview to try erneut.`,
-    busy: 'The preview Fenster reached its connection oder request limit. Close unused tabs in it oder wait a minute, dann reload the page.',
-    refused: "The preview Fenster's authorization was refused. Press Open preview to reconnect.",
-    connect: (host, port) => `The preview Fenster couldn't connect to ${host}'s localhost:${port}. Check that it's läuft there, dann reload the page.`,
+    unreachable: (host, port) => `localhost:${port} von ${host} konnte für das Vorschaufenster nicht erreicht werden. Drücke auf Vorschau öffnen, um es erneut zu versuchen.`,
+    busy: 'Das Vorschaufenster hat sein Verbindungs- oder Anfragelimit erreicht. Schließe ungenutzte Tabs oder lade die Seite in einer Minute neu.',
+    refused: "Die Berechtigung des Vorschaufensters wurde verweigert. Drücke auf Vorschau öffnen, um erneut zu verbinden.",
+    connect: (host, port) => `Das Vorschaufenster konnte keine Verbindung zu localhost:${port} von ${host} herstellen. Prüfe, ob es dort läuft, und lade die Seite neu.`,
   },
 }
 
@@ -1271,7 +1271,7 @@ function reseat($: $, room: ShareRoom): Promise<Reseat> {
       // in flight with the old seat's token ends (`sameRoom`).
       if (s.live && s.key === roomIdentity(room)) s.token = joined.token
       await update($, roomA, r => (r && r.id === room.id && s.live ? { ...r, token: joined.token, seat: joined.seat } : r))
-      $.ui.log('Shared Sitzung: the room let this seat go; took a neu one', { to: 'debug' })
+      $.ui.log('Shared-Sitzung: Der Raum hat diesen Platz freigegeben; ein neuer wurde belegt', { to: 'debug' })
       // Its answer's list isn't taken: the stream or a poll may have brought
       // a newer one meanwhile, which it would undo (a preview opened since
       // would end here for good), and the room's next page brings its list.
@@ -1295,7 +1295,7 @@ async function stillSeated($: $, room: ShareRoom, status: number): Promise<boole
     if (!again.gone) return true // the server didn't answer: try again later
     await closeRoom($, 'ended', {
       room,
-      log: again.why && !/no longer shared/i.test(again.why) ? `Left ${room.host}'s session: ${again.why}` : `${room.host}'s session is no longer shared.`,
+      log: again.why && !/no longer shared/i.test(again.why) ? `Left ${room.host}'s session: ${again.why}` : `${room.host}s Sitzung wird nicht mehr geteilt.`,
     })
     return false
   }
@@ -1306,10 +1306,10 @@ async function stillSeated($: $, room: ShareRoom, status: number): Promise<boole
   await closeRoom($, 'ended', {
     room,
     log: leftHere
-      ? `You left ${room.host}'s Sitzung von the Team Bereich.`
+      ? `Du hast ${room.host}s Sitzung über den Team-Bereich verlassen.`
       : mode === 'guest'
-        ? `${room.host}'s session is no longer shared.`
-        : 'Sharing ended: the room closed on the server. Press Share to start a new one.',
+        ? `${room.host}s Sitzung wird nicht mehr geteilt.`
+        : 'Freigabe beendet: Der Raum wurde auf dem Server geschlossen. Drücke auf Teilen, um einen neuen zu starten.',
   })
   return false
 }
@@ -1519,7 +1519,7 @@ function tooLarge($: $, batch: { type: string; body: Record<string, unknown> }[]
   if (singly) singly -= 1
   const pid = batch[0]?.type === 'prompt' ? batch[0].body.pid : undefined
   if (typeof pid === 'string' && ownPending.delete(pid)) unsent.set(pid, null)
-  noteOnce($, 'too-large', 'A Nachricht was too large to senden to the room.', scope)
+  noteOnce($, 'too-large', 'Eine Nachricht war zu groß, um an den Raum gesendet zu werden.', scope)
 }
 
 // Starts hearing about the room: the stream, or polls where it can't run.
@@ -1572,7 +1572,7 @@ function answerRoomAsk($: $, room: ShareRoom, kind: RoomAsk, ask: Record<string,
     kind === 'proxy' ? answerProxy($, room, ask) : kind === 'ws' ? relaySocket($, room, ask) : kind === 'tcp' ? relayTcp($, room, ask) : hostNeed($, room, ask)
   void answering.catch(error => {
     try {
-      $.ui.log(`Shared Sitzung: the room's ${kind}: ${String((error as Error)?.message ?? error)}`, { to: 'debug' })
+      $.ui.log(`Shared-Sitzung: ${kind} des Raums: ${String((error as Error)?.message ?? error)}`, { to: 'debug' })
     } catch {}
   })
 }
@@ -1656,10 +1656,10 @@ async function runStream($: $, generation: number) {
           else if (ask) answerRoomAsk($, room, ask, message[ask] as Record<string, unknown>)
           else if (message.peer && typeof message.peer === 'object')
             void takePeer($, room, host, message.peer as Record<string, unknown>).catch(error =>
-              $.ui.log(`Shared Sitzung: a Nachricht between Sitzungen: ${String((error as Error)?.message ?? error)}`, { to: 'debug' }),
+              $.ui.log(`Shared-Sitzung: eine Nachricht zwischen Sitzungen: ${String((error as Error)?.message ?? error)}`, { to: 'debug' }),
             )
           else if (Array.isArray(message.events)) {
-            if (!streamUp && !delivered) $.ui.log('Shared Sitzung: listening on a stream', { to: 'debug' })
+            if (!streamUp && !delivered) $.ui.log('Shared-Sitzung: lauscht auf einem Stream', { to: 'debug' })
             // Connected: the Stops the room didn't hear are told again.
             if (host && !delivered) void endUnheard($, room, scope).catch(() => {})
             streamUp = true
@@ -1709,7 +1709,7 @@ async function setConnection($: $, state: 'live' | 'reconnecting') {
 }
 
 function startPolls($: $, generation: number, why: string) {
-  $.ui.log(`Shared Sitzung: polling (${why})`, { to: 'debug' })
+  $.ui.log(`Shared-Sitzung: abfragen (${why})`, { to: 'debug' })
   void pollOnce($, generation)
 }
 
@@ -1869,7 +1869,7 @@ async function absorb($: $, room: ShareRoom, mode: ShareMode, event: ServerEvent
       lostAt.delete(who)
       if (live && !mine && !back) {
         $.ui.log(`${who} joined`)
-        void cue($, 'join', `${who} joined your session`)
+        void cue($, 'join', `${who} ist deiner Sitzung beigetreten`)
       }
       break
     }
@@ -2481,9 +2481,9 @@ async function updateRow($: $, el: UI, compact: boolean) {
         {updating.ok || compact ? null : (
           <Button
             key="copy-update"
-            label="Copy aktualisieren Befehl"
+            label="Aktualisierungsbefehl kopieren"
             plain
-            onPress={press => void copyText($, UPDATE_COMMAND, 'Update Befehl copied: paste it in a terminal', press.surface)}
+            onPress={press => void copyText($, UPDATE_COMMAND, 'Aktualisierungsbefehl kopiert: in einem Terminal einfügen', press.surface)}
           />
         )}
       </Box>
@@ -2495,12 +2495,12 @@ async function updateRow($: $, el: UI, compact: boolean) {
     <Box key="update" flexDirection="row" gap={1} alignItems="center" justifyContent="space-between">
       <Box flexShrink={1} minWidth={0}>
         <Text color="claude" wrap="truncate-end">
-          {compact ? `● ${newer} is out` : `● Version ${newer} is out (this Sitzung runs ${mine})`}
+          {compact ? `● ${newer} ist verfügbar` : `● Version ${newer} ist verfügbar (diese Sitzung nutzt ${mine})`}
         </Text>
       </Box>
       <Box flexShrink={0} flexDirection="row" gap={1}>
         {[
-          <Button key="update-now" label={inPlace ? 'Update und load here' : 'Install aktualisieren'} variant="primary" onPress={() => void pressUpdate($)} />,
+          <Button key="update-now" label={inPlace ? 'Aktualisieren und hier laden' : 'Update installieren'} variant="primary" onPress={() => void pressUpdate($)} />,
           compact || updates ? null : <Button key="updates-on" label="Turn on Updates" plain dimColor onPress={() => void writeUpdates($, true)} />,
         ]}
       </Box>
@@ -2542,7 +2542,7 @@ async function receive($: $, mode: ShareMode, room: ShareRoom, page: EventsPage)
   if (mode === 'host') await noteBehind($, page.people)
   const hostIs = page.people.find(p => p.role === 'host')?.online
   if (mode === 'guest' && hostWas !== undefined && hostIs !== undefined && hostWas !== hostIs) {
-    $.ui.toast(hostIs ? `${room.host} is back` : `${room.host}'s Claude Code closed; the room waits for them`)
+    $.ui.toast(hostIs ? `${room.host} ist wieder da` : `${room.host}s Claude Code wurde geschlossen; der Raum wartet`)
   }
   // What's shared now, before the page's events: an artifact among them
   // shows a preview the list has.
@@ -2645,7 +2645,7 @@ async function receive($: $, mode: ShareMode, room: ShareRoom, page: EventsPage)
         }
         break
       case 'ended':
-        await closeRoom($, 'ended', { room, log: mode === 'guest' ? `${room.host} stopped sharing this session.` : 'This shared session ended.' })
+        await closeRoom($, 'ended', { room, log: mode === 'guest' ? `${room.host} stopped sharing this session.` : 'Diese geteilte Sitzung ist beendet.' })
         return
     }
   }
@@ -2711,7 +2711,7 @@ function closeRoom($: $, how: Exit, opts: ExitOptions = {}): Promise<void> {
   closing = closeSteps($, s, live, how, opts, stopping)
     .catch(error => {
       try {
-        $.ui.log(`Shared Sitzung: closing the room: ${String((error as Error)?.message ?? error)}`, { to: 'debug' })
+        $.ui.log(`Shared-Sitzung: Raum wird geschlossen: ${String((error as Error)?.message ?? error)}`, { to: 'debug' })
       } catch {}
     })
     .finally(() => {
@@ -2749,7 +2749,7 @@ async function roomClosed($: $, opts: { start?: boolean; keep?: boolean } = {}):
     closing = finishClose($, closeMark)
       .catch(error => {
         try {
-          $.ui.log(`Shared Sitzung: finishing leaving the room: ${String((error as Error)?.message ?? error)}`, { to: 'debug' })
+          $.ui.log(`Shared-Sitzung: Raum wird verlassen: ${String((error as Error)?.message ?? error)}`, { to: 'debug' })
         } catch {}
       })
       .finally(() => {
@@ -3458,25 +3458,25 @@ async function copyText($: $, text: string, done: string, surface?: RenderSurfac
 async function pressInvite($: $, url: string, surface?: RenderSurface) {
   const t = await read($, teamsA)
   if (!t.account) {
-    $.ui.toast('Sign in to invite teammates: the Team Bereich zeigt how')
+    $.ui.toast('Melde dich an, um Teammitglieder einzuladen: Der Team-Bereich zeigt wie')
     return openTeam($)
   }
   const people = await read($, peopleA)
   const mates = (t.teammates ?? []).filter(m => !people.some(p => p.online && p.name === m.name))
   if (!mates.length) {
     const copied = await $.ui.copy({ text: url, surface }).catch(() => ({ isCopied: false }))
-    $.ui.toast(copied.isCopied ? 'No teammates to invite here yet · link copied' : 'No teammates to invite here yet: share the link instead')
-    if (!copied.isCopied) $.ui.log(`The share link: ${url}`)
+    $.ui.toast(copied.isCopied ? 'Hier gibt es noch keine Teammitglieder zum Einladen · Link kopiert' : 'Hier gibt es noch keine Teammitglieder zum Einladen: teile stattdessen den Link')
+    if (!copied.isCopied) $.ui.log(`Der Freigabelink: ${url}`)
     return
   }
   await update($, roomTabA, () => 'people')
-  $.ui.toast(`Invite ${mates.length === 1 ? (mates[0]?.Name ?? 'your teammate') : `any of ${mates.length} teammates`} below`)
+  $.ui.toast(`Lade ${mates.length === 1 ? (mates[0]?.Name ?? 'dein Teammitglied') : `eines von ${mates.length} Teammitgliedern`} unten ein`)
 }
 
 async function copyLink($: $, url: string, surface?: RenderSurface) {
   const copied = await $.ui.copy({ text: url, surface }).catch(() => ({ isCopied: false }))
-  if (copied.isCopied) $.ui.toast('Link copied')
-  else $.ui.log(`The share link: ${url}`)
+  if (copied.isCopied) $.ui.toast('Link kopiert')
+  else $.ui.log(`Der Freigabelink: ${url}`)
 }
 
 // Stop sharing ends the room for everyone: the first press asks, a second
@@ -4052,7 +4052,7 @@ async function resumeHosting($: $) {
       page = await eventsSince($, saved.room, saved.room.seq)
     } catch (error) {
       if (isGone(error)) {
-        if (current()) $.ui.log('The Sitzung you shared ended while this one was closed.')
+        if (current()) $.ui.log('Die geteilte Sitzung endete, während diese geschlossen war.')
         return
       }
       // Unreachable for now: share on, and the feed keeps trying.
@@ -4060,7 +4060,7 @@ async function resumeHosting($: $) {
     // The session ended meanwhile (its place saved again, or its room
     // ended), or the room was given up for another: nothing more of it here.
     if (!current()) return
-    if (page?.ended) return void $.ui.log('The Sitzung you shared ended while this one was closed.')
+    if (page?.ended) return void $.ui.log('Die geteilte Sitzung endete, während diese geschlossen war.')
     const room: ShareRoom = { ...saved.room, seq: page?.seq ?? saved.room.seq }
     const shares = sharesSaved(saved)
     await update($, roomA, v => (reclaiming === back ? room : v))
@@ -4740,7 +4740,7 @@ async function stopTurn($: $, who: string) {
   if (!working) return
   try {
     await $.turn.abort({ turnId: working.turnId })
-    $.ui.toast(`${who} stopped the turn`)
+    $.ui.toast(`${who} hat die Runde beendet`)
   } catch {}
 }
 
@@ -5165,7 +5165,7 @@ async function bringHome($: $) {
     await resumeHosting($)
     await update($, cloudMoveA, () => null)
     if (home.changes) await applyCloudChanges($, { ...room, token: home.token }, home.changes)
-    else $.ui.log('Back home. The cloud host changed nein Dateien.')
+    else $.ui.log('Zurück zu Hause. Der Cloud-Host hat keine Dateien geändert.')
   } catch (error) {
     await update($, cloudMoveA, () => cloudMove('failed', String((error as Error)?.message ?? error).slice(0, 300)))
   }
@@ -7084,7 +7084,7 @@ async function startLocalPreview($: $, room: ShareRoom, pid: string, run: LocalP
       }
     }
     if ((await ended) === 'NODE')
-      run.error = 'Local previews need Node 22.18 or later on this computer. Install it and press Open in the Room, or choose Public link.'
+      run.error = 'Lokale Vorschauen benötigen Node 22.18 oder neuer auf diesem Computer. Installiere es und drücke im Raum auf Öffnen, oder wähle einen öffentlichen Link.'
   } catch {
     // Never echo child diagnostics or credentials: the run's own words stand.
   } finally {
@@ -7107,7 +7107,7 @@ async function runTrouble($: $, room: ShareRoom, pid: string, run: LocalPreviewR
   const say = SAY[run.owner]
   if (what !== 'channel') {
     if (run.owner === 'listener')
-      $.ui.toast(what === 'stopped' ? `Local preview on localhost:${run.localPort} stopped. Press Open in the Room to reconnect.` : run.error)
+      $.ui.toast(what === 'stopped' ? `Lokale Vorschau auf localhost:${run.localPort} wurde beendet. Drücke im Raum auf Öffnen, um erneut zu verbinden.` : run.error)
     return
   }
   const error = code === 'BUSY' ? say.busy : code === 'AUTH' ? say.refused : code === 'CONNECT' ? say.connect(room.host, run.port) : ''
@@ -7286,9 +7286,9 @@ async function openPublicPreview($: $, shown: ShareShown, surface?: RenderSurfac
   const live = async () => localRequestCurrent(room, s, pid, epoch)
   if (!(await live())) return
   const url = await previewTicket($, room, pid, shown.path)
-  if (!url) return void $.ui.toast('That preview has ended oder is nicht reachable')
+  if (!url) return void $.ui.toast('Diese Vorschau ist beendet oder nicht erreichbar')
   await showPage($, room, url, surface, live, {
-    copied: 'Public preview link copied: open it within 10 minutes',
+    copied: 'Link zur öffentlichen Vorschau kopiert: innerhalb von 10 Minuten öffnen',
     said: `Public preview link, for 10 minutes: ${url}`,
   })
 }
@@ -7317,7 +7317,7 @@ type WindowChoice =
 // browser refused, and the like. A room's own (a preview's first Open and
 // its cost, the window's welcome) are said once in that room (its scope's).
 const saidOnce = new Set<string>()
-const WINDOW_CLOSING = 'The preview window is still closing. Open the preview again in a moment.'
+const WINDOW_CLOSING = 'Das Vorschaufenster wird noch geschlossen. Öffne die Vorschau in einem Moment erneut.'
 // How long each of the window's shell steps may take (sh's `within`): a look
 // at a profile, its settings, a close (which waits up to 3 s) and a profile's
 // cleanup all answer well inside it; the browser look can ask a Firefox
@@ -7325,7 +7325,7 @@ const WINDOW_CLOSING = 'The preview window is still closing. Open the preview ag
 const WINDOW_STEP_MS = 15_000,
   BROWSER_LOOK_MS = 30_000
 // This Sitzung closed its own window as its proxy ended under it (routes the proxy refused, looks that failed).
-const windowLost = (host: string) => `The preview window closed: its connection to ${host}'s previews stopped working. Press Open preview to open it again.`
+const windowLost = (host: string) => `Das Vorschaufenster wurde geschlossen: Die Verbindung zu ${host}s Vorschauen funktioniert nicht mehr. Drücke auf Vorschau öffnen, um es erneut zu öffnen.`
 
 // Looked for once a room (its scope's). A look that failed (the shell
 // itself, no platform line) says nothing about this computer: it isn't kept,
@@ -8169,7 +8169,7 @@ async function openLook($: $, open: WindowOpen, profile: string): Promise<Window
 // A look that still knows nothing: the open writes, starts and closes
 // nothing more, and the person presses Open preview again.
 function unknownLook($: $, why: string): WindowOutcome {
-  $.ui.toast(`Couldn't tell whether the preview Fenster ist öffnen (${why}). Press Open preview erneut.`)
+  $.ui.toast(`Es konnte nicht festgestellt werden, ob das Vorschaufenster geöffnet ist (${why}). Drücke erneut auf Vorschau öffnen.`)
   return 'done'
 }
 
@@ -8222,7 +8222,7 @@ async function readyProxy($: $, open: WindowOpen): Promise<BrowserProxy | Window
   // Without Node nothing here opens a forwarded preview (its listeners run
   // under Node too): only the public link, which goes through the room.
   if ('error' in proxy && proxy.error === 'NODE') {
-    $.ui.toast('Preview windows need Node 22.18 oder later on this computer. Install it, dann drücken Open preview erneut, oder wählen Public link in Room → Shown.')
+    $.ui.toast('Vorschaufenster benötigen Node 22.18 oder neuer auf diesem Computer. Installiere es und drücke erneut auf Vorschau öffnen, oder wähle Öffentlicher Link im Raum → Angezeigt.')
     return 'done'
   }
   if ('error' in proxy) return { failed: "its proxy didn't start" }
@@ -8251,7 +8251,7 @@ async function readyProxy($: $, open: WindowOpen): Promise<BrowserProxy | Window
   // started, and nothing else, may go with it (`idleProxy`).
   if (!tunnel.run) {
     await idleProxy(open, proxy)
-    $.ui.toast(reseated ? RESEATED : (tunnel.error ?? 'That preview could nicht be opened.'))
+    $.ui.toast(reseated ? RESEATED : (tunnel.error ?? 'Diese Vorschau konnte nicht geöffnet werden.'))
     return 'done'
   }
   await windowStep(open, syncBrowserRoutes($, s))
@@ -8347,7 +8347,7 @@ async function launchWindow($: $, open: WindowOpen, proxy: BrowserProxy): Promis
       await windowOpened($, open, port, !pageStopped(open))
       $.ui.invalidate('ui.render')
     }
-    $.ui.toast(`${choice.name} didn't open a preview window within 10 seconds. ${await windowRemedy($, open.why, true)}`)
+    $.ui.toast(`${choice.name} hat innerhalb von 10 Sekunden kein Vorschaufenster geöffnet. ${await windowRemedy($, open.why, true)}`)
     return 'done'
   }
   return 'seen'
@@ -8502,8 +8502,8 @@ async function restorePreviewWindow($: $) {
     if (another || (alive === undefined && !closed)) return
     $.ui.toast(
       proxy.error === 'EADDRINUSE'
-        ? `The preview window closed: its proxy's port (${w.port}) was taken while the plugin reloaded. Press Open preview to open it again.`
-        : "The preview window closed: its proxy couldn't start again. Press Open preview to open it again.",
+        ? `Das Vorschaufenster wurde geschlossen: Der Proxy-Port (${w.port}) wurde beim Neuladen des Plugins belegt. Drücke auf Vorschau öffnen, um es erneut zu öffnen.`
+        : "Das Vorschaufenster wurde geschlossen: Sein Proxy konnte nicht erneut gestartet werden. Drücke auf Vorschau öffnen, um es erneut zu öffnen.",
     )
     return
   }
@@ -9360,7 +9360,7 @@ function listening(pid: string, s: RoomScope = scope): LocalPreviewRun | null {
 // as opened on its own (`own`).
 type Bound = { url: string; run: LocalPreviewRun; taken: number[]; denied: number[]; failed: string[] }
 type BindResult = Bound | RefusedPort | { inWindow: true } | { error: string }
-const RESEATED = 'The room reconnected you while the preview was opening. Press Open again.'
+const RESEATED = 'Der Raum hat dich während des Öffnens der Vorschau neu verbunden. Drücke erneut auf Öffnen.'
 async function bindForOpen(
   $: $,
   room: ShareRoom,
@@ -9469,7 +9469,7 @@ async function openForwarded($: $, room: ShareRoom, s: RoomScope, shown: ShareSh
   const elsewhere = async (why: RefusedPort, noWindow: string) => {
     const bound = await bindForOpen($, room, s, page, uses, 'elsewhere')
     if (!(await live())) return
-    if (!('url' in bound)) return void $.ui.toast('error' in bound ? bound.error : 'That preview could nicht be opened.')
+    if (!('url' in bound)) return void $.ui.toast('error' in bound ? bound.error : 'Diese Vorschau konnte nicht geöffnet werden.')
     if (!(await showPage($, room, bound.url, surface, async () => (await live()) && (await localRunCurrent($, pid, bound.run))))) return
     const note = elsewhereNote(room, page, bound, why, noWindow)
     noteOnce($, `elsewhere ${note}`, note, s)
@@ -9568,7 +9568,7 @@ async function openShown($: $, shown: ShareShown, surface?: RenderSurface) {
   const room = await read($, roomA)
   if (!room) return
   const path = (await downloadShown($, room, shown.files ?? []))[0] ?? null
-  if (!path) return void $.ui.toast("Couldn't get that Datei")
+  if (!path) return void $.ui.toast("Datei konnte nicht abgerufen werden")
   // A page opens in Claude's browser, where it runs (inside the project);
   // refused there (auto mode), in the Files pane as a file does.
   if (shown.kind === 'page' && (await inPane($, `file://${path}`, 'shared pages', 'in the Files pane'))) return
@@ -9614,7 +9614,7 @@ async function answerProxy($: $, room: ShareRoom, ask: Record<string, unknown>) 
   proxyBusy += 1
   try {
     if (sameRoom(room, s) && (await read($, sharesA))[String(ask.port)]?.pid === pid)
-      await answerPage($, run, 503, 'The preview is busy', 'Too many requests at once. Reload in a moment.')
+      await answerPage($, run, 503, 'Vorschau ist beschäftigt', 'Zu viele gleichzeitige Anfragen. Lade in einem Moment neu.')
   } catch {
   } finally {
     proxyBusy -= 1
@@ -9654,7 +9654,7 @@ async function proxyOnce($: $, run: ProxyRun) {
     // at the room's own deadline.
     const stopped = s.revoking.has(pid) || (await read($, shownA)).some(x => x.kind === 'preview' && x.pid === pid)
     if (stopped && !run.stopped && sameRoom(room, s) && s.mode === 'host')
-      await answerPage($, run, 404, 'This preview has ended', `${room.host} is no longer sharing it.`)
+      await answerPage($, run, 404, 'Diese Vorschau ist beendet', `${room.host} teilt sie nicht mehr.`)
     return
   }
   // Another session's preview holds the port now: its app is never fetched for this room.
@@ -9664,7 +9664,7 @@ async function proxyOnce($: $, run: ProxyRun) {
         $,
         run,
         403,
-        "This preview isn't available",
+        "Diese Vorschau ist nicht verfügbar",
         `localhost:${port} is another shared session's preview, forwarded to ${room.host}'s computer, so it can't be shared on.`,
       )
     return
@@ -9726,19 +9726,19 @@ async function proxyOnce($: $, run: ProxyRun) {
   if ((await $.clock.now()) - run.at >= PROXY_ASK_MS || !(await live())) return discardFetch($, kept)
   if (exit !== '0' || !dir) {
     discardFetch($, kept)
-    if (exit === '63') return answerPage($, run, 502, 'Too large for a preview', 'This response is over 20 MB, more than a preview carries.')
-    if (exit === '28') return answerPage($, run, 504, 'The preview did not answer', `${room.host}'s app took too long to respond.`)
-    return answerPage($, run, 502, 'The preview is not reachable', `Nothing answered on ${room.host}'s localhost:${port}.`)
+    if (exit === '63') return answerPage($, run, 502, 'Zu groß für eine Vorschau', 'Diese Antwort ist über 20 MB und damit zu groß für eine Vorschau.')
+    if (exit === '28') return answerPage($, run, 504, 'Vorschau hat nicht geantwortet', `Die App von ${room.host} hat zu lange gebraucht.`)
+    return answerPage($, run, 502, 'Vorschau ist nicht erreichbar', `Auf localhost:${port} von ${room.host} hat nichts geantwortet.`)
   }
   const status = Number(/^status=(\d{3})$/m.exec(out)?.[1])
   const head = proxyHead(status, /^headers=([A-Za-z0-9+/=]*)$/m.exec(out)?.[1] ?? '')
   if (out.length >= PROXY_SAID_MAX || (head !== null && head.length > PROXY_HEAD_MAX)) {
     discardFetch($, dir)
-    return answerPage($, run, 502, 'Too large for a preview', "This response's headers are over 64 KB, more than a preview carries.")
+    return answerPage($, run, 502, 'Zu groß für eine Vorschau', "Die Kopfzeilen dieser Antwort sind über 64 KB und damit zu groß für eine Vorschau.")
   }
   if (head === null || !(status >= 200 && status <= 599)) {
     discardFetch($, dir)
-    return answerPage($, run, 502, 'The preview is not reachable', `Nothing answered on ${room.host}'s localhost:${port}.`)
+    return answerPage($, run, 502, 'Vorschau ist nicht erreichbar', `Auf localhost:${port} von ${room.host} hat nichts geantwortet.`)
   }
   const config = [
     roomConfig(room, `proxy/${run.id}`),

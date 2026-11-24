@@ -2151,11 +2151,11 @@ const welcome = atom({ plugin: 'show-your-work', key: 'welcome' } as const, 0)
 type Spot = 'play' | 'changes' | 'tabs' | 'history'
 export type Stop = { tag: string; spot?: Spot; goal?: string; media?: 'splash' | 'recording' | 'compare' | 'history' }
 export const STOPS: Stop[] = [
-  { tag: 'Press Play to watch it', spot: 'play', goal: 'play', media: 'splash' },
-  { tag: 'Click a ändern to jump to that moment', spot: 'changes', goal: 'change_jump', media: 'recording' },
-  { tag: 'Press Original to see it vorher the ändern', spot: 'tabs', goal: 'original', media: 'compare' },
-  { tag: 'Open History, dann pick a version', spot: 'history', goal: 'version_pick', media: 'history' },
-  { tag: 'Now ask Claude to zeigen you what it builds' },
+  { tag: 'Drücke Wiedergabe, um es anzusehen', spot: 'play', goal: 'play', media: 'splash' },
+  { tag: 'Klicke auf eine Änderung, um zu dieser Stelle zu springen', spot: 'changes', goal: 'change_jump', media: 'recording' },
+  { tag: 'Drücke Original, um den Zustand vor der Änderung zu sehen', spot: 'tabs', goal: 'original', media: 'compare' },
+  { tag: 'Öffne den Verlauf und wähle eine Version', spot: 'history', goal: 'version_pick', media: 'history' },
+  { tag: 'Bitte jetzt Claude, dir zu zeigen, was es baut' },
 ]
 
 // A button press, heard: when it is what the stop asked for, it ticks; the
@@ -2608,11 +2608,11 @@ const openArgv = (target: string) => (state.isMac ? ['open', target] : ['sh', '-
 // open's error text. `what` names the kind of thing, as in "no app opens videos".
 export function openFailure(r: { exitCode: number; stderr: string }, what: string, path: string) {
   const said = r.stderr.trim().split('\n')[0]?.trim().slice(0, 100) ?? ''
-  if (r.exitCode === 127) return "Couldn't öffnen it: xdg-open is missing. Install xdg-utils und try erneut."
-  if (r.exitCode === 2 || /does not exist|no such file/i.test(said)) return `Couldn't open it: nothing is at ${path} any more.`
-  if (r.exitCode === 3 || /no application knows|no application|no method available|no default/i.test(said)) return `Couldn't open it: no app on this computer is set to open ${what}.`
-  if (r.exitCode === 4) return said ? `Couldn't öffnen it: ${said}` : `Couldn't öffnen it: the app for ${what} failed to starten.`
-  return said ? `Couldn't öffnen it: ${said}` : `Couldn't öffnen it (Fehler ${r.exitCode}).`
+  if (r.exitCode === 127) return 'Konnte es nicht öffnen: xdg-open fehlt. Installiere xdg-utils und versuche es erneut.'
+  if (r.exitCode === 2 || /does not exist|no such file/i.test(said)) return `Konnte es nicht öffnen: unter ${path} ist nichts mehr vorhanden.`
+  if (r.exitCode === 3 || /no application knows|no application|no method available|no default/i.test(said)) return `Konnte es nicht öffnen: auf diesem Computer ist keine App für ${what} eingestellt.`
+  if (r.exitCode === 4) return said ? `Konnte es nicht öffnen: ${said}` : `Konnte es nicht öffnen: die App für ${what} konnte nicht gestartet werden.`
+  return said ? `Konnte es nicht öffnen: ${said}` : `Konnte es nicht öffnen (Fehler ${r.exitCode}).`
 }
 
 // The narrowest the scrub and button rows get, in columns: room for the play
@@ -2885,7 +2885,7 @@ function probe($: EngineInterface, site: string, key: string, pic: Pic) {
       state.canImage = false
       state.drawCause = causeOf(state.inTmux, state.terminalName, state.isForced)
       track('cannot_draw', { cause: state.drawCause })
-      $.ui.toast("Pictures can't zeigen here: see the notice in the chat.")
+      $.ui.toast('Bilder können hier nicht angezeigt werden: siehe den Hinweis im Chat.')
       redraw($)
     }
   }, () => undefined)
@@ -3333,7 +3333,7 @@ function PageButtons(ui: Ui, $: EngineInterface, site: string, media: Shown) {
   return [
     pages.count > 1 && <Button key="prev" plain dimColor={at === 0} label="‹ Prev" onPress={() => { act('page_prev'); go(at - 1) }} />,
     <Text key="page-count" dimColor>{`Page ${at + 1} of ${pages.count}`}</Text>,
-    pages.count > 1 && <Button key="next" plain dimColor={at >= pages.count - 1} label="Next ›" onPress={() => { act('page_next'); go(at + 1) }} />,
+    pages.count > 1 && <Button key="next" plain dimColor={at >= pages.count - 1} label="Weiter ›" onPress={() => { act('page_next'); go(at + 1) }} />,
   ]
 }
 
@@ -3409,7 +3409,7 @@ function pickVersion($: EngineInterface, site: string, shown: Shown, to: number)
     if (!one.isCompare) flip($, site, { ...shown, compare: version }, true)
     else draw($, site, version)
     redraw($, site)
-  }).catch(() => $.ui.toast('That version is gone'))
+  }).catch(() => $.ui.toast('Diese Version ist nicht mehr verfügbar'))
 }
 
 // With history, which version is on screen, in words: "viewing v1 of 3".
@@ -3730,18 +3730,18 @@ function Actions(ui: Ui, $: EngineInterface, media: Shown, source: string, isNar
     for (let n = 2; await $.fs.stat(out).then(() => true, () => false); n++) out = `${state.home}/Downloads/${stem} ${n}${ext}`
     if (!state.isMac) await $.process.run(['mkdir', '-p', `${state.home}/Downloads`])
     const r = await $.process.run(['cp', source, out])
-    if (r.exitCode !== 0) return $.ui.toast(`Couldn't save it to Downloads: ${r.stderr.trim().split('\n')[0]?.slice(0, 100) || `error ${r.exitCode}`}`)
+    if (r.exitCode !== 0) return $.ui.toast(`Konnte nicht nach Downloads speichern: ${r.stderr.trim().split('\n')[0]?.slice(0, 100) || `Fehler ${r.exitCode}`}`)
     // Saved either way; the folder opening is a convenience on top.
     await $.process.run(state.isMac ? ['open', '-R', out] : openArgv(`${state.home}/Downloads`)).catch(() => undefined)
-    $.ui.toast(`Saved to Downloads/${out.split('/').pop()}`)
+    $.ui.toast(`Nach Downloads/${out.split('/').pop()} gespeichert`)
   }
 
   return (
     <Box flexDirection="row" gap={2}>
       {!source.startsWith(`${state.home}/Downloads/`) ? (
-        <Button key="keep" plain dimColor label="Save to Downloads" onPress={() => { act('save'); void keep() }} />
+        <Button key="keep" plain dimColor label="In Downloads speichern" onPress={() => { act('save'); void keep() }} />
       ) : (
-        <Button key="reveal" plain dimColor label={state.isMac ? 'Show in Finder' : 'Show in Ordner'} onPress={() => act('reveal') || void $.process.run(state.isMac ? ['open', '-R', source] : openArgv(source.slice(0, source.lastIndexOf('/')) || '/')).then(r => done(r, state.isMac ? 'Shown in Finder' : 'Opened the Ordner', 'folders', source))} />
+        <Button key="reveal" plain dimColor label={state.isMac ? 'In Finder anzeigen' : 'Im Ordner anzeigen'} onPress={() => act('reveal') || void $.process.run(state.isMac ? ['open', '-R', source] : openArgv(source.slice(0, source.lastIndexOf('/')) || '/')).then(r => done(r, state.isMac ? 'In Finder angezeigt' : 'Ordner geöffnet', 'folders', source))} />
       )}
       {!isNarrow && (
         <Button
@@ -3750,7 +3750,7 @@ function Actions(ui: Ui, $: EngineInterface, media: Shown, source: string, isNar
           dimColor
           label="Copy Pfad"
           onPress={(press: { surface: 'terminal' }) =>
-            act('copy_path') || void $.ui.copy({ text: source, surface: press.surface }).then(r => $.ui.toast(r.isCopied ? 'Path copied' : 'Could nicht copy the Pfad'))
+            act('copy_path') || void $.ui.copy({ text: source, surface: press.surface }).then(r => $.ui.toast(r.isCopied ? 'Pfad kopiert' : 'Pfad konnte nicht kopiert werden'))
           }
         />
       )}
@@ -3965,13 +3965,13 @@ function Warning(ui: Ui, $: EngineInterface, site: string, shown: Shown, width: 
   const n = cantDraw(state.drawCause, shown.title, shown.frames ? 'video' : 'picture', state.sessionId)
   const file = shown.origin ?? shown.source ?? shown.path
   const onPress = state.drawCause === 'desktop'
-    ? () => act(n.action) || void $.process.run(openArgv(file)).then(r => { if (r.exitCode !== 0) $.ui.toast(openFailure(r, shown.frames ? 'videos' : 'pictures', file)) })
+    ? () => act(n.action) || void $.process.run(openArgv(file)).then(r => { if (r.exitCode !== 0) $.ui.toast(openFailure(r, shown.frames ? 'Videos' : 'Bilder', file)) })
     : state.drawCause === 'unrecognised'
       ? (press: { surface: 'terminal' }) => act(n.action) || void (async () => {
         const profile = await turnOnPictures($)
         const copied = await $.ui.copy({ text: n.command, surface: press.surface }).then(r => r.isCopied, () => false)
         const where = profile ? `Added to ${profile.replace(state.home, '~')}. ` : ''
-        $.ui.toast(copied ? `${where}Copied: type /exit and paste it.` : `${where}Could nicht copy the command.`)
+        $.ui.toast(copied ? `${where}Kopiert: /exit eingeben und einfügen.` : `${where}Befehl konnte nicht kopiert werden.`)
       })()
       : undefined
   return NoticeBox(ui, $, width, { ...n, copy: n.command, onPress })
@@ -4012,7 +4012,7 @@ export function NoticeBox(ui: Ui, $: EngineInterface, width: number, n: { title:
           variant="primary"
           label={n.label}
           onPress={(press: { surface: 'terminal' }) =>
-            n.onPress ? n.onPress(press) : act(n.action) || void $.ui.copy({ text: n.copy, surface: press.surface }).then(r => $.ui.toast(r.isCopied ? (n.command ? 'Copied. Paste it in your terminal.' : 'Copied. Paste it to Claude.') : 'Could nicht copy'))
+            n.onPress ? n.onPress(press) : act(n.action) || void $.ui.copy({ text: n.copy, surface: press.surface }).then(r => $.ui.toast(r.isCopied ? (n.command ? 'Kopiert. Im Terminal einfügen.' : 'Kopiert. In Claude einfügen.') : 'Konnte nicht kopieren'))
           }
         />
       </Box>
@@ -4116,7 +4116,7 @@ export async function Viewer(
       : <Text color="suggestion">{prLabel}</Text>
     : null
   const run = (argv: string[], note: string) => () => {
-    void $.process.run(argv).then(r => $.ui.toast(r.exitCode === 0 ? note : `Could nicht: ${r.stderr.trim()}`))
+    void $.process.run(argv).then(r => $.ui.toast(r.exitCode === 0 ? note : `Konnte nicht: ${r.stderr.trim()}`))
   }
   // The single view with the QA sidebar is the default; side by side is a click away.
   if (!state.canImage) {
@@ -4184,8 +4184,8 @@ export async function Viewer(
         let target = rendered ?? page
         if (rendered) {
           try { target = await documentView($, baseMedia) ?? undefined }
-          catch (error) { $.ui.toast(`Could nicht öffnen document: ${String(error).slice(0, 160)}`); return }
-          if (!target) { $.ui.toast('Could nicht prepare the document preview.'); return }
+          catch (error) { $.ui.toast(`Dokument konnte nicht geöffnet werden: ${String(error).slice(0, 160)}`); return }
+          if (!target) { $.ui.toast('Die Dokumentvorschau konnte nicht vorbereitet werden.'); return }
         }
         // A local page opens in its own small window, the way an image opens
         // in an image viewer: the same engine that rendered the preview, as
@@ -4196,7 +4196,7 @@ export async function Viewer(
           ? ['sh', '-c', OPEN_SH, 'sh', ...htmlOpenArgv(state.chrome, target!)]
           : openArgv(target ?? source)
         void $.process.run(argv).then(r =>
-          $.ui.toast(r.exitCode === 0 ? `Opened ${(target ?? source.split('/').pop()!).slice(0, 60)}` : openFailure(r, target ? 'web pages' : media.kind === 'video' ? 'videos' : media.kind === 'audio' ? 'audio files' : 'pictures', target ?? source)),
+          $.ui.toast(r.exitCode === 0 ? `Geöffnet: ${(target ?? source.split('/').pop()!).slice(0, 60)}` : openFailure(r, target ? 'Webseiten' : media.kind === 'video' ? 'Videos' : media.kind === 'audio' ? 'Audiodateien' : 'Bilder', target ?? source)),
         )
       }}
     />
@@ -4586,7 +4586,7 @@ export async function checkForUpdate($: EngineInterface, current: string, branch
   track('update_check', { result: found.kind, channel: branch, ...('latest' in found ? { latest: found.latest } : {}) })
   if (found.kind !== 'offline' && found.kind !== 'no_cli') await $.store.set('updateCheckedAt', now)
   const isReady = found.kind === 'pending' || ((found.kind === 'update' || found.kind === 'move') && (await installUpdate($, found, current)))
-  if (isReady && 'latest' in found) $.ui.status(`zeigen-your-work ${found.latest} is bereit. Restart Claude Code to verwenden it.`)
+  if (isReady && 'latest' in found) $.ui.status(`show-your-work ${found.latest} ist bereit. Starte Claude Code neu, um es zu verwenden.`)
 }
 
 // The result of checking for an update:
@@ -4763,7 +4763,7 @@ export async function startBackground($: EngineInterface) {
 // The first run (see 'toured'): the plugin runs /show-your-work once, and its output row
 // in the chat draws the welcome. That run answers with WELCOME_TEXT, which is
 // how its row is told from the person's own /show-your-work.
-export const WELCOME_TEXT = 'show-your-work is installed and ready.'
+export const WELCOME_TEXT = 'show-your-work ist installiert und bereit.'
 export async function openWelcome($: EngineInterface) {
   await prepareSplash($).catch(() => undefined)
   await finishWelcome($)
@@ -4804,50 +4804,50 @@ async function installFound($: EngineInterface, found: Extract<Found, { kind: 'u
 export function UpdatePane(ui: Ui, $: EngineInterface) {
   const { Box, Text, Button } = ui
   const channel = settings.stable_updates ? 'Stable releases' : 'Latest releases'
-  const close = <Button key="update-close" label="Close" onPress={() => void $.ui.close({ id: UPDATE })} />
+  const close = <Button key="update-close" label="Schließen" onPress={() => void $.ui.close({ id: UPDATE })} />
   const c = updateCheck
   const found = c.phase === 'found' ? c.found : null
   // Each outcome of the check sets a bold headline, a dim second line, and
   // the buttons. Install shows only when there is a newer version.
-  let head = 'Checking for updates…'
-  let line = `On ${state.pluginVersion} · ${channel}`
+  let head = 'Suche nach Updates…'
+  let line = `Version ${state.pluginVersion} · ${channel}`
   let actions: Ui[] = []
   if (found?.kind === 'update' || found?.kind === 'move') {
-    head = `Version ${found.latest} is available`
-    actions = [<Button key="update-install" variant="primary" label="Install" onPress={() => void installFound($, found)} />, close]
+    head = `Version ${found.latest} ist verfügbar`
+    actions = [<Button key="update-install" variant="primary" label="Installieren" onPress={() => void installFound($, found)} />, close]
   } else if (found?.kind === 'current') {
-    head = "You're on the latest version"
+    head = "Du hast die neueste Version"
     actions = [close]
   } else if (found?.kind === 'pending') {
-    head = `Version ${found.latest} is installed`
-    line = 'Restart Claude Code to starten using it.'
+    head = `Version ${found.latest} ist installiert`
+    line = 'Starte Claude Code neu, um sie zu verwenden.'
     actions = [close]
   } else if (found?.kind === 'folder') {
     head = 'This copy runs von a Ordner, so it doesn\'t aktualisieren'
     actions = [close]
   } else if (found?.kind === 'busy') {
-    head = 'An aktualisieren is being installed'
-    line = 'Check erneut in a minute.'
+    head = 'Ein Update wird installiert'
+    line = 'In einer Minute erneut prüfen.'
     actions = [close]
   } else if (found?.kind === 'pinned') {
-    head = `This installieren is pinned to ${found.ref}, so it doesn't aktualisieren`
+    head = `Diese Installation ist auf ${found.ref} festgelegt und wird nicht aktualisiert`
     actions = [close]
   } else if (found?.kind === 'no_cli') {
-    head = "Couldn't find Claude Code's Befehl"
+    head = "Claude Code-Befehl nicht gefunden"
     line = 'Update by hand with: claude plugin update show-your-work@iamumeransari'
     actions = [close]
   } else if (found?.kind === 'offline') {
-    head = "Couldn't prüfen for updates"
-    line = 'Check your connection und ausführen /zeigen-your-work aktualisieren erneut.'
+    head = "Updates konnten nicht geprüft werden"
+    line = 'Prüfe deine Verbindung und führe /zeigen-your-work update erneut aus.'
     actions = [close]
   } else if (c.phase === 'installing') {
-    head = `Installing ${c.latest}…`
+    head = `Installiere ${c.latest}…`
   } else if (c.phase === 'installed') {
-    head = `Version ${c.latest} is installed`
-    line = 'Restart Claude Code to starten using it.'
+    head = `Version ${c.latest} ist installiert`
+    line = 'Starte Claude Code neu, um sie zu verwenden.'
     actions = [close]
   } else if (c.phase === 'failed') {
-    head = "Couldn't installieren the aktualisieren"
+    head = "Update konnte nicht installiert werden"
     line = `Try again, or run: claude plugin update ${PLUGIN}@iamumeransari`
     actions = [close]
   }
@@ -4862,7 +4862,7 @@ export function UpdatePane(ui: Ui, $: EngineInterface) {
 
 // /show-your-work: the switches, in a pane.
 export async function openSettings($: EngineInterface) {
-  await $.ui.open({ id: WELCOME, title: 'Settings', focus: true, closeOnEscape: true, holdToasts: true, rows: 10, columns: 70 })
+  await $.ui.open({ id: WELCOME, title: 'Einstellungen', focus: true, closeOnEscape: true, holdToasts: true, rows: 10, columns: 70 })
   await update($, welcome, n => n + 1)
 }
 
@@ -4911,8 +4911,8 @@ export function Settings(ui: Ui, $: EngineInterface) {
   return (
     <Box flexDirection="column" paddingX={2} paddingBottom={1}>
       <Box flexDirection="row" columnGap={2} marginBottom={1}>
-        <Button key="close" label="✕ Close" onPress={() => void $.ui.close({ id: WELCOME })} />
-        <Button key="tour" label="Take a tour" onPress={() => { act('tour_from_settings'); void $.ui.close({ id: WELCOME }).then(() => openTour($)) }} />
+        <Button key="close" label="✕ Schließen" onPress={() => void $.ui.close({ id: WELCOME })} />
+        <Button key="tour" label="Tour starten" onPress={() => { act('tour_from_settings'); void $.ui.close({ id: WELCOME }).then(() => openTour($)) }} />
       </Box>
       <Box marginBottom={1}><Text bold>Show Your Work Settings</Text></Box>
       {SettingRows(ui, $)}
@@ -4984,7 +4984,7 @@ const TOUR = 'show-your-work-tour'
 // /show-your-work tour (TOUR_TEXT marks it): it lays out at the chat's full
 // width at any window size. tourSite is the live row; an older one shrinks to
 // a line.
-export const TOUR_TEXT = 'show-your-work tour.'
+export const TOUR_TEXT = 'show-your-work-Tour.'
 
 // The one line above the control a stop points at, in the tour's row only.
 const tourMedia: { recording?: Shown | null; compare?: Shown | null; history?: Shown | null } = {}
@@ -5000,38 +5000,38 @@ async function prepareTour($: EngineInterface) {
   const recording = async () => {
     if (tourMedia.recording !== undefined) return
     tourMedia.recording = await (async () => {
-      const clip = await prepare($, `${dir}/trip-form.mp4`, 'New trip form')
+      const clip = await prepare($, `${dir}/trip-form.mp4`, 'Neues Reiseformular')
       const lead = clip.frames?.lead ?? 0
       const at = (s: number) => Math.max(0, s - lead)
       return {
         ...clip,
         // Where each step lands in the recording (its QA run, 1.3 s behind the log).
         changes: [
-          { title: 'Dates pick a range, nights in the summary', at: at(5.25) },
-          { title: 'Invalid emails rejected mit a Nachricht', at: at(6.85) },
-          { title: 'Invites become chips', at: at(9.1) },
-          { title: 'Create trip öffnet the trip', at: at(10.5) },
+          { title: 'Datumsangaben wählen einen Zeitraum, Nächte in der Zusammenfassung', at: at(5.25) },
+          { title: 'Ungültige E-Mail-Adressen werden mit einer Meldung abgelehnt', at: at(6.85) },
+          { title: 'Einladungen werden zu Chips', at: at(9.1) },
+          { title: 'Reise erstellen öffnet die Reise', at: at(10.5) },
         ],
         checks: [
-          { name: 'Dates pick a range', ok: true, at: at(5.25) },
-          { name: 'Bad emails get a Nachricht', ok: true, at: at(6.85) },
-          { name: 'Invites become chips', ok: true, at: at(9.1) },
-          { name: 'Create trip öffnet the trip', ok: true, at: at(10.7) },
-          { name: 'Labels for screen readers', ok: true, at: at(11.2) },
+          { name: 'Datumsangaben wählen einen Zeitraum', ok: true, at: at(5.25) },
+          { name: 'Ungültige E-Mails erhalten eine Meldung', ok: true, at: at(6.85) },
+          { name: 'Einladungen werden zu Chips', ok: true, at: at(9.1) },
+          { name: 'Reise erstellen öffnet die Reise', ok: true, at: at(10.7) },
+          { name: 'Beschriftungen für Screenreader', ok: true, at: at(11.2) },
         ],
         summary: [
-          { label: 'Trip form works end to end', ok: true, passed: 4, total: 4 },
-          { label: 'Labels for screen readers', ok: true, passed: 1, total: 1 },
+          { label: 'Reiseformular funktioniert vollständig', ok: true, passed: 4, total: 4 },
+          { label: 'Beschriftungen für Screenreader', ok: true, passed: 1, total: 1 },
         ],
       } as Shown
-    })().catch(() => prepare($, `${dir}/hero.jpg`, 'Tern homepage').catch(() => null))
+    })().catch(() => prepare($, `${dir}/hero.jpg`, 'Tern-Startseite').catch(() => null))
     await ready()
   }
   const compare = async () => {
     if (tourMedia.compare !== undefined) return
     tourMedia.compare = await (async () => ({
-      ...(await prepare($, `${dir}/hero.jpg`, 'Tern homepage')),
-      changes: [{ title: 'Trip card beside the headline' }, { title: 'Friends und trip count under the Schaltfläche' }],
+      ...(await prepare($, `${dir}/hero.jpg`, 'Tern-Startseite')),
+      changes: [{ title: 'Reisekarte neben der Überschrift' }, { title: 'Freunde und Reiseanzahl unter der Schaltfläche' }],
       compare: await prepare($, `${dir}/direction-b.jpg`, 'Original'),
     }) as Shown)().catch(() => null)
     await ready()
@@ -5041,14 +5041,14 @@ async function prepareTour($: EngineInterface) {
     tourMedia.history = await (async () => {
       const hero = `${dir}/hero.jpg`
       return {
-        ...(await prepare($, `${dir}/breakpoints.jpg`, 'Tern homepage')),
-        changes: [{ title: 'Desktop, tablet und phone' }],
-        note: 'Desktop, tablet und phone',
+        ...(await prepare($, `${dir}/breakpoints.jpg`, 'Tern-Startseite')),
+        changes: [{ title: 'Desktop, Tablet und Telefon' }],
+        note: 'Desktop, Tablet und Telefon',
         compare: await preparedOf($, hero),
         history: [
-          { path: `${dir}/concepts.jpg`, note: 'Four directions' },
-          { path: `${dir}/direction-b.jpg`, note: 'Direction B, full size' },
-          { path: hero, note: 'Trip card beside the headline' },
+          { path: `${dir}/concepts.jpg`, note: 'Vier Richtungen' },
+          { path: `${dir}/direction-b.jpg`, note: 'Richtung B, vollständige Größe' },
+          { path: hero, note: 'Reisekarte neben der Überschrift' },
         ],
         historyAt: 2,
       } as Shown

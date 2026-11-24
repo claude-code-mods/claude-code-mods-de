@@ -91,7 +91,7 @@ export async function startBackground($: EngineInterface) {
 // The first run (see 'toured'): the plugin runs /show-your-work once, and its output row
 // in the chat draws the welcome. That run answers with WELCOME_TEXT, which is
 // how its row is told from the person's own /show-your-work.
-export const WELCOME_TEXT = 'show-your-work is installed and ready.'
+export const WELCOME_TEXT = 'show-your-work ist installiert und bereit.'
 export async function openWelcome($: EngineInterface) {
   await prepareSplash($).catch(() => undefined)
   await finishWelcome($)
@@ -132,51 +132,51 @@ async function installFound($: EngineInterface, found: Extract<Found, { kind: 'u
 export function UpdatePane(ui: Ui, $: EngineInterface) {
   const { Box, Text, Button } = ui
   const channel = settings.stable_updates ? 'Stable releases' : 'Latest releases'
-  const close = <Button key="update-close" label="Close" onPress={() => void $.ui.close({ id: UPDATE })} />
+  const close = <Button key="update-close" label="Schließen" onPress={() => void $.ui.close({ id: UPDATE })} />
   const c = updateCheck
   const found = c.phase === 'found' ? c.found : null
   // Each outcome of the check sets a bold headline, a dim second line, and
   // the buttons. Install shows only when there is a newer version.
-  let head = 'Checking for updates…'
-  let line = `On ${state.pluginVersion} · ${channel}`
+  let head = 'Suche nach Updates…'
+  let line = `Version ${state.pluginVersion} · ${channel}`
   let actions: Ui[] = []
   if (found?.kind === 'update' || found?.kind === 'move') {
-    head = `Version ${found.latest} is available`
-    actions = [<Button key="update-install" variant="primary" label="Install" onPress={() => void installFound($, found)} />, close]
+    head = `Version ${found.latest} ist verfügbar`
+    actions = [<Button key="update-install" variant="primary" label="Installieren" onPress={() => void installFound($, found)} />, close]
   } else if (found?.kind === 'current') {
-    head = "You're on the latest version"
+    head = "Du hast die neueste Version"
     actions = [close]
   } else if (found?.kind === 'pending') {
-    head = `Version ${found.latest} is installed`
-    line = 'Restart Claude Code to starten using it.'
+    head = `Version ${found.latest} ist installiert`
+    line = 'Starte Claude Code neu, um sie zu verwenden.'
     actions = [close]
   } else if (found?.kind === 'folder') {
     head = 'This copy runs von a Ordner, so it doesn\'t aktualisieren'
     actions = [close]
   } else if (found?.kind === 'busy') {
-    head = 'An aktualisieren is being installed'
-    line = 'Check erneut in a minute.'
+    head = 'Ein Update wird installiert'
+    line = 'In einer Minute erneut prüfen.'
     actions = [close]
   } else if (found?.kind === 'pinned') {
-    head = `This installieren is pinned to ${found.ref}, so it doesn't aktualisieren`
+    head = `Diese Installation ist auf ${found.ref} festgelegt und wird nicht aktualisiert`
     actions = [close]
   } else if (found?.kind === 'no_cli') {
-    head = "Couldn't find Claude Code's Befehl"
-    line = 'Update by hand mit: claude plugin aktualisieren zeigen-your-work@iamumeransari'
+    head = "Claude Code-Befehl nicht gefunden"
+    line = 'Manuell aktualisieren mit: claude plugin update show-your-work@iamumeransari'
     actions = [close]
   } else if (found?.kind === 'offline') {
-    head = "Couldn't prüfen for updates"
-    line = 'Check your connection und ausführen /zeigen-your-work aktualisieren erneut.'
+    head = "Updates konnten nicht geprüft werden"
+    line = 'Prüfe deine Verbindung und führe /zeigen-your-work update erneut aus.'
     actions = [close]
   } else if (c.phase === 'installing') {
-    head = `Installing ${c.latest}…`
+    head = `Installiere ${c.latest}…`
   } else if (c.phase === 'installed') {
-    head = `Version ${c.latest} is installed`
-    line = 'Restart Claude Code to starten using it.'
+    head = `Version ${c.latest} ist installiert`
+    line = 'Starte Claude Code neu, um sie zu verwenden.'
     actions = [close]
   } else if (c.phase === 'failed') {
-    head = "Couldn't installieren the aktualisieren"
-    line = `Try erneut, oder ausführen: claude plugin aktualisieren ${PLUGIN}@iamumeransari`
+    head = "Update konnte nicht installiert werden"
+    line = `Versuche es erneut oder führe aus: claude plugin update ${PLUGIN}@iamumeransari`
     actions = [close]
   }
   return (
@@ -190,7 +190,7 @@ export function UpdatePane(ui: Ui, $: EngineInterface) {
 
 // /show-your-work: the switches, in a pane.
 export async function openSettings($: EngineInterface) {
-  await $.ui.open({ id: WELCOME, title: 'Settings', focus: true, closeOnEscape: true, holdToasts: true, rows: 10, columns: 70 })
+  await $.ui.open({ id: WELCOME, title: 'Einstellungen', focus: true, closeOnEscape: true, holdToasts: true, rows: 10, columns: 70 })
   await update($, welcome, n => n + 1)
 }
 
@@ -239,8 +239,8 @@ export function Settings(ui: Ui, $: EngineInterface) {
   return (
     <Box flexDirection="column" paddingX={2} paddingBottom={1}>
       <Box flexDirection="row" columnGap={2} marginBottom={1}>
-        <Button key="close" label="✕ Close" onPress={() => void $.ui.close({ id: WELCOME })} />
-        <Button key="tour" label="Take a tour" onPress={() => { act('tour_from_settings'); void $.ui.close({ id: WELCOME }).then(() => openTour($)) }} />
+        <Button key="close" label="✕ Schließen" onPress={() => void $.ui.close({ id: WELCOME })} />
+        <Button key="tour" label="Tour starten" onPress={() => { act('tour_from_settings'); void $.ui.close({ id: WELCOME }).then(() => openTour($)) }} />
       </Box>
       <Box marginBottom={1}><Text bold>Show Your Work Settings</Text></Box>
       {SettingRows(ui, $)}
@@ -312,7 +312,7 @@ const TOUR = 'show-your-work-tour'
 // /show-your-work tour (TOUR_TEXT marks it): it lays out at the chat's full
 // width at any window size. tourSite is the live row; an older one shrinks to
 // a line.
-export const TOUR_TEXT = 'show-your-work tour.'
+export const TOUR_TEXT = 'show-your-work-Tour.'
 
 // The one line above the control a stop points at, in the tour's row only.
 const tourMedia: { recording?: Shown | null; compare?: Shown | null; history?: Shown | null } = {}
@@ -328,38 +328,38 @@ async function prepareTour($: EngineInterface) {
   const recording = async () => {
     if (tourMedia.recording !== undefined) return
     tourMedia.recording = await (async () => {
-      const clip = await prepare($, `${dir}/trip-form.mp4`, 'New trip form')
+      const clip = await prepare($, `${dir}/trip-form.mp4`, 'Neues Reiseformular')
       const lead = clip.frames?.lead ?? 0
       const at = (s: number) => Math.max(0, s - lead)
       return {
         ...clip,
         // Where each step lands in the recording (its QA run, 1.3 s behind the log).
         changes: [
-          { title: 'Dates pick a range, nights in the summary', at: at(5.25) },
-          { title: 'Invalid emails rejected mit a Nachricht', at: at(6.85) },
-          { title: 'Invites become chips', at: at(9.1) },
-          { title: 'Create trip öffnet the trip', at: at(10.5) },
+          { title: 'Datumsangaben wählen einen Zeitraum, Nächte in der Zusammenfassung', at: at(5.25) },
+          { title: 'Ungültige E-Mail-Adressen werden mit einer Meldung abgelehnt', at: at(6.85) },
+          { title: 'Einladungen werden zu Chips', at: at(9.1) },
+          { title: 'Reise erstellen öffnet die Reise', at: at(10.5) },
         ],
         checks: [
-          { name: 'Dates pick a range', ok: true, at: at(5.25) },
-          { name: 'Bad emails get a Nachricht', ok: true, at: at(6.85) },
-          { name: 'Invites become chips', ok: true, at: at(9.1) },
-          { name: 'Create trip öffnet the trip', ok: true, at: at(10.7) },
-          { name: 'Labels for screen readers', ok: true, at: at(11.2) },
+          { name: 'Datumsangaben wählen einen Zeitraum', ok: true, at: at(5.25) },
+          { name: 'Ungültige E-Mails erhalten eine Meldung', ok: true, at: at(6.85) },
+          { name: 'Einladungen werden zu Chips', ok: true, at: at(9.1) },
+          { name: 'Reise erstellen öffnet die Reise', ok: true, at: at(10.7) },
+          { name: 'Beschriftungen für Screenreader', ok: true, at: at(11.2) },
         ],
         summary: [
-          { label: 'Trip form works end to end', ok: true, passed: 4, total: 4 },
-          { label: 'Labels for screen readers', ok: true, passed: 1, total: 1 },
+          { label: 'Reiseformular funktioniert vollständig', ok: true, passed: 4, total: 4 },
+          { label: 'Beschriftungen für Screenreader', ok: true, passed: 1, total: 1 },
         ],
       } as Shown
-    })().catch(() => prepare($, `${dir}/hero.jpg`, 'Tern homepage').catch(() => null))
+    })().catch(() => prepare($, `${dir}/hero.jpg`, 'Tern-Startseite').catch(() => null))
     await ready()
   }
   const compare = async () => {
     if (tourMedia.compare !== undefined) return
     tourMedia.compare = await (async () => ({
-      ...(await prepare($, `${dir}/hero.jpg`, 'Tern homepage')),
-      changes: [{ title: 'Trip card beside the headline' }, { title: 'Friends und trip count under the Schaltfläche' }],
+      ...(await prepare($, `${dir}/hero.jpg`, 'Tern-Startseite')),
+      changes: [{ title: 'Reisekarte neben der Überschrift' }, { title: 'Freunde und Reiseanzahl unter der Schaltfläche' }],
       compare: await prepare($, `${dir}/direction-b.jpg`, 'Original'),
     }) as Shown)().catch(() => null)
     await ready()
@@ -369,14 +369,14 @@ async function prepareTour($: EngineInterface) {
     tourMedia.history = await (async () => {
       const hero = `${dir}/hero.jpg`
       return {
-        ...(await prepare($, `${dir}/breakpoints.jpg`, 'Tern homepage')),
-        changes: [{ title: 'Desktop, tablet und phone' }],
-        note: 'Desktop, tablet und phone',
+        ...(await prepare($, `${dir}/breakpoints.jpg`, 'Tern-Startseite')),
+        changes: [{ title: 'Desktop, Tablet und Telefon' }],
+        note: 'Desktop, Tablet und Telefon',
         compare: await preparedOf($, hero),
         history: [
-          { path: `${dir}/concepts.jpg`, note: 'Four directions' },
-          { path: `${dir}/direction-b.jpg`, note: 'Direction B, full size' },
-          { path: hero, note: 'Trip card beside the headline' },
+          { path: `${dir}/concepts.jpg`, note: 'Vier Richtungen' },
+          { path: `${dir}/direction-b.jpg`, note: 'Richtung B, vollständige Größe' },
+          { path: hero, note: 'Reisekarte neben der Überschrift' },
         ],
         historyAt: 2,
       } as Shown
