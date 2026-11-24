@@ -134,12 +134,12 @@ async function runCommand($, specId: string): Promise<string> {
     await refresh($)
     if (spec === undefined) return `No event log found for spec ${specId}`
     await openPane($)
-    return `Dashboard showing ${spec.name}`
+    return `Dashboard zeigt ${spec.name}`
   }
   if ((await $.ui.panes()).some((pane) => pane.id === DASHBOARD_PANE)) {
     isDismissed = true
     await $.ui.close({ id: DASHBOARD_PANE })
-    return 'Dashboard closed'
+    return 'Dashboard geschlossen'
   }
   isDismissed = false
   await refresh($)

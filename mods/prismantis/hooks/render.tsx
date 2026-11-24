@@ -2366,7 +2366,7 @@ export const hasShellOutput = (output: unknown): boolean => {
 
 const PREVIEW_LINES = 10
 
-export const lineCount = (n: number): string => (n === 0 ? 'empty' : `${n} ${n === 1 ? 'line' : 'lines'}`)
+export const lineCount = (n: number): string => (n === 0 ? 'leer' : `${n} ${n === 1 ? 'Zeile' : 'Zeilen'}`)
 
 const BAND_SHARE = 0.12
 const BAND_FLOOR = 0.06
@@ -2437,7 +2437,7 @@ type Toggle = ReturnType<Fold>
 const wholeToggle = (fold: Fold, file: WholeFile, head: RenderElement, id: string, key: string): Toggle => {
   const n = file.lines.length
   if (file.kind === 'created') return n > PREVIEW_LINES ? fold(id, n - PREVIEW_LINES, `fold${key}`) : null
-  return n > 0 ? fold(id, n, `fold${key}`, { label: `zeigen ${lineCount(n)}`, face: () => head }) : null
+  return n > 0 ? fold(id, n, `fold${key}`, { label: `${lineCount(n)} anzeigen`, face: () => head }) : null
 }
 
 const wholeBody = (el: ElementTable, style: Style, file: WholeFile, head: RenderElement, rows: RenderElement | null, toggle: Toggle, band: string | undefined): (RenderElement | null)[] | RenderElement => {
@@ -3121,7 +3121,7 @@ export const renderUserPrompt = (el: ElementTable, style: Style, typed: string, 
   const pastes: string[] = []
   const text = typed.replace(PASTE, (_, _id, body: string) => `\0${pastes.push(body) - 1}\0`).replace(/^\n+|\n+$/g, '')
   const own = (line: string) => paste && /^\0\d+\0$/.test(line) ? pastes[Number(line.slice(1, -1))]! : undefined
-  const told = (line: string) => line.replace(/\0(\d+)\0/g, (_, n) => `[Pasted text +${lineCount(pastes[Number(n)]!.split('\n').length)}]`)
+  const told = (line: string) => line.replace(/\0(\d+)\0/g, (_, n) => `[Eingefügter Text +${lineCount(pastes[Number(n)]!.split('\n').length)}]`)
   const t = style.theme
   const color = promptInk(style)
   const rows = text.split('\n')

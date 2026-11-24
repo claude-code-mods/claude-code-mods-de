@@ -14,37 +14,36 @@ export const COMMAND_NAME = 'shunt:usage'
 export const USAGE_PATH = '/usage'
 
 export const NO_BASE_URL_TEXT =
-  'nein gateway to ask — neither SHUNT_BASE_URL nor ANTHROPIC_BASE_URL is ' +
-  'set, so this Sitzung is talking to Anthropic directly. Point Claude Code at ' +
-  'your gateway (export ANTHROPIC_BASE_URL=http://127.0.0.1:3001) und ausführen ' +
-  '/shunt:usage again.'
+  'kein Gateway, das man fragen konnte — weder SHUNT_BASE_URL noch ANTHROPIC_BASE_URL ist ' +
+  'gesetzt, daher spricht diese Sitzung direkt mit Anthropic. Richte Claude Code auf ' +
+  'dein Gateway aus (export ANTHROPIC_BASE_URL=http://127.0.0.1:3001) und führe ' +
+  '/shunt:usage erneut aus.'
 
 export const NO_TOKEN_TEXT =
-  'nein usable credential to authenticate mit — keine of SHUNT_TOKEN, ' +
-  'ANTHROPIC_AUTH_TOKEN or ANTHROPIC_API_KEY is set, and there is no shunt ' +
-  'gateway Token apiKeyHelper to lesen a gateway login von. Log in mit ' +
-  'shunt gateway login, oder ask the gateway operator for a Client Token.'
+  'keine verwendbaren Anmeldedaten — weder SHUNT_TOKEN, ' +
+  'ANTHROPIC_AUTH_TOKEN noch ANTHROPIC_API_KEY ist gesetzt, und es gibt keinen ' +
+  'shunt-Gateway-apiKeyHelper, aus dem eine Gateway-Anmeldung gelesen werden kann. ' +
+  'Melde dich mit shunt gateway login an oder bitte den Gateway-Betreiber um einen Client-Token.'
 
 export const NOT_ENABLED_TEXT =
-  'the gateway answered, aber GET /Nutzung is nicht aktiviert on it. Add an ' +
-  '[Server.Nutzung] table to the gateway config und neu starten it; the table takes ' +
-  'nein keys, aber it requires [Server.auth] (Client Tokens) oder ' +
-  '[server.gateway] (gateway login) to be set as well.'
+  'das Gateway hat geantwortet, aber GET /usage ist dort nicht aktiviert. Füge der ' +
+  'Gateway-Konfiguration eine Tabelle [server.usage] hinzu und starte es neu; die Tabelle ' +
+  'braucht keine Schlüssel, erfordert aber zusätzlich [server.auth] (Client-Tokens) oder ' +
+  '[server.gateway] (Gateway-Anmeldung).'
 
 export const REFUSED_TEXT =
-  'the gateway refused the credential this Sitzung is using. The erste ' +
-  'of SHUNT_TOKEN, ANTHROPIC_AUTH_TOKEN, ANTHROPIC_API_KEY und the ' +
-  'shunt gateway Token helper that is set is the one sent, und the rest are ' +
-  'ignored. A Client Token must be one the gateway\'s [Server.auth] accepts; ' +
-  'a gateway login may have expired oder been revoked, so log in erneut mit ' +
-  'shunt gateway login.'
+  'das Gateway hat die von dieser Sitzung verwendeten Anmeldedaten abgelehnt. Von ' +
+  'SHUNT_TOKEN, ANTHROPIC_AUTH_TOKEN, ANTHROPIC_API_KEY und dem shunt-Gateway-Token-Helper ' +
+  'wird der erste gesendet, der gesetzt ist; die übrigen werden ignoriert. Ein Client-Token ' +
+  'muss von [server.auth] des Gateways akzeptiert werden; eine Gateway-Anmeldung kann ' +
+  'abgelaufen oder widerrufen sein. Melde dich erneut mit shunt gateway login an.'
 
 export const HOOK_FAILED_TEXT =
-  'could nicht lesen the pool Nutzung — the Hook that answers this Befehl ' +
-  'failed oder ran past its budget. Run /shunt:Nutzung erneut; if it keeps ' +
-  'failing, prüfen that the gateway is up und reachable.'
+  'die Pool-Nutzung konnte nicht gelesen werden — der Hook, der diesen Befehl beantwortet, ' +
+  'ist fehlgeschlagen oder hat sein Zeitbudget überschritten. Führe /shunt:usage erneut aus; ' +
+  'wenn es weiterhin fehlschlägt, prüfe, ob das Gateway läuft und erreichbar ist.'
 
 export const NO_POOL_TEXT =
-  'the gateway reports nein pooled provider, so es gibt nein shared quota ' +
-  'to zeigen. Pool Nutzung appears once a provider is configured mit pooled ' +
-  'accounts (auth mode oauth oder chatgpt).'
+  'das Gateway meldet keinen gepoolten Anbieter, daher gibt es keine gemeinsame ' +
+  'Kontingentanzeige. Die Pool-Nutzung erscheint, sobald ein Anbieter mit gepoolten ' +
+  'Konten konfiguriert ist (Authentifizierungsmodus oauth oder chatgpt).'

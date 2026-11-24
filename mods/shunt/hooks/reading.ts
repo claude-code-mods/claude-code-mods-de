@@ -75,8 +75,8 @@ export function helperFailedOf(
 
   return {
     problem:
-      'the apiKeyHelper is shunt gateway Token, aber läuft it failed ' +
-      `${'—'} ${detail}. Run shunt gateway login to log in again.`,
+      'der apiKeyHelper shunt gateway token konnte nicht ausgeführt werden ' +
+      `— ${detail}. Melde dich mit shunt gateway login erneut an.`,
     brief: HELPER_FAILED,
   }
 }
@@ -90,9 +90,9 @@ export function helperFailedOf(
 export function unreachableOf(endpoint: Endpoint, error: unknown): Reading {
   return {
     problem:
-      `could nicht reach the gateway at ${endpoint.base} ` +
-      `${'—'} ${messageOf(error)}`,
-    brief: 'gateway unreachable',
+      `das Gateway unter ${endpoint.base} ist nicht erreichbar ` +
+      `— ${messageOf(error)}`,
+    brief: 'Gateway nicht erreichbar',
   }
 }
 

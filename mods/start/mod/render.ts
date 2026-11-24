@@ -19,10 +19,10 @@ const STAGE_GLYPH: Record<StageMark, string> = { done: '●', current: '◐', to
 const GATE_GLYPH: Record<GateValue, string> = { approved: '✓', skipped: '✓', draft: '◐', pending: '○' }
 const ACTIVE_STATUSES = ['building', 'built', 'evaluating', 'in_progress']
 const RESULT_LINE: Record<string, { glyph: string; label: string; tone: Tone }> = {
-  stalled: { glyph: '⏸', label: 'stalled', tone: 'warn' },
+  stalled: { glyph: '⏸', label: 'angehalten', tone: 'warn' },
   'blocked-environment': { glyph: '⛔', label: 'blocked-environment', tone: 'bad' },
   'harness-abort': { glyph: '↻', label: 'harness-abort', tone: 'warn' },
-  failed: { glyph: '✗', label: 'failed', tone: 'bad' },
+  failed: { glyph: '✗', label: 'fehlgeschlagen', tone: 'bad' },
 }
 const SCORE_WIDTH = 7
 const UNCOVERED_SHOWN = 3
@@ -93,18 +93,18 @@ function stageLine(state: SpecState): Line {
     return line([...marks, `slices ${passed}/${slices.length}`].join('  '), 'dim')
   }
   if (stage === 'Verify') {
-    if (state.verify === undefined) return line('nein verification recorded', 'dim')
+    if (state.verify === undefined) return line('keine Prüfung aufgezeichnet', 'dim')
     const drift = tasksOfType(state, 'drift').some(isOpen) ? '◐' : '✓'
     const constitution = { pass: '✓', fail: '✗', none: '–' }[state.verify.constitution]
     return line(`drift ${drift}  constitution ${constitution}`, 'dim')
   }
-  return line(state.archivedAt === undefined ? 'bereit to archive' : `archived ${state.archivedAt.slice(0, 10)}`, 'dim')
+  return line(state.archivedAt === undefined ? 'bereit zum Archivieren' : `archiviert am ${state.archivedAt.slice(0, 10)}`, 'dim')
 }
 
 export function needsYou(state: SpecState, live: Live): Line[] {
   const items: Line[] = []
-  if (live.isAsking) items.push(line('? Claude is asking you a Frage', 'ask'))
-  for (const part of GATE_PARTS) if (state.gates[part] === 'draft') items.push(line(`◆ ${part} draft to genehmigen`, 'ask'))
+  if (live.isAsking) items.push(line('? Claude fragt dich etwas', 'ask'))
+  for (const part of GATE_PARTS) if (state.gates[part] === 'draft') items.push(line(`◆ ${part}-Entwurf genehmigen`, 'ask'))
   for (const decision of state.decisions.values()) if (!decision.confirmed) items.push(line(`? ${decision.id} ${decision.title ?? ''} — bestätigen`.trim(), 'ask'))
   for (const question of state.questions.values()) if (!question.resolved) items.push(line(`? ${question.id} ${question.text ?? ''}`.trim(), 'ask'))
   for (const assumption of state.assumptions.values()) {
@@ -113,18 +113,18 @@ export function needsYou(state: SpecState, live: Live): Line[] {
   const uncovered = uncoveredCriteria(state)
   if (uncovered.length > 0) {
     const shown = uncovered.slice(0, UNCOVERED_SHOWN).join(', ')
-    items.push(line(`✗ ${uncovered.length} AC in nein slice: ${shown}${uncovered.length > UNCOVERED_SHOWN ? ', …' : ''}`, 'bad'))
+    items.push(line(`✗ ${uncovered.length} AK in keinem Slice: ${shown}${uncovered.length > UNCOVERED_SHOWN ? ', …' : ''}`, 'bad'))
   }
-  for (const slice of slicesWithoutP0(state)) items.push(line(`✗ ${slice.name}: nein P0 scenario`, 'bad'))
+  for (const slice of slicesWithoutP0(state)) items.push(line(`✗ ${slice.name}: kein P0-Szenario`, 'bad'))
   for (const slice of tasksOfType(state, 'slice')) {
     const status = effectiveStatus(state, slice.id)
     const outcome = RESULT_LINE[state.results.get(slice.id)?.result ?? '']
     const iterations = state.results.get(slice.id)?.iterations
     const max = state.run?.maxIterations
-    const tries = iterations === undefined ? '' : `  it ${iterations}${max === undefined ? '' : `/${max}`}`
+    const tries = iterations === undefined ? '' : `  Durchlauf ${iterations}${max === undefined ? '' : `/${max}`}`
     if (status !== 'passed' && outcome !== undefined) items.push(line(`${outcome.glyph} ${slice.name}  ${outcome.label}${tries}`, outcome.tone))
     else if (status === 'failed' || status === 'blocked') items.push(line(`${statusGlyph(status).glyph} ${slice.name}  ${status}`, 'bad'))
-    else if (ACTIVE_STATUSES.includes(status) && !isRunLive(state)) items.push(line(`⚠ ${slice.name}  ${status}, nein ausführen live`, 'warn'))
+    else if (ACTIVE_STATUSES.includes(status) && !isRunLive(state)) items.push(line(`⚠ ${slice.name}  ${status}, kein laufender Durchgang`, 'warn'))
   }
   for (const drift of tasksOfType(state, 'drift')) if (isOpen(drift)) items.push(line(`⚠ drift: ${drift.name}`, 'warn'))
   const stage = currentStage(state)
@@ -136,10 +136,10 @@ export function needsYou(state: SpecState, live: Live): Line[] {
 function nowSection(state: SpecState, live: Live): Section | undefined {
   const isLive = isRunLive(state) || live.runningAgents > 0
   if (!isLive && currentStage(state) !== 'Build') return undefined
-  if (!isLive) return { key: 'now', title: 'NOW', lines: [line('nein workflow läuft', 'dim')] }
+  if (!isLive) return { key: 'now', title: 'NOW', lines: [line('kein Workflow läuft', 'dim')] }
   const lines: Line[] = []
-  if (isRunLive(state)) lines.push(line(`/start:implement running · ${duration(live.now - Date.parse(state.run!.at))}`))
-  if (live.runningAgents > 0) lines.push(line(`${live.runningAgents} agent${live.runningAgents === 1 ? '' : 's'} running`, 'dim'))
+  if (isRunLive(state)) lines.push(line(`/start:implement läuft · ${duration(live.now - Date.parse(state.run!.at))}`))
+  if (live.runningAgents > 0) lines.push(line(`${live.runningAgents} ${live.runningAgents === 1 ? 'Agent läuft' : 'Agenten laufen'}`, 'dim'))
   for (const slice of tasksOfType(state, 'slice')) {
     if (ACTIVE_STATUSES.includes(slice.status)) lines.push(line(`◐ ${slice.name}  ${slice.status}`, 'warn'))
   }
@@ -152,13 +152,13 @@ function defineSection(state: SpecState): Section {
   const confirmed = counted(decisions, (decision) => decision.confirmed)
   const lines = [
     line(`FR ${state.requirements.size} · AC ${acs}`),
-    line(`ADR ${decisions.length} (${confirmed} confirmed · ${decisions.length - confirmed} pending)`),
+    line(`ADR ${decisions.length} (${confirmed} bestätigt · ${decisions.length - confirmed} ausstehend)`),
   ]
   const slices = tasksOfType(state, 'slice')
-  if (slices.some((slice) => slice.covers !== undefined)) lines.push(line(`AC in a slice  ${acs - uncoveredCriteria(state).length}/${acs}`))
+  if (slices.some((slice) => slice.covers !== undefined)) lines.push(line(`AK in einem Slice  ${acs - uncoveredCriteria(state).length}/${acs}`))
   const scenarios = tasksOfType(state, 'scenario')
   if (scenarios.some((scenario) => scenario.priority !== undefined)) {
-    lines.push(line(`slices ohne P0  ${slicesWithoutP0(state).length}/${slices.length}`))
+    lines.push(line(`Slices ohne P0  ${slicesWithoutP0(state).length}/${slices.length}`))
     const byPriority = ['P0', 'P1', 'P2'].map((priority) => `${priority} ${counted(scenarios, (scenario) => scenario.priority === priority)}`)
     lines.push(line(`scenarios  ${byPriority.join(' · ')}`))
   }
@@ -182,27 +182,27 @@ function buildSection(state: SpecState, columns: number): Section {
     return line(`${glyph} ${clip(slice.name, nameWidth)}  ${score.padStart(SCORE_WIDTH)}  ${tries}`, tone)
   })
   const title = `BUILD${phase === undefined ? '' : ` · P${index + 1}`}${threshold}`
-  return { key: 'build', title, lines: rows.length === 0 ? [line('nein slices yet', 'dim')] : [header, ...rows] }
+  return { key: 'build', title, lines: rows.length === 0 ? [line('noch keine Slices', 'dim')] : [header, ...rows] }
 }
 
 function verifySection(state: SpecState): Section {
   const drift = tasksOfType(state, 'drift')
   const gaps = tasksOfType(state, 'gap')
-  const constitution = state.verify === undefined ? 'nicht checked' : { pass: 'pass', fail: 'fail', none: 'nein constitution' }[state.verify.constitution]
+  const constitution = state.verify === undefined ? 'nicht geprüft' : { pass: 'bestanden', fail: 'fehlgeschlagen', none: 'keine Konstitution' }[state.verify.constitution]
   return {
     key: 'verify',
     title: 'VERIFY',
     lines: [
-      line(`drift findings  ${counted(drift, isOpen)} öffnen · ${counted(drift, (task) => !isOpen(task))} fixed`),
-      line(`known gaps  ${counted(gaps, isOpen)} öffnen`),
+      line(`Drift-Befunde  ${counted(drift, isOpen)} offen · ${counted(drift, (task) => !isOpen(task))} behoben`),
+      line(`bekannte Lücken  ${counted(gaps, isOpen)} offen`),
       line(`constitution  ${constitution}`, state.verify?.constitution === 'fail' ? 'bad' : 'plain'),
     ],
   }
 }
 
-function openClosed(label: string, tasks: Task[], closedWord = 'closed'): Line | undefined {
+function openClosed(label: string, tasks: Task[], closedWord = 'geschlossen'): Line | undefined {
   if (tasks.length === 0) return undefined
-  return line(`${label}  ${counted(tasks, isOpen)} open · ${counted(tasks, (task) => !isOpen(task))} ${closedWord}`)
+  return line(`${label}  ${counted(tasks, isOpen)} offen · ${counted(tasks, (task) => !isOpen(task))} ${closedWord}`)
 }
 
 function trackerSection(state: SpecState): Section | undefined {
@@ -217,7 +217,7 @@ function trackerSection(state: SpecState): Section | undefined {
   if (scenarios.some((status) => status !== 'pending')) {
     lines.push(line(`scenarios  ✓ ${counted(scenarios, (s) => s === 'passed')}  ✗ ${counted(scenarios, (s) => s === 'failed')}  ○ ${counted(scenarios, (s) => s !== 'passed' && s !== 'failed')}`))
   }
-  for (const extra of [openClosed('bugs', tasksOfType(state, 'bug')), openClosed('gaps', tasksOfType(state, 'gap')), openClosed('drift', tasksOfType(state, 'drift'), 'fixed')]) {
+  for (const extra of [openClosed('Fehler', tasksOfType(state, 'bug')), openClosed('Lücken', tasksOfType(state, 'gap')), openClosed('Drift', tasksOfType(state, 'drift'), 'behoben')]) {
     if (extra !== undefined) lines.push(extra)
   }
   return { key: 'tracker', title: 'TRACKER', lines }
@@ -231,7 +231,7 @@ function ledgerSection(state: SpecState): Section {
   return {
     key: 'ledger',
     title: 'LEDGER',
-    lines: [line(`Q ${counted(questions, (question) => !question.resolved)} öffnen · A ${assumptions.length} (${proposed} proposed) · ADR ${decisions.length}`)],
+    lines: [line(`F ${counted(questions, (question) => !question.resolved)} offen · A ${assumptions.length} (${proposed} vorgeschlagen) · ADR ${decisions.length}`)],
   }
 }
 
@@ -240,18 +240,18 @@ export function view(state: SpecState, live: Live, columns: number): View {
   const stage = currentStage(state)
   const stageSection = stage === 'Define' ? defineSection(state) : stage === 'Build' ? buildSection(state, columns) : stage === 'Verify' ? verifySection(state) : undefined
   const sections = [
-    { key: 'needs', title: `NEEDS YOU (${needs.length})`, lines: needs.length === 0 ? [line('nothing needs you', 'dim')] : needs },
+    { key: 'needs', title: `DU BIST GEFORDERT (${needs.length})`, lines: needs.length === 0 ? [line('nichts erfordert deine Hilfe', 'dim')] : needs },
     nowSection(state, live),
     stageSection,
     trackerSection(state),
     ledgerSection(state),
   ].filter((section): section is Section => section !== undefined)
-  return { title: `starten · ${state.name}`, stepper: stepper(state, columns), stageLine: stageLine(state), sections }
+  return { title: `start · ${state.name}`, stepper: stepper(state, columns), stageLine: stageLine(state), sections }
 }
 
 export function footerText(state: SpecState, live: Live): string {
   const marks = stageMarks(state)
   const count = needsYou(state, live).length
   const glyphs = STAGES.map((stage) => STAGE_GLYPH[marks[stage]]).join('')
-  return `${specLabel(state.name)} ${glyphs}${count > 0 ? ` · ${count} need${count === 1 ? 's' : ''} you` : ''}`
+  return `${specLabel(state.name)} ${glyphs}${count > 0 ? ` · ${count} ${count === 1 ? 'Sache erfordert' : 'Sachen erfordern'} deine Hilfe` : ''}`
 }

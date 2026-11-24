@@ -63,7 +63,7 @@ export const resetTextOf = (
   const atMs = resetsAt * 1000
 
   if (atMs <= nowMs) {
-    return 'resets due'
+    return 'Zurücksetzung fällig'
   }
 
   const at = new Date(atMs)
@@ -75,7 +75,7 @@ export const resetTextOf = (
     at.getMonth() === now.getMonth() &&
     at.getDate() === now.getDate()
 
-  return today ? `resets ${clock}` : `resets ${DAYS[at.getDay()]} ${clock}`
+  return today ? `zurückgesetzt ${clock}` : `zurückgesetzt ${DAYS[at.getDay()]} ${clock}`
 }
 
 const windowLabel = (key: WindowKey) => key.padEnd(5)
@@ -86,7 +86,7 @@ const poolLines = (pool: PoolStatus, nowMs: number): string[] =>
 
     const row =
       `  ${windowLabel(key)} ${barOf(window.remaining)} ` +
-      `${percentOf(window.remaining)} left`
+      `${percentOf(window.remaining)} übrig`
 
     const reset = resetTextOf(window.resetsAt, nowMs)
 
@@ -139,8 +139,8 @@ export function reportText(
   const providers = providerLines(report.providers)
 
   const legend =
-    `  headroom left, averaged over the pool's accounts; a shared figure, ` +
-    `nicht a promise about your nächste request`
+    `  verbleibender Spielraum, gemittelt über alle Konten des Pools; ein gemeinsamer Wert, ` +
+    `keine Garantie für deine nächste Anfrage`
 
   return [
     head,

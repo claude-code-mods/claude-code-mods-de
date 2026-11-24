@@ -12,7 +12,7 @@ async function loadPreamble($: ModApi): Promise<string | null> {
   }
 
   $.ui.log(
-    "Operator Memory could nicht ausführen operator-helper preamble. Install oder repair @aerovato/operator-helper globally, dann neu starten Claude Code.",
+    "Operator Memory konnte den Präambel-Befehl operator-helper nicht ausführen. Installiere oder repariere @aerovato/operator-helper global und starte Claude Code dann neu.",
   );
   return null;
 }
