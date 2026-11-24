@@ -3,145 +3,145 @@
   <img src="site/assets/cache-tax-light.svg" alt="Cache Tax" width="64" height="64">
 </picture>
 
-# Cache Tax for Claude Code
+# Cache Tax für Claude Code
 
-**Keep Claude Code's Prompt Cache warm during breaks.**
+**Hält den Prompt-Cache von Claude Code in Pausen warm.**
 
-Cache Tax is a Claude Code mod that refreshes your Prompt Cache while you step away und zeigt the estimated rewrite Kosten vorher a cold senden. Run `/keepwarm 90m` vorher a break. Pings Kosten Tokens; wählen a Fenster you expect to return within.
+Cache Tax ist ein Mod für Claude Code, der deinen Prompt-Cache auffrischt, während du dich entfernt, und dir vor einem Versand ohne Cache die geschätzten Kosten der Neuerstellung zeigt. Führe vor einer Pause `/keepwarm 90m` aus. Pings kosten Tokens; wähle ein Zeitfenster, in dem du voraussichtlich zurückkehrst.
 
-**[Install](#install)** · [Website](https://cachetax.aidojo.si/) · [How it works](#how-it-works) · [Costs and limits](#cost-and-the-plan-limit-question) · [Commands](#commands)
+**[Install](#install)** · [Website](https://cachetax.aidojo.si/) · [So funktioniert es](#so-funktioniert-es) · [Kosten und die Frage der Nutzungsgrenzen](#kosten-und-die-frage-der-nutzungsgrenzen) · [Befehle](#befehle)
 
-![Real recording of cache-tax stopping a cold send with a $6.61 estimate](site/assets/refusal.gif)
+![Echte Aufzeichnung, wie cache-tax einen Versand ohne Cache mit einer Schätzung von 6,61 $ stoppt](site/assets/refusal.gif)
 
-A two-line recap in a 330k-token Sitzung triggered a **$6.61 estimate**. After resending, the reported Cache schreiben was **$6.28**. Recorded on 2.1.1; aktuell wording says “up to” the estimated Token count. These are API-equivalent costs, nicht extra subscription charges.
+Eine Zusammenfassung in zwei Zeilen in einer Sitzung mit 330k Tokens löste eine **Schätzung von 6,61 $** aus. Nach dem erneuten Senden belief der gemeldete Cache-Schreibvorgang auf **6,28 $**. Aufgezeichnet auf 2.1.1; der heutige Wortlaut sagt „bis zu“ der geschätzten Token-Anzahl. Es handelt sich um API-äquivalente Kosten, nicht um zusätzliche Abgaben auf dein Abo.
 
 ## Install
 
-Needs [Claude Code 2.1.287 or later](https://code.claude.com/docs/en/plugins/mods/overview#turn-mods-on-or-off), a one-hour Cache und Claude Code left läuft. Mods are on standardmäßig. Pings Kosten Tokens, including uncapped Ausgabe.
+Vorausgesetzt sind [Claude Code 2.1.287 oder neuer](https://code.claude.com/docs/en/plugins/mods/overview#turn-mods-on-or-off), ein einstündiger Cache und ein laufendes Claude Code. Mods sind standardmäßig aktiviert. Pings kosten Tokens, einschließlich nicht gedeckelter Ausgabe.
 
 ```sh
-claude plugin marketplace add karanb192/claude-code-mods
-claude plugin install cache-tax@claude-code-mods
+claude plugin marketplace add claude-code-mods/claude-code-mods-de
+claude plugin install cache-tax@claude-code-mods-de
 ```
 
-Restart Claude Code oder ausführen `/reload-plugins` in an öffnen Sitzung. No early-access flag is needed. Wenn du set `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS` previously, entfernen it; aktuell Claude Code ignores it.
+Starte Claude Code neu oder führe `/reload-plugins` in einer offenen Sitzung aus. Ein Early-Access-Flag ist nicht nötig. Falls du früher `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS` gesetzt hast, entferne es; aktuelles Claude Code ignoriert es.
 
-In a warm Sitzung, ausführen `/keepwarm` to arm six hours. Use `/keepwarm 90m` for a shorter Fenster, oder `/keepwarm off` to stoppen.
+Führe in einer warmen Sitzung `/keepwarm` aus, um sechs Stunden zu aktivieren. Nutze `/keepwarm 90m` für ein kürzeres Fenster oder `/keepwarm off` zum Beenden.
 
-**Check the main Cache lifetime.** Included subscription Nutzung defaults to one hour. API-key, Nutzung-credit und cloud-provider Sitzungen default to five minutes, so set [`promptCacheTtl`](https://code.claude.com/docs/en/prompt-caching#choose-the-ttl-yourself) to `"1h"` for those billing paths. A 50-minute timer cannot protect a five-minute main Cache. See [Limits](#limits) for the fork evidence.
+**Prüfe die Lebensdauer des Haupt-Caches.** Im enthaltenen Abo beträgt sie standardmäßig eine Stunde. Sitzungen mit API-Schlüssel, Nutzungsguthaben oder Cloud-Anbieter fallen standardmäßig auf fünf Minuten zurück; setze für diese Abrechnungswege [`promptCacheTtl`](https://code.claude.com/docs/en/prompt-caching#choose-the-ttl-yourself) auf `"1h"`. Ein 50-Minuten-Timer kann einen fünfminütigen Haupt-Cache nicht schützen. Die Belege aus dem Fork findest du unter [Limits](#limits).
 
-**Prefer a settings Hook?** The [hook version](https://github.com/karanb192/claude-code-hooks/tree/main/plugins/cache-tax) warns standardmäßig, refuses once mit `CACHE_TAX_BLOCK=1`, und provides a standalone Status-line countdown. Warming is part of dieser Mod.
+**Lieber ein Settings-Hook?** Die [Hook-Version](https://github.com/karanb192/claude-code-hooks/tree/main/plugins/cache-tax) warnt standardmäßig, verweigert einmal mit `CACHE_TAX_BLOCK=1` und bietet einen eigenständigen Countdown in der Statuszeile. Das Warmhalten gehört zu diesem Mod.
 
-Built by [Karan Bansal](https://karanbansal.in/). Read [the Cache Tax story and recorded cache costs](https://karanbansal.in/blog/cache-tax/).
+Erstellt von [Karan Bansal](https://karanbansal.in/). Lies [die Geschichte von Cache Tax und die aufgezeichneten Cache-Kosten](https://karanbansal.in/blog/cache-tax/).
 
 ## Optionen
 
-In `/config`, under Cache-tax:
+In `/config` unter cache-tax:
 
     Auto keepwarm:    on | off
-    Display:          Leiste | Status
+    Display:          band | status
     Ping floor:       2 (a number, 0 oder mehr)
-    Headless prompts: guard | senden
+    Headless prompts: guard | send
 
-`on` (the default) keeps today's behavior: danach you pay a cold Cache schreiben, keepwarm arms itself for three hours. `off` leaves keepwarm alone until you arm it mit `/keepwarm`; the guard's wording dann says keepwarm stays off, oder names the Zeit left on a Fenster you armed. `/keepwarm always` still arms it either way.
+`on` (die Voreinstellung) behält das bisherige Verhalten: Nachdem du einen Schreibvorgang ohne Cache bezahlt hast, aktiviert sich keepwarm für drei Stunden selbst. `off` lässt keepwarm in Ruhe, bis du es mit `/keepwarm` aktivierst; der Wortlaut der Warnung sagt dann, dass keepwarm aus bleibt, oder nennt die verbleibende Zeit eines aktivierten Fensters. `/keepwarm always` aktiviert es in beiden Fällen weiterhin.
 
-Ping floor divides the estimated cold rewrite Kosten in an idle-break budget: 2 permits estimated ping spend below half a rewrite; 0 disables the limit. Before a ping, spend already observed in this break plus the nächste ping's estimate must be below that budget. The estimate verwendet the cheapest of the five most recent warm receipts, repriced for the aktuell Modell und Kontext, including its Prompt tier. A neu main Zug resets spend; extending oder stopping und re-arming a Fenster does nicht. A skipped ping leaves the Cache to go cold. The log und Status say why, und `$.cacheTax.status()` exposes `pingSkipped` und `idlePingUsd`.
+Ping floor teilt die geschätzten Kosten einer Neuerstellung in ein Budget für Pausen ohne Aktivität: 2 erlaubt geschätzte Ping-Ausgaben unter der Hälfte einer Neuerstellung; 0 schaltet das Limit ab. Vor einem Ping müssen die in dieser Pause bereits beobachteten Ausgaben plus die Schätzung des nächsten Pings unter diesem Budget liegen. Die Schätzung verwendet den günstigsten der fünf letzten Belege für warme Lesevorgänge, neu bepreist für das aktuelle Modell und den aktuellen Kontext, einschließlich dessen Prompt-Tarifstufe. Ein neuer Hauptzug setzt die Ausgaben zurück; das Verlängern oder Beenden und erneute Aktivieren eines Fensters tut es nicht. Ein übersprungener Ping lässt den Cache kalt werden. Protokoll und Status nennen den Grund, und `$.cacheTax.status()` gibt `pingSkipped` und `idlePingUsd` heraus.
 
-The erste ping has nein receipt, so it goes out. A later Antwort can Kosten mehr than estimated, so das ist an estimate-based limit, nicht a guaranteed maximum bill. With nein Modell price, Kontext oder priced receipts, nein comparison can be made. Receipts und spend are in memory: a neu starten oder neu Gespräch clears them. Pings may end vorher the requested warming Fenster.
+Der erste Ping hat noch keinen Beleg, daher geht er hinaus. Eine spätere Antwort kann mehr kosten als geschätzt; es handelt sich also um ein schätzungsbasiertes Limit, keine garantierte Obergrenze der Rechnung. Ohne Modellpreis, Kontext oder bepreiste Belege lässt sich kein Vergleich anstellen. Belege und Ausgaben liegen im Speicher: Ein Neustart oder neues Gespräch löscht sie. Pings können vor dem gewünschten Warmhaltefenster enden.
 
-Display picks where the state zeigt while keepwarm is armed. `band` (the default) is the row above the Prompt, mit a Text icon in terminals und the cube on Desktop. `status` puts the same Text in the Status entry under the Prompt und draws nein row: verwenden it when another mod owns the space above the Prompt. Es gibt nein setting that hides it: pings Kosten Tokens, so the screen immer says when they ausführen.
+Display legt fest, wo der Zustand angezeigt wird, während keepwarm aktiv ist. `band` (die Voreinstellung) ist die Zeile über der Eingabe, mit einem Textsymbol im Terminal und dem Würfel auf dem Desktop. `status` bringt denselben Text in den Statuseintrag unter der Eingabe und zeichnet keine Zeile: Verwende es, wenn ein anderer Mod den Platz über der Eingabe belegt. Eine Einstellung zum Ausblenden gibt es nicht: Pings kosten Tokens, daher sagt der Bildschirm immer, wann sie laufen.
 
 ## So funktioniert es
 
-**Before a break:** `/keepwarm` arms a bounded Fenster. After 50 idle minutes, a timer inside Claude Code sendet one Werkzeug-less fork over the Sitzung's transcript. It liest Nutzung danach every ping und stops if liest are zero oder schreibt reach 10% of liest. The idle spending limit kann überspringen later pings vorher the Fenster ends. Es gibt nein background transcript-polling loop.
+**Vor einer Pause:** `/keepwarm` aktiviert ein begrenztes Fenster. Nach 50 Minuten ohne Aktivität sendet ein Timer innerhalb von Claude Code einen Fork ohne Werkzeug über das Transkript der Sitzung. Nach jedem Ping liest er die Nutzung und stoppt, wenn Lesevorgänge null sind oder Schreibvorgänge 10 % der Lesevorgänge erreichen. Das Limit für Ausgaben in Ruhe kann spätere Pings überspringen, bevor das Fenster endet. Es gibt keine Hintergrundschleife, die das Transkript abfragt.
 
-**When you return cold:** for a Kontext of at least 50,000 Tokens, the guard asks vorher your ordinary Nachricht goes out when its one-hour clock says cold. The Frage zeigt the estimated rewrite Kosten und warming guidance. **Send anyway** sendet that Nachricht; **Don't senden** drops it. If the dialog is dismissed oder the host cannot Antwort it, the guard refuses once und the resend goes through. SDK hosts that can Antwort the dialog retain that choice. `/cache-tax guard refuse 5` asks at $5 oder mehr, including a Modell mit nein price row; cheaper sendet log their price und proceed.
+**Wenn du kalt zurückkehrst:** Bei einem Kontext von mindestens 50.000 Tokens fragt der Wächter vor deiner gewöhnlichen Nachricht, wenn seine Ein-Stunden-Uhr „kalt“ anzeigt. Die Frage nennt die geschätzten Kosten der Neuerstellung und gibt Hinweise zum Warmhalten. **Send anyway** sendet die Nachricht; **Don't send** verwirft sie. Wird das Dialogfenster geschlossen oder kann der Host es nicht beantworten, verweigert der Wächter einmal und das erneute Senden geht durch. SDK-Hosts, die den Dialog beantworten können, behalten diese Auswahl. `/cache-tax guard refuse 5` fragt ab 5 $ oder mehr, auch bei einem Modell ohne Preiseintrag; günstigere Sendungen protokollieren ihren Preis und laufen durch.
 
-`Headless prompts: send` opts non-interactive `sdk`-origin prompts in sending immediately at the default guard setting. Claude Code verwendet those same fields for both `claude -p` und Agent SDK turns, so the Option covers both; it cannot distinguish the CLI von an SDK host. The default, `guard`, keeps asking, oder refuses once where nobody can Antwort. Explicit `/cache-tax guard refuse`, mit oder ohne a dollar floor, still applies mit `send`; `/cache-tax guard default` clears that explicit preference. Remote human Nachrichten (`composer`, `bridge`, `unclassified` und channel origins) behalten the guard, even in a non-interactive host. Background notifications und scheduled prompts are sent mit the price logged because nein person can resend them.
+`Headless prompts: send` optiert nichtinteraktive Prompts mit `sdk`-Herkunft bei der Voreinstellung des Wächters in sofortiges Senden ein. Claude Code verwendet dieselben Felder sowohl für `claude -p` als auch für Agent-SDK-Züge, daher gilt die Option für beide; sie kann die CLI nicht von einem SDK-Host unterscheiden. Die Voreinstellung `guard` fragt weiter nach oder verweigert einmal, wo niemand antworten kann. Ein ausdrückliches `/cache-tax guard refuse`, mit oder ohne Dollarbetrag, gilt auch mit `send`; `/cache-tax guard default` löscht diese ausdrückliche Einstellung. Nachrichten von Menschen aus der Ferne (`composer`, `bridge`, `unclassified` und Kanal-Herkünfte) behalten den Wächter, auch in einem nichtinteraktiven Host. Hintergrundbenachrichtigungen und geplante Prompts werden gesendet und ihr Preis protokolliert, weil niemand sie erneut senden kann.
 
-A headless refusal returns its reason und logs it to the transcript/debug log. Use Claude Code's `--debug-file` when diagnosing a script. Der Mod API cannot set the process exit code oder schreiben a refusal to stderr; a refusal need nicht produce a nonzero exit oder a reason on stdout. An opted-in ausführen that hits a dollar floor must still be retried deliberately.
+Eine Verweigerung im Headless-Modus liefert ihren Grund zurück und protokolliert ihn im Transkript/Debug-Protokoll. Verwende bei der Fehlersuche in einem Skript Claude Codes `--debug-file`. Die Mod-API kann den Prozess-Exit-Code nicht setzen und eine Verweigerung nicht nach stderr schreiben; eine Verweigerung muss weder einen von null verschiedenen Exit-Code noch einen Grund auf stdout erzeugen. Ein optiertes Ausführen, das einen Dollarbetrag erreicht, muss weiterhin bewusst wiederholt werden.
 
-By default, a detected cold schreiben automatisch arms at least three hours of keepwarm, the immer Fenster (six hours unless you set another) mit `always` on, und prints what it Kosten; the Auto keepwarm [option](#options) turns the automatic part off. `/cache-tax` zeigt the aktuell Cache estimate, warming Fenster und this Sitzung's cold-write tally.
+Standardmäßig aktiviert ein erkannter Schreibvorgang ohne Cache automatisch mindestens drei Stunden keepwarm, mit `always` das always-Fenster (sechs Stunden, sofern du kein anderes setzt), und zeigt die Kosten an; die [Option](#optionen) Auto keepwarm schaltet den automatischen Teil aus. `/cache-tax` zeigt die aktuelle Cache-Schätzung, das Warmhaltefenster und die Zahl der Schreibvorgänge ohne Cache in dieser Sitzung.
 
-The tally follows Cache receipts. For jede request, it estimates the alt Kontext written erneut as the smaller of the reported schreiben und the prior Kontext minus the reported lesen. A missing tail smaller than 10% of the lesen is treated as a Cache hit. New content on a hit does nicht count oder arm keepwarm; a substantial partial rewrite still can. Each rewrite verwendet that request's Modell und price tier.
+Die Zählung folgt den Cache-Belegen. Für jede Anfrage schätzt sie den erneut geschriebenen alten Kontext als den kleineren Wert aus dem gemeldeten Schreibvorgang und dem vorherigen Kontext abzüglich des gemeldeten Lesevorgangs. Ein fehlender Rest, der kleiner als 10 % des Lesevorgangs ist, gilt als Cache-Treffer. Neuer Inhalt bei einem Treffer zählt nicht und aktiviert kein keepwarm; eine erhebliche teilweise Neuerstellung kann es sehr wohl. Jede Neuerstellung verwendet das Modell und die Preisstufe dieser Anfrage.
 
-If the host reports nur summed Zug Nutzung, the estimate can miss a rewrite hidden by later Cache liest, und a Zug that compacted is left unscored ohne per-request receipts.
+Meldet der Host nur summierte Nutzung pro Zug, kann die Schätzung eine Neuerstellung übersehen, die durch spätere Cache-Lesevorgänge verborgen wird; ein Zug, in dem komprimiert wurde, bleibt ohne Belege pro Anfrage unbewertet.
 
-When a guard-allowed senden has nein detected rewrite, a completion note explains that nein automatic cold-write Fenster was opened, oder names the existing warming state. This does nicht bestätigen the Server's Cache state von summed Nutzung. A cold-write completion interrupted by `/clear` cannot öffnen its automatic Fenster in the replacement Gespräch.
+Hat ein vom Wächter erlaubter Sendevorgang keine erkannte Neuerstellung, erklärt ein Hinweis nach Abschluss, dass kein automatisches Fenster für Schreibvorgänge ohne Cache geöffnet wurde, oder nennt den bestehenden Warmhaltezustand. Das bestätigt nicht den Cache-Zustand des Servers anhand summierter Nutzung. Ein durch `/clear` unterbrochener Abschluss eines Schreibvorgangs ohne Cache kann sein automatisches Fenster nicht im nachfolgenden Gespräch öffnen.
 
-Preparing oder skipping a compaction leaves warming alone. An applied compaction pauses it until a main request liest oder schreibt the neu prefix. An armed Fenster can dann resume pinging while the Zug waits on a Werkzeug oder user Antwort. Summary schreibt stay out of the tally; a rewrite paid vorher compaction retains its original Kontext und price.
+Das Vorbereiten oder Überspringen einer Komprimierung lässt das Warmhalten unberührt. Eine durchgeführte Komprimierung pausiert es, bis eine Hauptanfrage den neuen Präfix liest oder schreibt. Ein aktiviertes Fenster kann dann wieder Pings senden, während der Zug auf ein Werkzeug oder eine Antwort des Nutzers wartet. Schreibvorgänge von Zusammenfassungen bleiben außerhalb der Zählung; eine vor der Komprimierung bezahlte Neuerstellung behält ihren ursprünglichen Kontext und Preis.
 
-Windows belong to individual Sitzungen. An already-cold Sitzung waits for your nächste Zug vorher pinging, und so does a Fenster restored danach Claude Code restarts, until the neu process has a Zug to fork. If a ping finds nothing to fork, a one-line note says so once, und the pings starten danach your nächste Nachricht. A ping refused by a busy API (429, 529, 5xx) is retried danach 1, 2 und 4 minutes while it can still land vorher the Cache goes cold. With `always` on, jede of your turns that reaches the Cache leaves at least the immer Fenster (six hours standardmäßig) at the default period, subject to the idle spending limit und a successful warm readback. `/keepwarm always 24h` makes that floor 24 hours instead, for every Sitzung (1h to 168h; bare `/keepwarm always` goes zurück to six). The same Zug brings zurück a Fenster that stopped, stretches a shorter one to the immer Fenster und resets a testing period; a longer Fenster you set stays. `/keepwarm off` in any Sitzung stops every Sitzung rolling von its nächste Zug. A Fenster ends at its deadline; `/keepwarm off` auch cancels it und clears the immer setting.
+Fenster gehören zu einzelnen Sitzungen. Eine bereits kalte Sitzung wartet vor dem Pingen auf deinen nächsten Zug, ebenso ein nach einem Neustart von Claude Code wiederhergestelltes Fenster, bis der neue Prozess einen Zug zum Forken hat. Findet ein Ping nichts zum Forken, sagt eine einzeilige Meldung dies einmal, und die Pings beginnen nach deiner nächsten Nachricht. Ein von einem überlasteten API abgelehnter Ping (429, 529, 5xx) wird nach 1, 2 und 4 Minuten erneut versucht, solange er noch vor dem Kaltwerden des Caches ankommen kann. Mit `always` lässt jeder deiner Züge, die den Cache erreichen, mindestens das always-Fenster (standardmäßig sechs Stunden) im Standardintervall bestehen, vorbehaltlich des Limits für Ausgaben in Ruhe und eines erfolgreichen warmen Rücklesens. `/keepwarm always 24h` setzt diese Untergrenze für jede Sitzung auf 24 Stunden statt (1 h bis 168 h; nacktes `/keepwarm always` geht zurück auf sechs). Derselbe Zug bringt ein gestopptes Fenster zurück, dehnt ein kürzeres auf das always-Fenster aus und setzt eine Testperiode zurück; ein längeres von dir gesetztes Fenster bleibt. `/keepwarm off` in einer Sitzung beendet ab dem nächsten Zug das Fortlaufen in allen Sitzungen. Ein Fenster endet an seiner Frist; `/keepwarm off` bricht es außerdem ab und löscht die always-Einstellung.
 
-### A recorded warming ping
+### Ein aufgezeichneter Warmhalte-Ping
 
-![Real keepwarm status showing a 75k-token cache read at $0.02](site/assets/keepwarm-receipt.png)
+![Echter keepwarm-Status mit einem Cache-Lesevorgang von 75k Tokens für 0,02 $](site/assets/keepwarm-receipt.png)
 
-Sonnet 5, 16 September 2026: the Status reported **75k Tokens lesen at $0.02**. Nothing appeared in the Gespräch during the live ausführen. This capture used the one-minute testing interval on 2.0.0; its card's $0.45 rewrite estimate used an older Sonnet price row, versus $0.30 for the same Kontext mit the aktuell row. The two-cent ping is a receipt for that Sitzung, nicht a fixed price.
+Sonnet 5, 16. September 2026: Der Status meldete **75k Tokens gelesen für 0,02 $**. Während des Live-Laufs erschien nichts im Gespräch. Diese Aufnahme nutzte das Testintervall von einer Minute auf 2.0.0; die Schätzung von 0,45 $ für eine Neuerstellung auf der Karte beruhte auf einer älteren Sonnet-Preiszeile gegenüber 0,30 $ für denselben Kontext mit der aktuellen Zeile. Der Ping für zwei Cent ist ein Beleg für diese Sitzung, kein fester Preis.
 
-## Why a short Nachricht can Kosten so much
+## Warum eine kurze Nachricht so viel kosten kann
 
-When the cached prefix expires, even “give me a recap” can trigger a rewrite of the alt Kontext vorher the Antwort. Cache Tax's Fable 5.1 price row compares a $20 one-hour schreiben mit a $0.25 Cache lesen per million Tokens: 80x per Token, nicht 80x gesamt savings. See the [pricing assumptions](#cost-and-the-plan-limit-question) und [Anthropic's price table](https://platform.claude.com/docs/en/about-claude/pricing).
+Wenn das zwischengespeicherte Präfix abläuft, kann selbst „gib mir eine Zusammenfassung“ eine Neuerstellung des alten Kontexts vor der Antwort auslösen. Die Preiszeile von Cache Tax für Fable 5.1 vergleicht einen Schreibvorgang mit 1 h Laufzeit für 20 $ mit einem Cache-Lesevorgang für 0,25 $ pro Million Tokens: das Achtzigfache pro Token, nicht das Achtzigfache an Gesamtersparnis. Siehe [die Preisannahmen](#kosten-und-die-frage-der-nutzungsgrenzen) und [Anthropics Preistabelle](https://platform.claude.com/docs/en/about-claude/pricing).
 
-[Watch the 23-second overview](docs/assets/cache-cost-explainer.mp4). Its designed scenes Beschriftung Fable 5.1 list prices; every terminal und Status-line pixel comes von the real refusal recording und behalten-warm receipt above. The refusal was recorded on 2.1.1 und the behalten-warm crop on 2.0.0.
+[Sieh dir die 23-sekündige Übersicht an](docs/assets/cache-cost-explainer.mp4). Ihre gestalteten Szenen beschriften die Listenpreise von Fable 5.1; jedes Pixel des Terminals und der Statuszeile stammt aus der echten Aufzeichnung der Verweigerung und des Warmhalte-Belegs oben. Die Verweigerung wurde auf 2.1.1 aufgezeichnet, der Warmhalte-Ausschnitt auf 2.0.0.
 
-New to caching? [Anthropic explains how Claude Code uses it](https://code.claude.com/docs/en/prompt-caching).
+Neu beim Caching? [Anthropic erklärt, wie Claude Code es nutzt](https://code.claude.com/docs/en/prompt-caching).
 
 ## Befehle
 
-    /keepwarm               behalten warm for six hours
-    /keepwarm 90m           behalten warm for a Fenster of your own, 1m to 168h (auch 2h30m, 6h)
-    /keepwarm immer        behalten every Sitzung warm until six hours danach its letzte Zug, remembered across Sitzungen
-    /keepwarm immer 24h    the same, until 24 hours danach the letzte Zug (1h to 168h)
-    /keepwarm 6h every 2m   pinging every two minutes; a testing knob, 1m to 59m, forgotten danach this Fenster (mit immer on, at your nächste Zug)
-    /keepwarm Status        the warming Fenster, nächste ping und letzte receipt
-    /keepwarm off           stoppen, forget the Fenster, und Zug immer off
-    /Cache-tax              the card
-    /Cache-tax guard warn   zeigen the price und senden (the Hook's default)
-    /Cache-tax guard default
-                            restore the default guard und let Headless prompts control non-interactive SDK sendet
-    /Cache-tax guard refuse ask vorher a cold senden, overriding Headless prompts: senden
-    /Cache-tax guard refuse 5
-                            ask nur at $5 oder mehr; below that, zeigen the price und senden
-    /Cache-tax guard test   ask once on the nächste Prompt you senden as if the Cache were cold, priced at this Sitzung's Kontext; the test scores nothing, a senden in a really cold Cache is scored as usual
+    /keepwarm               warmhalten für sechs Stunden
+    /keepwarm 90m           warmhalten für ein selbst gewähltes Fenster, 1 m bis 168 h (auch 2h30m, 6h)
+    /keepwarm always        jede Sitzung bis sechs Stunden nach ihrem letzten Zug warmhalten, über Sitzungen hinweg gespeichert
+    /keepwarm always 24h    dasselbe, bis 24 Stunden nach dem letzten Zug (1 h bis 168 h)
+    /keepwarm 6h every 2m   alle zwei Minuten pingen; ein Testregler, 1 m bis 59 m, nach diesem Fenster vergessen (mit always beim nächsten Zug)
+    /keepwarm status        Warmhaltefenster, nächster Ping und letzter Beleg
+    /keepwarm off           beenden, Fenster vergessen und always ausschalten
+    /cache-tax              die Karte
+    /cache-tax guard warn   Preis zeigen und senden (Voreinstellung des Hooks)
+    /cache-tax guard default
+                            die Voreinstellung des Wächters wiederherstellen und Headless prompts über nichtinteraktive SDK-Sendungen bestimmen lassen
+    /cache-tax guard refuse vor einem Versand ohne Cache fragen, ohne Rücksicht auf Headless prompts: send
+    /cache-tax guard refuse 5
+                            nur ab 5 $ fragen; darunter Preis zeigen und senden
+    /cache-tax guard test   einmal bei der nächsten von dir gesendeten Eingabe fragen, als wäre der Cache kalt, bepreist mit dem Kontext dieser Sitzung; der Test bewertet nichts, ein Versand in einen wirklich kalten Cache wird wie üblich bewertet
 
-`/keepwarm` rejects extra words, invalid durations und windows outside the limits ohne changing the aktuell warming Fenster. It auch discards invalid oder overlong stored deadlines on startup. A Fenster that ends vorher its erste ping is due says so in its reply.
+`/keepwarm` lehnt zusätzliche Wörter, ungültige Zeiträume und Fenster außerhalb der Grenzen ab, ohne das aktuelle Warmhaltefenster zu verändern. Beim Start verwirft es außerdem ungültige oder zu lange gespeicherte Fristen. Ein Fenster, das vor dem ersten fälligen Ping endet, sagt das in seiner Antwort.
 
-The Frage, verbatim, mit **Send anyway ($4.01)** und **Don't senden** beneath it:
+Die Frage im Wortlaut, darunter **Send anyway ($4.01)** und **Don't send**:
 
-    Cache-tax: the Prompt Cache went cold 2h00m ago. Sending this re-writes up to 200,502 Tokens at $20/MTok = $4.01 (a warm Zug would have Kosten $0.05). Don't senden saves $4.01; danach Send anyway, keepwarm is armed for up to 3h00m. The Cache lesen alone is about $0.05 per ping. Pings may stoppen sooner at the idle spending limit, leaving the Cache to go cold. Send it anyway?
+    cache-tax: Der Prompt-Cache ist seit 2h00m kalt. Dieses Senden schreibt bis zu 200.502 Tokens zu $20/MTok neu = $4.01 (ein warmer Zug hätte $0.05 gekostet). Don't send spart $4.01; nach Send anyway ist keepwarm für bis zu 3h00m aktiviert. Allein das Cache-Lesen kostet etwa $0.05 pro Ping. Pings können wegen des Limits für Ausgaben in Ruhe früher enden und den Cache kalt werden lassen. Trotzdem senden?
 
-When the Frage is dismissed oder a guarded headless ausführen cannot zeigen it, the refusal appears instead, und the resend goes through:
+Wird die Frage geschlossen oder kann ein überwachter Headless-Lauf sie nicht anzeigen, erscheint stattdessen die Verweigerung und das erneute Senden geht durch:
 
-    Cache-tax: the Prompt Cache went cold 2h00m ago. Sending this re-writes up to 200,502 Tokens at $20/MTok = $4.01 (a warm Zug would have Kosten $0.05). Send it erneut to pay it, und keepwarm will be armed for up to 3h00m, aber may stoppen sooner at the idle spending limit. Or /leeren und starten von a note.
+    cache-tax: Der Prompt-Cache ist seit 2h00m kalt. Dieses Senden schreibt bis zu 200.502 Tokens zu $20/MTok neu = $4.01 (ein warmer Zug hätte $0.05 gekostet). Sende es erneut, um zu bezahlen; keepwarm wird für bis zu 3h00m aktiviert, kann aber wegen des Limits für Ausgaben in Ruhe früher enden. Oder /clear und von einer Notiz aus neu beginnen.
 
-The figure is an upper bound. The Kontext count the engine reports for a resumed Sitzung is the letzte response's Eingabe, Cache lesen, Cache schreiben und Ausgabe together, und the resume payload carries nein separate Ausgabe count to take off; on one 15-day-old Sitzung the guard said 330,316 Tokens und $6.61 und the schreiben that followed was 314k Tokens, $6.28.
+Die Zahl ist eine Obergrenze. Die Kontextzahl, die die Engine für eine fortgesetzte Sitzung meldet, setzt sich aus Eingabe, Cache-Lesen, Cache-Schreiben und Ausgabe der letzten Antwort zusammen; die Nutzlast der Fortsetzung enthält keine getrennte Ausgabezahl, die abgezogen werden könnte. Bei einer 15 Tage alten Sitzung nannte der Wächter 330.316 Tokens und 6,61 $, und der darauffolgende Schreibvorgang umfasste 314k Tokens und kostete 6,28 $.
 
-While keepwarm is armed, the terminal und Desktop Code tab zeigen a row above the Prompt, unless Display ist `status`. Terminals verwenden a bold `[>]` Text icon mit the state color. Desktop zeigt the Cache Tax cube, mit a green lid for warm, orange for cold, und grey vorher the erste Zug oder danach compaction. The bold state Beschriftung matches; the timer und receipt Text verwenden normal weight. A nonempty `NO_COLOR` selects a bold Text icon on both surfaces und removes the state color. Both display choices say `warm`, `cold` oder `unknown`, so color is nie the nur signal. These states verwenden the same one-hour clock as `/cache-tax`; they are estimates, nicht a live Server Cache prüfen.
+Solange keepwarm aktiv ist, zeigen das Terminal und der Code-Tab der Desktop-App eine Zeile über der Eingabe, es sei denn, Display ist `status`. Terminals verwenden ein fettes Textsymbol `[>]` in der Zustandsfarbe. Der Desktop zeigt den Cache-Tax-Würfel mit grünem Deckel bei warm, orange bei kalt und grau vor dem ersten Zug oder nach einer Komprimierung. Die fette Zustandsbezeichnung passt dazu; Timer und Belegtext verwenden normale Schriftstärke. Ein nicht leeres `NO_COLOR` wählt auf beiden Oberflächen ein fettes Textsymbol und entfernt die Zustandsfarbe. Beide Anzeigen nennen `warm`, `cold` oder `unknown`, sodass Farbe nie das einzige Signal ist. Diese Zustände nutzen dieselbe Ein-Stunden-Uhr wie `/cache-tax`; sie sind Schätzungen, keine Live-Prüfung des Server-Caches.
 
-The row und plain Status fallback refresh once a minute while keepwarm is armed, including while idle. Refreshing nur updates the display; it sendet nein Modell request.
+Die Zeile und der einfache Status-Ersatz aktualisieren sich einmal pro Minute, während keepwarm aktiv ist, auch im Leerlauf. Das Aktualisieren betrifft nur die Anzeige; es sendet keine Modell-Anfrage.
 
-The row includes the warming Fenster, nächste ping und letzte readback. A stopped loop zeigt a neutral symbol und its reason. `/keepwarm off` oder an expired Fenster removes the row. Surveys temporarily take priority, und other mods' content stays in the Leiste. Display `status` zeigt the same labelled Text in the Status entry; surfaces ohne a Leiste behalten the plain Status Text when Display remains `band`.
+Die Zeile enthält das Warmhaltefenster, den nächsten Ping und das letzte Rücklesen. Eine gestoppte Schleife zeigt ein neutrales Symbol und ihren Grund. `/keepwarm off` oder ein abgelaufenes Fenster entfernt die Zeile. Umfragen haben vorübergehend Vorrang, und Inhalte anderer Mods bleiben in der Leiste. Display `status` zeigt denselben beschrifteten Text im Statuseintrag; Oberflächen ohne Leiste behalten den einfachen Statustext, solange Display auf `band` steht.
 
-The Desktop cube und the terminal's cold-state color follow Claude's light oder dark theme. The embedded SVGs come von the Website's official assets; maintainers can regenerate them mit `python3 tools/generate-status-icons.py`. No Bild Dateien are lesen oder fetched at runtime.
+Der Desktop-Würfel und die Farbe des kalten Zustands im Terminal folgen Claudes hellem oder dunklem Design. Die eingebetteten SVGs stammen aus den offiziellen Assets der Website; Maintainer können sie mit `python3 tools/generate-status-icons.py` neu erzeugen. Zur Laufzeit werden keine Bilddateien gelesen oder abgerufen.
 
-Der Mod liest the theme und `NO_COLOR` once when the Sitzung starts. Accepted theme ändert aktualisieren the icon immediately; ordinary redraws do nicht reread either setting. Set `NO_COLOR` vorher starting the Sitzung.
+Der Mod liest das Design und `NO_COLOR` einmal beim Start der Sitzung. Akzeptierte Designänderungen aktualisieren das Symbol sofort; gewöhnliche Neuzeichnungen lesen keine der beiden Einstellungen erneut. Setze `NO_COLOR`, bevor du die Sitzung startest.
 
-## Both forms installed
+## Beide Formen installiert
 
-The Hook und der Mod share a Name und a job, so having both means two guards on every cold senden. Der Mod prüft at Sitzung starten whether the Hook's `/cache-tax:status` Befehl exists und says so once. Keep one guard. The Hook remains an Option for people who prefer settings Hooks. Before uninstalling it, prüfen your Status Zeile: the 🧊 row wired to `cache-tax.js` comes von the Hook's Dateien. Dieser Mod draws above the Prompt while keepwarm is armed; it does nicht replace your shell Status Zeile.
+Hook und Mod teilen sich Namen und Aufgabe; sind beide installiert, bedeutet das zwei Wächter bei jedem Versand ohne Cache. Der Mod prüft beim Sitzungsstart, ob der Befehl `/cache-tax:status` des Hooks existiert, und sagt dies einmal. Behalte einen Wächter. Der Hook bleibt eine Option für alle, die Settings-Hooks bevorzugen. Prüfe vor dem Deinstallieren deine Statuszeile: Die 🧊-Zeile, die mit `cache-tax.js` verdrahtet ist, stammt aus den Dateien des Hooks. Dieser Mod zeichnet über der Eingabe, während keepwarm aktiv ist; er ersetzt nicht deine Shell-Statuszeile.
 
-## What it can reach
+## Was es erreichen kann
 
-Validated on Claude Code 2.1.312:
+Validiert auf Claude Code 2.1.312:
 
     ❯ ./register.ts hooks: config.set{key=theme}, ui.render{component=AbovePrompt}, session.start, session.end, classic.SessionStart, command.run{command=keepwarm}, command.run{command=cache-tax}, prompt.submit, turn.step, turn.complete, session.compact
     ❯ ./register.ts calls: $.clock.after (via arm, ping), $.clock.every (via updateStatus), $.clock.now, $.command.list, $.command.register, $.config.list, $.env.get, $.model.fork (via ping), $.session.id (via reseat, seat), $.session.model, $.session.usage, $.store.delete, $.store.get, $.store.set, $.ui.ask (via ask), $.ui.invalidate, $.ui.log, $.ui.resolve, $.ui.status
-    ❯ ./register.ts env liest: NO_COLOR
+    ❯ ./register.ts env reads: NO_COLOR
 
-Reach L2, drives Claude. Sees every Prompt you type, every Modell request's timing und every Antwort's Token counts.
+Reichweite L2, steuert Claude. Sieht jede Eingabe, die du tippst, den Zeitpunkt jeder Modell-Anfrage und die Token-Zahlen jeder Antwort.
 
-The same scan is on [cache-tax's page in Awesome Claude Code Mods](https://mods.aidojo.si/mods/karanb192--cache-tax--cache-tax/), which records what thousands of other mods can reach.
+Dieselbe Prüfung steht auf [cache-tax' Seite in Awesome Claude Code Mods](https://mods.aidojo.si/mods/karanb192--cache-tax--cache-tax/); dort ist verzeichnet, was Tausende anderer Mods erreichen können.
 
     Threat Modell for Cache-tax (reach L2, drives Claude)
     1. Reads:    of jede Prompt, whether it starts mit a slash und nothing else (the Text is passed on untouched, nie kept, nie logged); the Zeit; the Token counts und Modell id the engine already holds on Zug.complete und on the fork's reply; the resume fields Claude Code computes for settings Hooks; the Befehl list; the Sitzung id, the Sitzung's Modell und the engine's own Kontext figure und starten Zeit, once per Gespräch the process runs, und the Modell erneut vorher pricing a cold senden und vorher jede ping; the reason und Sitzung id of a Gespräch ending under /leeren oder an in-process resume; jede main request's Nachricht count; von its own $.store, the keepwarm deadline und the ping period keyed by Sitzung id, plus the global immer switch (und its Fenster) und guard mode mit its dollar floor; at load, its Auto keepwarm, Display, Ping floor und Headless prompts options; whether the Sitzung starts interactive
@@ -150,85 +150,85 @@ The same scan is on [cache-tax's page in Awesome Claude Code Mods](https://mods.
     4. Persists: in $.store, the keepwarm deadline und the ping period under this Sitzung's id (mit immer on, rewritten danach jede Zug), und the immer switch (true, oder its Fenster in milliseconds) und the guard mode (a dollar floor is stored in its place) for every Sitzung; danach a refusal, the Zeit of the letzte response under this Sitzung's id, so a resend von a neu process (claude -p starts one per Zug) goes through, deleted by that resend oder /leeren; a Fenster that has ended is deleted at stoppen und at this Sitzung's nächste starten, together mit the bare keys of a 2.1.0 store; another Sitzung's keys are nie deleted here, because a lesen followed by a delete cannot be made atomic against that Sitzung renewing its Fenster, so a Sitzung that armed keepwarm und nie came zurück leaves two small keys behind; the Sitzung's cold-write tally, up to five warm ping receipts und idle ping spend live in memory und die mit the process
     5. Hostile Eingabe: the nur Text it parses is the argument of its two commands, matched against a duration regex, a dollar amount und a few literals; the dialog's Antwort is nur compared mit its own two labels; of the Prompt Text nur the erste non-blank character is inspected, for a slash; Werkzeug results und Dateien nie reach a Branch; the fork's Prompt is a constant, so nothing crafted can be sent through it; the guard nur ever drops the user's own Nachricht: danach Don't senden the resend is asked about erneut, und danach a dismissed oder unanswerable Frage the resend is unconditional; if a Hook throws, the engine skips it und the Nachricht enters unguarded, mit one dim Zeile
 
-## Cost und the plan-limit Frage
+## Kosten und die Frage der Nutzungsgrenzen
 
-Prices are the list table, where Fable 5.1 liest at $0.25, schreibt the 1h tier at $20 und answers at $50 per million Tokens; Fable 5.2 ($0.20, $16, $40) und Sonnet 5 ($0.20, $4, $10) have their own rows. Only listed versions are priced: a Modell newer than the table zeigt `n/a` for dollars und one Zeile saying it has nein price row yet, und it nie takes an older Modell's rate. On an API key the arithmetic is plain. A ping bills the Cache lesen, its own few uncached Tokens at the base rate, und whatever the Modell says zurück at the Ausgabe rate; the displayed ping Kosten counts alle of it, since a fork takes nein Ausgabe cap und a Modell at high effort may think vorher it says "warm". A comeback danach the lapse is a schreiben. The card prints the lesen-only upper bound for your Modell, 80 pings on Fable 5.1, mit the idle that covers at the aktuell ping period; a real ping costs a little mehr than a lesen, so the true break-even sits below that number. On a subscription the dollars are a yardstick, nicht the bill, und how a Cache lesen weighs against the 5-hour und weekly limits is nicht documented anywhere I could find. Watch the rate-limit row of your Status Zeile during the erste Fenster.
+Die Preise stammen aus der Listentabelle: Fable 5.1 liest für 0,25 $, schreibt in der 1-h-Stufe für 20 $ und antwortet für 50 $ pro Million Tokens; Fable 5.2 (0,20 $, 16 $, 40 $) und Sonnet 5 (0,20 $, 4 $, 10 $) haben eigene Zeilen. Nur aufgeführte Versionen sind bepreist: Ein neueres Modell als die Tabelle zeigt bei Dollarbeträgen `n/a` und eine Zeile, dass noch keine Preiszeile existiert, und übernimmt nie den Tarif eines älteren Modells. Mit einem API-Schlüssel ist die Rechnung einfach. Ein Ping wird das Cache-Lesen, die eigenen wenigen nicht zwischengespeicherten Tokens zum Basistarif und alles, was das Modell zurücksagt, zum Ausgabetarif berechnet; der angezeigte Ping-Preis umfasst alles, denn ein Fork hat keine Ausgabegrenze, und ein Modell mit hohem Denkaufwand darf nachdenken, bevor es „warm“ sagt. Eine Rückkehr nach dem Ablauf ist ein Schreibvorgang. Die Karte nennt die Obergrenze für reine Lesevorgänge bei deinem Modell, 80 Pings bei Fable 5.1, samt der Leerlaufzeit, die das aktuelle Ping-Intervall abdeckt; ein echter Ping kostet etwas mehr als ein Lesevorgang, daher liegt der tatsächliche Break-even unter dieser Zahl. Bei einem Abo sind die Dollars ein Maßstab, nicht die Rechnung, und wie ein Cache-Lesevorgang auf die 5-Stunden- und Wochengrenzen wirkt, ist nirgends dokumentiert, was ich finden konnte. Beobachte im ersten Fenster die Zeile der Ratenbegrenzung in deiner Statuszeile.
 
 ## Limits
 
-- Mods require Claude Code 2.1.287+. They are on standardmäßig, aber local settings, safe mode oder organization policy can prevent them von loading. See [mod controls](https://code.claude.com/docs/en/plugins/mods/overview#turn-mods-on-or-off).
-- The 50-minute schedule needs a one-hour main Cache. Included subscription Nutzung has it standardmäßig. Other billing paths need [`promptCacheTtl`](https://code.claude.com/docs/en/prompt-caching#choose-the-ttl-yourself) set to `"1h"`.
-- One transcript-verified return at the default interval, Fable 5.1 on a subscription, 19 September 2026: `/keepwarm` armed at minute 42 of a break, the ping fired at minute 50 und lesen 157k, und the Nachricht sent at minute 62 lesen 156,886 Tokens von Cache und wrote 2,255. Claude Code's own Cache countdown zurücksetzen to 58 minutes danach the ping, so the fork carried the one-hour TTL. One ausführen, one configuration: it zeigt the ping kept that Cache alive past the hour, nicht net savings for every setup. Claude Code documents forks in its non-main request bucket, normally five minutes. In this ausführen, the fork still lesen the one-hour Sitzung prefix und zurücksetzen the native countdown. That is observed behavior in one configuration, nicht proof that every provider handles the buckets identically.
-- A ping that liest warm proves the Cache was warm dann. Prefix ändert can invalidate the Cache regardless of Zeit. The exact effect depends on the Modell und when Claude Code applies the ändern; see [Claude Code's cache behavior](https://code.claude.com/docs/en/prompt-caching).
-- Resume fields let the guard prüfen the erste ordinary senden danach resuming. If those fields are absent, the erste Zug seeds its clock und Kontext.
-- On Team und Enterprise accounts a managed plugin seated above dieser Mod handles the classic events und compaction und continues beneath it, so they nie reach der Mod. It dann learns a `/clear` von the Sitzung's end, so keepwarm stops und the neu Gespräch gets its own Fenster; a resumed transcript's Kontext von the engine's figures, mit nein Zeit of its letzte response, so von an hour danach that transcript's erste launch the erste Nachricht logs what a cold senden would Kosten statt refusing; und a compaction von a request over fewer than half the previous one's Nachrichten (a rewind takes a few off, a summary replaces tens), so a ping oder a senden between the compaction und that request still sees the alt Kontext. The summary written danach a compaction is nie scored as a cold schreiben; a cold schreiben the same Zug paid vorher it still is, when the host reports Nutzung per request. A Fenster carried through an in-process resume moves to the neu Sitzung's keys.
-- The guard's Token count is an upper bound: es ist the Kontext the engine reports for the letzte response, which on a resume includes that response's Ausgabe, und der Mod has nein separate Ausgabe count to subtract.
-- The cold-write tally is per Sitzung und in memory; /leeren empties it.
-- Context size is the engine's live Fenster figure. A Zug's own Nutzung is its responses summed, which on a ten-step Zug is ten liest of the Kontext, so es ist nur the fallback where the host reports nein live figure.
+- Mods benötigen Claude Code 2.1.287 oder neuer. Sie sind standardmäßig aktiviert, können aber durch lokale Einstellungen, den Safe Mode oder eine Organisationsrichtlinie am Laden gehindert werden. Siehe [Mod-Steuerung](https://code.claude.com/docs/en/plugins/mods/overview#turn-mods-on-or-off).
+- Der 50-Minuten-Zeitplan erfordert einen einstündigen Haupt-Cache. Im enthaltenen Abo ist er standardmäßig vorhanden. Andere Abrechnungswege benötigen [`promptCacheTtl`](https://code.claude.com/docs/en/prompt-caching#choose-the-ttl-yourself) auf `"1h"`.
+- Ein anhand des Transkripts überprüfter Fall mit dem Standardintervall, Fable 5.1 im Abo, 19. September 2026: `/keepwarm` wurde in Minute 42 einer Pause aktiviert, der Ping lief in Minute 50 und las 157k, und die in Minute 62 gesendete Nachricht las 156.886 Tokens aus dem Cache und schrieb 2,255. Claudes eigener Cache-Countdown wurde nach dem Ping auf 58 Minuten zurückgesetzt, der Fork trug also die einstündige TTL. Ein Lauf, eine Konfiguration: Er zeigt, dass der Ping diesen Cache über die Stunde hinaus am Leben hielt, keine Nettoersparnis für jede Einrichtung. Claude Code dokumentiert Forks im Bucket für Nicht-Haupt-Anfragen, normalerweise fünf Minuten. In diesem Lauf las der Fork trotzdem das einstündige Sitzungspräfix und setzte den nativen Countdown zurück. Das ist beobachtetes Verhalten in einer Konfiguration, kein Beweis, dass alle Anbieter die Buckets gleich behandeln.
+- Ein warm lesender Ping beweist, dass der Cache damals warm war. Präfixänderungen können den Cache unabhängig von der Zeit ungültig machen. Die genaue Wirkung hängt vom Modell und davon ab, wann Claude Code die Änderung anwendet; siehe [Claude Codes Cache-Verhalten](https://code.claude.com/docs/en/prompt-caching).
+- Fortsetzungsfelder erlauben dem Wächter, die erste gewöhnliche Sendung nach der Fortsetzung zu prüfen. Fehlen diese Felder, initialisieren der erste Zug seine Uhr und seinen Kontext.
+- Bei Team- und Enterprise-Konten sitzt ein verwaltetes Plugin über diesem Mod, verarbeitet die klassischen Ereignisse und die Komprimierung und leitet sie darunter weiter, sodass sie den Mod nie erreichen. Danach erfährt er einen `/clear` aus dem Sitzungsende, also stoppt keepwarm und das neue Gespräch erhält sein eigenes Fenster; den Kontext eines fortgesetzten Transkripts entnimmt er den Werten der Engine ohne Zeitpunkt der letzten Antwort, daher protokolliert ab einer Stunde nach dem ersten Start dieses Transkripts die erste Nachricht, was eine Sendung ohne Cache kosten würde, statt zu verweigern; und eine Komprimierung durch eine Anfrage mit weniger als der Hälfte der Nachrichten der vorherigen (ein Rewind entfernt ein paar, eine Zusammenfassung ersetzt Dutzende), sodass ein Ping oder eine Sendung zwischen Komprimierung und dieser Anfrage noch den alten Kontext sieht. Die nach einer Komprimierung geschriebene Zusammenfassung wird nie als Schreibvorgang ohne Cache bewertet; ein Schreibvorgang ohne Cache, den derselbe Zug davor bezahlt hat, sehr wohl, wenn der Host Nutzung pro Anfrage meldet. Ein durch eine Fortsetzung im selben Prozess getragenes Fenster wechselt in die Schlüssel der neuen Sitzung.
+- Die Token-Zahl des Wächters ist eine Obergrenze: Sie ist der Kontext, den die Engine für die letzte Antwort meldet, bei einer Fortsetzung einschließlich der Ausgabe dieser Antwort, und der Mod hat keine getrennte Ausgabezahl zum Abziehen.
+- Die Zählung der Schreibvorgänge ohne Cache gilt pro Sitzung und liegt im Speicher; `/clear` leert sie.
+- Die Kontextgröße ist der aktuelle Fensterwert der Engine. Die Nutzung eines Zugs selbst ist die Summe seiner Antworten, bei einem zehnschrittigen Zug also zehn Lesevorgänge des Kontexts; sie ist daher nur der Ersatzwert, wenn der Host keinen aktuellen Wert meldet.
 
-## Local development
+## Lokale Entwicklung
 
-From a local checkout, load it for one Sitzung:
+Lade es aus einem lokalen Checkout für eine Sitzung:
 
     claude --plugin-dir .
 
-To behalten it installed, verwenden the [marketplace commands](#install).
+Um es installiert zu lassen, nutze die [Marketplace-Befehle](#install).
 
-Sending a ändern? [CONTRIBUTING.md](CONTRIBUTING.md) says what evidence a PR needs.
+Du willst eine Änderung senden? [CONTRIBUTING.md](CONTRIBUTING.md) sagt, welche Belege ein PR braucht.
 
-## Prove it on your own Sitzung
+## Pruefe es in deiner eigenen Sitzung
 
-The mock-clock tests prove the timer, the guard und the scoring, nicht that a fork hits the main Cache. One ping proves that, und it costs a Cache lesen plus the Antwort. In any warm Sitzung:
+Die Tests mit simulierte Uhr beweisen den Timer, den Wächter und die Bewertung, nicht dass ein Fork den Haupt-Cache trifft. Ein Ping beweist das, und er kostet ein Cache-Lesen plus die Antwort. In einer beliebigen warmen Sitzung:
 
-    > Reply mit one word: bereit
+    > Antworte mit einem Wort: bereit
     > /keepwarm 1h every 1m
 
-Watch the row above the Prompt danach a minute, oder the Status entry when Display ist `status` oder the surface has nein Leiste. `last ping read 20k $0.01` reports the fork's readback. `keepwarm stopped: the ping read ... and wrote ...` means the readback did nicht meet the warm threshold; the loop has stopped. `API busy, ping retry 1 of 3` means a 429, 529 oder 5xx is being retried; the loop stops if the API is still busy danach three retries oder a minute vorher the Cache goes cold. `nothing to fork yet` means the process has nein Gespräch to fork, as danach a neu starten; the Fenster waits for your nächste Nachricht. Any other API Fehler, an interruption oder an empty reply stops the loop mit a reason. Older engines that return null zeigen a combined cold-snapshot oder API-failure Nachricht. Finish mit `/keepwarm off`. This short prüfen establishes a Cache lesen, nicht retention across the default 50-minute interval.
+Sieh dir nach einer Minute die Zeile über der Eingabe an, oder den Statuseintrag, wenn Display auf `status` steht oder die Oberfläche keine Leiste hat. `last ping read 20k $0.01` meldet das Rücklesen des Forks. `keepwarm stopped: the ping read ... and wrote ...` bedeutet, dass das Rücklesen die Warm-Schwelle nicht erreichte; die Schleife ist gestoppt. `API busy, ping retry 1 of 3` bedeutet, dass ein 429, 529 oder 5xx erneut versucht wird; die Schleife stoppt, wenn die API nach drei Versuchen immer noch überlastet ist oder eine Minute vor dem Kaltwerden des Caches. `nothing to fork yet` bedeutet, dass der Prozess kein Gespräch zum Forken hat, etwa nach einem Neustart; das Fenster wartet auf deine nächste Nachricht. Jeder andere API-Fehler, eine Unterbrechung oder eine leere Antwort stoppt die Schleife mit einem Grund. Ältere Engines, die null zurückgeben, zeigen eine zusammengefasste Meldung zu kaltem Zustand oder API-Fehler. Beende mit `/keepwarm off`. Diese kurze Prüfung stellt ein Cache-Lesen fest, keine Erhaltung über das Standardintervall von 50 Minuten.
 
-## Tests und typecheck
+## Tests und Typecheck
 
-Run von the Repository root:
+Führe dies aus dem Repository-Stammverzeichnis aus:
 
 ```sh
 claude plugin validate .claude-plugin/plugin.json
 claude plugin test .
 ```
 
-The [366 tests](tests/register.test.ts) verwenden a mock clock und engine. They cover:
+Die [366 Tests](tests/register.test.ts) nutzen eine simulierte Uhr und Engine. Sie decken ab:
 
-- **Auto keepwarm Option:** off scores a paid cold schreiben ohne arming keepwarm und says so in the refusal und the Frage; a Fenster armed by hand is promised until its deadline und keeps pinging; immer still renews for six hours.
-- **Ping floor Option:** cumulative spend stops a long break, a main Zug resets it, re-arming cannot zurücksetzen it, a recent cheap receipt survives an expensive outlier, a Modell switch is priced vorher the nächste ping, und an off Befehl during the Modell lesen cancels that ping. A ping billed across a stoppen still counts, one finishing danach a Zug does nicht, und an errored Zug keeps the überspringen. Existing überspringen, compaction, leeren, unknown-context und deaktiviert-limit coverage remains.
-- **Headless prompts Option:** opt-in for non-interactive SDK prompts, SDK dialog answers, interactive SDK und remote human guards, explicit refusal und dollar floors, resetting to default, und a Prompt arriving while stored preferences are still loading.
-- **Guard:** the Send anyway / Don't senden Frage, its dismissed fallback und the guard test, refuse once und resend, including von a neu process und danach an API Fehler mit nein response, warn mode, a dollar floor (under it, at it, an unpriced Modell, a Modell switched since the letzte Zug), slash commands, small contexts, prompts nobody typed, resume seeding und cold-write scoring.
-- **Warming:** Befehl defaults und refused windows und periods, immer/off, immer mit its own Fenster und the windows it refuses, immer danach `/clear`, immer rolling von the letzte Zug, idle resets, Nutzung-based stopping, cold-window expiry und delayed timers danach sleep.
-- **Session state:** isolated store keys, restored windows, legacy cleanup, leeren/compaction resets und Subagent isolation. A leeren during an automatic Fenster's clock oder store wait cannot arm the nächste Gespräch oder erase its manuell Fenster.
-- **Compaction readiness:** preparing oder skipping a summary leaves warming alone. After an applied compaction, a main response that liest oder schreibt Cache lets warming resume while the Zug waits on Werkzeuge oder a user Antwort. Summary schreibt stay out of the cold-write tally; failed requests und stale responses danach a leeren, stoppen oder newer compaction cannot neu starten pings.
-- **Managed plugins above der Mod:** `/clear`, resume, a restored Fenster und compaction mit the classic und compaction events continued beneath the user tier, the same events delivered twice oder out of order ohne a second Fenster, Warnung oder zurücksetzen, a Fenster und a Modell ändern carried through an in-process resume, a transcript that turns alt enough to be cold danach its resume, a rewind told apart von a compaction, a summary schreiben that is nein cold schreiben beside a cold schreiben that ist (a guarded senden compacted vorher its erste request, two compactions in one Zug), an end of the alt Gespräch that overlaps oder outlasts the classic resume, und a `/keepwarm` ausführen vorher the host reports the nächste Gespräch's id.
-- **Pricing und display:** a row for every listed Modell in its dated, provider und display-name spellings, nein borrowed row for a version the table does nicht list, a cold schreiben mit nein price row counted apart von the dollar gesamt, the Haiku 5.5 long-prompt tier priced per request, a long warm Zug whose requests together schreiben half the Kontext kept apart von a cold schreiben, guarded Cache hits und large pastes left unscored, partial rewrites separated von neu content, later liest that cannot ausblenden a per-request miss, alt receipts dropped across a held request oder Kontext lesen during leeren, Opus 4 und 4.1 apart von Opus 4.5, Ausgabe und uncached Eingabe costs, Kontext counts, duration formatting und the lesen-only break-even figure.
-- **Indicator:** terminal Text icons ohne Bild elements, desktop SVGs, theme selection, warm/cold transitions, resume, compaction, leeren, expiry, surveys, other mods' content und `NO_COLOR` fallback.
-- **Display Option:** `band` draws the row; `status` moves the Text, including its Cache-tax und state Beschriftung, to the Status entry on terminal und Desktop surfaces mit nein row. Any other value, such as an alt `off`, falls zurück to the row.
-- **Preferences:** one lesen per Sitzung, immediate theme updates, denied ändert und the effective theme returned by the settings writer.
-- **Fork failures:** a busy API is retried while the Cache is warm, a erneut versuchen that wakes too late is dropped, nothing to fork waits for the nächste Zug, one ping is out at a Zeit, a reply that lands danach a request, `/clear` oder compaction is discarded, und other failures und the null Ergebnis returned by older releases stoppen ohne retrying.
+- **Option Auto keepwarm:** `off` bewertet einen bezahlten Schreibvorgang ohne Cache, ohne keepwarm zu aktivieren, und sagt das in der Verweigerung und der Frage; ein von Hand aktiviertes Fenster wird bis zu seiner Frist zugesagt und pingt weiter; `always` erneuert weiterhin für sechs Stunden.
+- **Option Ping floor:** kumulierte Ausgaben beenden eine lange Pause, ein Hauptzug setzt sie zurück, erneutes Aktivieren kann sie nicht zurücksetzen, ein kürzlich günstiger Beleg übersteht einen teuren Ausreißer, ein Modellwechsel wird vor dem nächsten Ping bepreist, und ein `off`-Befehl während des Modell-Lesens bricht diesen Ping ab. Ein über einen Stopp abgerechneter Ping zählt weiterhin, einer nach einem Zug abgeschlossene nicht, und ein fehlerhafter Zug behält das Überspringen. Die bestehende Abdeckung für Überspringen, Komprimierung, leeren, unbekannten Kontext und deaktiviertes Limit bleibt.
+- **Option Headless prompts:** Opt-in für nichtinteraktive SDK-Prompts, SDK-Dialogantworten, Wächter bei interaktiven SDKs und Nachrichten von Menschen aus der Ferne, ausdrückliche Verweigerung und Dollarbeträge, Rücksetzen auf die Voreinstellung und eine Eingabe, die trifft, während gespeicherte Einstellungen noch laden.
+- **Wächter:** die Frage Send anyway / Don't send, ihr Ersatz bei geschlossenem Dialog und der Wächter-Test, einmalige Verweigerung und erneutes Senden, auch aus einem neuen Prozess und nach einem API-Fehler ohne Antwort, Warn-Modus, ein Dollarbetrag (darunter, genau dafür, ein Modell ohne Preis, ein seit dem letzten Zug gewechseltes Modell), Slash-Befehle, kleine Kontexte, Prompts, die niemand getippt hat, Initialisierung bei Fortsetzung und Bewertung von Schreibvorgängen ohne Cache.
+- **Warmhalten:** Voreinstellungen der Befehle und abgelehnte Fenster und Intervalle, always/off, always mit eigenem Fenster und den abgelehnten Fenstern, always nach `/clear`, always fortlaufend ab dem letzten Zug, Zurücksetzen bei Leerlauf, Stoppen anhand der Nutzung, Ablauf kalter Fenster und verzögerte Timer nach dem Schlaf.
+- **Sitzungszustand:** getrennte Speicherschlüssel, wiederhergestellte Fenster, Aufräumen alter Schlüssel, Zurücksetzen bei leeren/Komprimierung und Isolierung von Subagenten. Ein Leeren während der Uhr oder des Speicherwartens eines automatischen Fensters kann das nächste Gespräch nicht aktivieren oder sein manuelles Fenster löschen.
+- **Bereitschaft zur Komprimierung:** Das Vorbereiten oder Überspringen einer Zusammenfassung lässt das Warmhalten unberührt. Nach einer durchgeführten Komprimierung lässt eine Hauptantwort, die Cache liest oder schreibt, das Warmhalten wieder aufleben, während der Zug auf Werkzeuge oder eine Nutzerantwort wartet. Schreibvorgänge von Zusammenfassungen bleiben außerhalb der Zählung der Schreibvorgänge ohne Cache; fehlgeschlagene Anfragen und veraltete Antworten nach Leeren, Stopp oder einer neueren Komprimierung können keine Pings neu starten.
+- **Verwaltete Plugins über dem Mod:** `/clear`, Fortsetzung, ein wiederhergestelltes Fenster und Komprimierung, deren klassische Ereignisse und Komprimierungsereignisse unter der Nutzer-Ebene weiterlaufen, dieselben Ereignisse zweimal oder in falscher Reihenfolge ohne zweites Fenster, Warnung oder Zurücksetzen, ein Fenster und ein Modellwechsel durch eine Fortsetzung im selben Prozess, ein Transkript, das nach seiner Fortsetzung alt genug für kalt wird, ein Rewind im Unterschied zu einer Komprimierung, ein Schreibvorgang einer Zusammenfassung, der kein Schreibvorgang ohne Cache ist, neben einem, der es ist (ein überwachter Sendevorgang komprimierte vor seiner ersten Anfrage, zwei Komprimierungen in einem Zug), ein Ende des alten Gesprächs, das die klassische Fortsetzung überlappt oder überdauert, und ein `/keepwarm`-Lauf, bevor der Host die ID des nächsten Gesprächs meldet.
+- **Preise und Anzeige:** eine Zeile für jedes aufgeführte Modell in seinen datierten, anbieter- und anzeigenamen Varianten, keine geborgte Zeile für eine nicht aufgeführte Version, ein Schreibvorgang ohne Cache ohne Preiszeile getrennt von der Dollarsumme, der Long-Prompt-Tarif von Haiku 5.5 pro Anfrage, ein langer warmer Zug, dessen Anfragen zusammen die Hälfte des Kontexts schreiben, getrennt von einem Schreibvorgang ohne Cache, überwachte Cache-Treffer und große Einfügungen ohne Bewertung, teilweise Neuerstellungen getrennt von neuem Inhalt, spätere Lesevorgänge, die einen Fehlschlag pro Anfrage nicht verdecken können, alte Belege, die über eine gehaltene Anfrage oder ein Cache-Lesen während des Leerens verworfen werden, Opus 4 und 4.1 getrennt von Opus 4.5, Ausgabe- und nicht zwischengespeicherte Eingabekosten, Kontextzahlen, Formatierung von Zeiträumen und die Obergrenze für reine Lesevorgänge.
+- **Indikator:** Textsymbole im Terminal ohne Bildelemente, Desktop-SVGs, Designauswahl, Übergänge warm/kalt, Fortsetzung, Komprimierung, leeren, Ablauf, Umfragen, Inhalte anderer Mods und `NO_COLOR`-Ersatz.
+- **Display-Option:** `band` zeichnet die Zeile; `status` verschiebt den Text einschließlich der Beschriftung für cache-tax und Zustand in den Statuseintrag auf Terminal- und Desktop-Oberflächen ohne Zeile. Jeder andere Wert, etwa ein altes `off`, fällt auf die Zeile zurück.
+- **Einstellungen:** ein Lesevorgang pro Sitzung, sofortige Designaktualisierungen, abgelehnte Änderungen und das vom Einstellungs-Schreiber zurückgegebene wirksame Design.
+- **Fork-Fehler:** eine überlastete API wird erneut versucht, solange der Cache warm ist, ein zu spät aufwachender Wiederholungsversuch wird verworfen, bei nichts zum Forken wird auf den nächsten Zug gewartet, es ist immer nur ein Ping unterwegs, eine Antwort, die nach einer Anfrage, `/clear` oder einer Komprimierung eintrifft, wird verworfen, und andere Fehler sowie das von älteren Versionen zurückgegebene null-Ergebnis stoppen ohne erneuten Versuch.
 
-The render tests prüfen the element tree, nicht native terminal oder desktop pixels. They do nicht validate Server-side Cache retention. See [the live check](#prove-it-on-your-own-session).
+Die Render-Tests prüfen die Elementstruktur, nicht native Terminal- oder Desktop-Pixel. Sie validieren keine serverseitige Cache-Erhaltung. Siehe [die Live-Prüfung](#pruefe-es-in-deiner-eigenen-sitzung).
 
 ### Typecheck
 
-Load this checkout mit `claude --plugin-dir .` to generate declarations beside das Plugin. Then, von the Repository root:
+Lade diesen Checkout mit `claude --plugin-dir .`, um Deklarationen neben dem Plugin zu erzeugen. Führe dann aus dem Repository-Stammverzeichnis aus:
 
 ```sh
 npx -p typescript tsc -p .
 ```
 
-Generated declarations live in `.claude-plugin/types/`. Keep them untracked.
+Die erzeugten Deklarationen liegen in `.claude-plugin/types/`. Lass sie unversioniert.
 
-## Reading the state von another mod
+## Den Zustand aus einem anderen Mod lesen
 
-Cache-tax adds a lesen-only `$.cacheTax.status()` to the mods API, so a Status Leiste can zeigen keepwarm ohne parsing `/cache-tax`. Es ist experimental until 3.0: fields may ändern in a minor release. `cold` is the same one-hour estimate `/cache-tax` zeigt, nicht a prüfen of the Server's Cache. It resolves to `{ keepwarm: 'on' | 'off' | 'stopped', leftMs, always, alwaysMs, autoWarm, guard, guardFloorUsd, cold, stopped, coldWrites, pingSkipped, idlePingUsd }`; the types are in `types/index.d.ts`. Where Cache-tax is nicht installed es gibt nein `$.cacheTax`, so a caller wraps the call in `try`/`catch`.
+Cache-tax ergänzt die Mods-API um einen lesenden `$.cacheTax.status()`, damit eine Statusleiste keepwarm anzeigen kann, ohne `/cache-tax` zu zerlegen. Es ist bis 3.0 experimentell: Felder können sich in einer Nebenversion ändern. `cold` ist dieselbe Ein-Stunden-Schätzung wie bei `/cache-tax`, keine Prüfung des Server-Caches. Der Aufruf liefert `{ keepwarm: 'on' | 'off' | 'stopped', leftMs, always, alwaysMs, autoWarm, guard, guardFloorUsd, cold, stopped, coldWrites, pingSkipped, idlePingUsd }`; die Typen stehen in `types/index.d.ts`. Wo cache-tax nicht installiert ist, gibt es kein `$.cacheTax`, daher umschließt ein Aufrufer den Aufruf mit `try`/`catch`.
 
-## More Claude Code mods
+## Weitere Claude-Code-Mods
 
-Cache-tax is one of the [prompt cache mods for Claude Code](https://mods.aidojo.si/topics/prompt-cache/) listed in [Awesome Claude Code Mods](https://github.com/karanb192/awesome-claude-code-mods). Browse the full catalogue at [mods.aidojo.si](https://mods.aidojo.si/) to find a mod by Aufgabe und see what it can access vorher you installieren it.
+Cache-tax ist einer der [Prompt-Cache-Mods für Claude Code](https://mods.aidojo.si/topics/prompt-cache/) in [Awesome Claude Code Mods](https://github.com/karanb192/awesome-claude-code-mods). Stöbere im vollständigen Katalog unter [mods.aidojo.si](https://mods.aidojo.si/), um einen Mod nach Aufgabe zu finden und zu sehen, worauf er zugreifen kann, bevor du ihn installierst.
 
 ## Quelle und Lizenz
 

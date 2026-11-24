@@ -1,163 +1,154 @@
-<p><img src="docs/banner.png" width="100%" alt="claude-carbon, free and open source: the CO2 of your Claude Code sessions, in the terminal and in the Claude app. Eight pixel molecules from dark blue to dark red, a terminal whose status line reads 8.2gCO2, and the /carbon-panel pane: this session's molecule and CO2, the last 30 days as tiles and warming stripes, a button for the yearly card"></p>
+<p><img src="docs/banner.png" width="100%" alt="claude-carbon, frei und Open Source: die CO2 deiner Claude-Code-Sitzungen, im Terminal und in der Claude-App. Acht Pixel-Moleküle von Dunkelblau bis Dunkelrot, ein Terminal, dessen Statuszeile 8,2 gCO2 anzeigt, und der Bereich /carbon-panel: Molekül und CO2 dieser Sitzung, die letzten 30 Tage als Kacheln und Erwärmungsstreifen, eine Schaltfläche für die Jahreskarte"></p>
 
-[![GitHub stars](https://img.shields.io/github/stars/gwittebolle/claude-carbon)](https://github.com/gwittebolle/claude-carbon/stargazers)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![GitHub release](https://img.shields.io/github/v/release/gwittebolle/claude-carbon)](https://github.com/gwittebolle/claude-carbon/releases)
+[![GitHub-Sterne](https://img.shields.io/github/stars/gwittebolle/claude-carbon)](https://github.com/gwittebolle/claude-carbon/stargazers)
+[![Lizenz: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![GitHub-Release](https://img.shields.io/github/v/release/gwittebolle/claude-carbon)](https://github.com/gwittebolle/claude-carbon/releases)
 [![npm](https://img.shields.io/npm/v/claude-carbon)](https://www.npmjs.com/package/claude-carbon)
 [![CI](https://github.com/gwittebolle/claude-carbon/actions/workflows/ci.yml/badge.svg)](https://github.com/gwittebolle/claude-carbon/actions/workflows/ci.yml)
 
-claude-carbon is an öffnen source Claude Code plugin that tracks the carbon footprint of your Sitzungen: a live CO2 estimate computed locally von your Token Nutzung, in the terminal Status Zeile und in the Code tab of the Claude desktop app, nächste to the Sitzung's API-equivalent Kosten. In the desktop app, `/carbon-panel` öffnet a pane mit a pixel molecule coloured by this Sitzung's CO2 against the median of your past Sitzungen, your Nutzung over the period you pick, its warming stripes, und a Schaltfläche for your yearly card.
+claude-carbon ist ein Open-Source-Claude-Code-Plugin, das den CO2-Fußabdruck deiner Sitzungen erfasst: eine lokal aus deinem Token-Verbrauch berechnete Live-CO2-Schätzung in der Statuszeile des Terminals und im Code-Tab der Claude-Desktop-App, neben den API-äquivalenten Kosten der Sitzung. In der Desktop-App öffnet `/carbon-panel` einen Bereich mit einem Pixel-Molekül, dessen Farbe den CO2 dieser Sitzung mit dem Median deiner bisherigen Sitzungen vergleicht, deinem Verbrauch im gewählten Zeitraum, dessen Erwärmungsstreifen und einer Schaltfläche für deine Jahreskarte.
 
-<p align="center"><img src="https://github.com/user-attachments/assets/f52b2653-28b9-4efc-82a6-02dfe256e193" width="480" alt="claude-carbon in 16 seconds: Claude Code never shows its CO2; claude-carbon puts it in the terminal status line, then in the Claude desktop app, where /carbon-panel opens a pane with a pixel molecule coloured by this session's CO2 against the median of your past sessions"></p>
+<p align="center"><img src="https://github.com/user-attachments/assets/f52b2653-28b9-4efc-82a6-02dfe256e193" width="480" alt="claude-carbon in 16 Sekunden: Claude Code zeigt seinen CO2 nie; claude-carbon setzt ihn in die Terminal-Statuszeile, dann in die Claude-Desktop-App, wo /carbon-panel einen Bereich mit einem Pixel-Molekül öffnet, dessen Farbe den CO2 dieser Sitzung mit dem Median der bisherigen Sitzungen vergleicht"></p>
 
-## What claude-carbon does
+## Was claude-carbon tut
 
-- `/carbon-panel`: a pane in the Claude desktop app mit your CO2 molecule, your Nutzung und the warming stripes of your Sitzungen (in a terminal, the Sitzung in the Leiste above the Prompt). See [the mod](#the-mod-carbon-panel-and-the-co2-of-each-answer)
-- Adds a live CO2 estimate to the Claude Code Status Zeile, und the Sitzung's CO2 under the Prompt in the Claude desktop app, jede nächste to the Sitzung's API-equivalent Kosten
-- Persists jede Sitzung to a local SQLite database, so history survives the 30-day transcript purge
-- Backfills historical data von existing `~/.claude` transcripts
-- Slash commands: `/carbon-report` (Text), `/carbon-card` (PNG), `/carbon-pr` (footprint of a pull request)
-- A README badge mit your alle-time gesamt, und a public methodology mit every factor sourced
+- `/carbon-panel`: ein Bereich in der Claude-Desktop-App mit deinem CO2-Molekül, deinem Verbrauch und den Erwärmungsstreifen deiner Sitzungen (im Terminal die Sitzung in der Leiste über der Eingabe). Siehe [den Mod](#der-mod-carbon-panel-und-der-co2-jeder-antwort)
+- Ergänzt die Claude-Code-Statuszeile um eine Live-CO2-Schätzung und zeigt den CO2 der Sitzung in der Desktop-App unter der Eingabe, jeweils neben den API-äquivalenten Kosten der Sitzung
+- Speichert jede Sitzung in einer lokalen SQLite-Datenbank, damit die Historie die 30-tägige Löschung der Transkripte überlebt
+- Füllt historische Daten aus vorhandenen `~/.claude`-Transkripten nach
+- Slash-Befehle: `/carbon-report` (Text), `/carbon-card` (PNG), `/carbon-pr` (Fußabdruck eines Pull Requests)
+- Ein README-Badge mit deiner Gesamtsumme und eine öffentliche Methodik mit belegten Faktoren
 
-> **About the `$` figure.** Es ist an API equivalent: what your Sitzung would Kosten at Anthropic's pay-as-you-go API list prices. On a Pro, Max oder Ultra subscription you do nicht pay it; it zeigt the value of what you used, nächste to its CO2. See [How it works](#how-it-works).
+> **Zur Zahl mit `$`.** Sie ist ein API-Äquivalent: Was deine Sitzung zu Anthropic pay-as-you-go-Listenpreisen kosten würde. Bei einem Pro-, Max- oder Ultra-Abo zahlst du sie nicht; sie zeigt den Wert des Genutzten neben dessen CO2. Siehe [So funktioniert es](#so-funktioniert-es).
 
 ## Install
 
-In Claude Code, type:
+Gib in Claude Code ein:
 
 ```text
 /plugin install claude-carbon --marketplace gwittebolle/claude-carbon
 ```
 
-Claude Code asks you to bestätigen the marketplace, zeigt what das Plugin installs, dann asks where to installieren it: pick **Install for you**. The same Zeile works on macOS, Linux und Windows. In the **Code** tab of the Claude desktop app, if the Zeile is nicht taken, paste this Nachricht instead und accept when Claude asks:
+Claude Code bittet dich, den Marketplace zu bestätigen, zeigt, was das Plugin installiert, und fragt dann, wo: Wähle **Install for you**. Dieselbe Zeile funktioniert unter macOS, Linux und Windows. Im **Code**-Tab der Claude-Desktop-App kannst du diese Zeile, falls sie belegt ist, durch folgende Nachricht ersetzen und die Installation bestätigen, wenn Claude fragt:
 
 ```text
 Install the claude-carbon plugin for me: claude plugin install claude-carbon --marketplace gwittebolle/claude-carbon
 ```
 
-Then quit Claude Code completely, öffnen it erneut und starten a neu Sitzung. Your CO2 jetzt zeigt nächste to the Sitzung's Kosten:
+Beende danach Claude Code vollständig, öffne es erneut und starte eine neue Sitzung. Dein CO2 erscheint jetzt neben den Kosten der Sitzung:
 
-- in a terminal, in the Status Zeile: `$0.50 · 65gCO₂`
-- in the desktop app, under the Prompt: `This session: 3.6 gCO₂ · $0.12`
+- im Terminal, in der Statuszeile: `$0.50 · 65gCO₂`
+- in der Desktop-App, unter der Eingabe: `This session: 3.6 gCO₂ · $0.12`
 
-Das Plugin sets that Status Zeile once, at its erste Sitzung starten, und nur when you have keine: another Werkzeug's Status Zeile is left as es ist (to hinzufügen the CO2 to it, see [ccstatusline](#using-with-ccstatusline)). `/carbon-report` gives your totals, und `/carbon-panel` öffnet the pane in the desktop app. The `$` is an API-equivalent Kosten, nicht what your subscription bills. To aktualisieren later, ausführen `/carbon-update`.
+Das Plugin setzt diese Statuszeile einmalig beim ersten Sitzungsstart und nur, wenn du keine hast; die Statuszeile eines anderen Werkzeugs bleibt unverändert (wie du den CO2 dort ergänzt, siehe [ccstatusline](#verwendung-mit-ccstatusline)). `/carbon-report` nennt deine Summen, und `/carbon-panel` öffnet den Bereich in der Desktop-App. Das `$` sind API-äquivalente Kosten, nicht das, was dein Abo in Rechnung stellt. Für eine spätere Aktualisierung führe `/carbon-update` aus.
 
-<p align="center"><img src="docs/desktop-pane.png" width="560" alt="Illustration of the Claude desktop app with the claude-carbon pane open: a blue pixel molecule, &quot;This session: 8.2 gCO₂ · 0.04× your median&quot;, the last 30 days as tiles and warming stripes, a &quot;Get my 2026 card&quot; button, and &quot;This session: 8.2 gCO₂&quot; under the prompt"></p>
+<p align="center"><img src="docs/desktop-pane.png" width="560" alt="Darstellung der Claude-Desktop-App mit geöffnetem claude-carbon-Bereich: ein blaues Pixel-Molekül, &quot;Diese Sitzung: 8,2 gCO₂ · 0,04× dein Median&quot;, die letzten 30 Tage als Kacheln und Erwärmungsstreifen, eine Schaltfläche &quot;Get my 2026 card&quot; und &quot;Diese Sitzung: 8,2 gCO₂&quot; unter der Eingabe"></p>
 
 <details>
-<summary><b>If the installieren stops</b></summary>
+<summary><b>Wenn die Installation stoppt</b></summary>
 
-- **macOS öffnet a Fenster about "Befehl Zeile developer Werkzeuge".** That ist `git`, which Claude Code needs to fetch das Plugin und a Mac ohne developer Werkzeuge does nicht have yet. Click **Install**, wait until it finishes (a few minutes), dann installieren erneut.
-- **"jq is nicht installed" oder "sqlite3 is nicht installed".** Tell Claude: "Install what is missing.", dann neu starten Claude Code. Every Mac has `sqlite3`, und macOS 15 und later auch have `jq`. On an older Mac, Claude can installieren `jq` mit Homebrew, oder the installer (under Other ways to installieren) fetches the official `jq` itself, checked against its published checksum. On Windows, `/carbon-panel` names the one missing und Claude can installieren it mit `winget`. If `winget` answers "Access is denied", security software on the PC is blocking it: erlauben `winget` there, dann try erneut.
-- **Windows says Git Bash is missing.** Install [Git for Windows](https://git-scm.com/downloads/win) (Claude Code needs it on Windows anyway), quit the app completely und reopen it, dann installieren erneut in a neu Sitzung. Claude Code looks for Git Bash when a Sitzung starts, so a Sitzung öffnen during the Git installieren still runs ohne it.
-- **Installed von Anthropic's community marketplace und das Plugin fails to load?** The `co2-tracker@claude-community` entry is pinned to a release von August 2026 that aktuell Claude Code rejects ("Duplicate Hooks Datei detected"). Run `/plugin uninstall co2-tracker@claude-community`, dann installieren as above.
+- **macOS oeffnet ein Fenster zu command line developer tools.** Das ist git, das Claude Code zum Laden des Plugins braucht und das ein Mac ohne Entwicklerwerkzeuge noch nicht hat. Klicke auf Install, warte bis zum Abschluss (einige Minuten) und installiere dann erneut.
+- **jq is not installed oder sqlite3 is not installed.** Sage Claude: Install what is missing., dann starte Claude Code neu. Jeder Mac hat sqlite3, und macOS 15 oder neuer auch jq. Auf einem aelteren Mac kann Claude jq mit Homebrew installieren, oder das Installationsprogramm (unter Weitere Installationswege) holt sich das offizielle jq selbst und prueft es gegen die veroeffentlichte Pruefsumme. Unter Windows nennt /carbon-panel das fehlende Programm, und Claude kann es mit winget installieren. Antwortet winget mit Access is denied, blockiert Sicherheitssoftware auf dem PC den Zugriff: Erlaube winget dort und versuche es erneut.
+- **Windows meldet, Git Bash fehle.** Installiere Git for Windows (https://git-scm.com/downloads/win) (Claude Code braucht es unter Windows ohnehin), beende die App vollstaendig, oeffne sie wieder und installiere dann in einer neuen Sitzung erneut. Claude Code sucht beim Sitzungsstart nach Git Bash, eine waehrend der Git-Installation geoeffnete Sitzung laeuft also ohne ihn.
+- **Aus Anthonics Community-Marketplace installiert und das Plugin laedt nicht?** Der Eintrag co2-tracker@claude-community ist auf eine Version von August 2026 festgelegt, die aktuelles Claude Code ablehnt (Duplicate hooks file detected). Fuehre /plugin uninstall co2-tracker@claude-community aus und installiere wie oben beschrieben.
 
 </details>
 
 <details>
-<summary><b>Other ways to installieren</b></summary>
+<summary><b>Weitere Installationswege</b></summary>
 
-- **The installer**, a script that clones dieses Repository und wires everything in `~/.claude/settings.json` itself. Paste this Nachricht in Claude Code, oder ausführen the Befehl danach the colon yourself in a terminal:
+- **Das Installationsprogramm**, ein Skript, das dieses Repository klont und alles selbst in `~/.claude/settings.json` eintraegt. Fuege diese Nachricht in Claude Code ein oder fuehre den Befehl nach dem Doppelpunkt selbst in einem Terminal aus:
 
   ```text
   Install claude-carbon for me by running this command:
   curl -fsSL https://raw.githubusercontent.com/gwittebolle/claude-carbon/main/install.sh | bash
   ```
 
-  On Windows, in PowerShell (it needs [Git for Windows](https://git-scm.com/downloads/win) und two packages erste, see [Windows](#windows)):
+  Unter Windows in PowerShell (dafuer sind [Git for Windows](https://git-scm.com/downloads/win) und zuerst zwei Pakete noetig, siehe [Windows](#windows)):
 
   ```text
   Install claude-carbon for me by running this command in PowerShell:
   irm https://raw.githubusercontent.com/gwittebolle/claude-carbon/main/install.ps1 | iex
   ```
 
-  If the mode selector under the Prompt zeigt **Auto**, pick **Manual** erste: automatisch mode blocks a Befehl that downloads a script und runs it. Du kannst lesen [install.sh](install.sh) vorher läuft it.
-- **With Node.js:** `npx claude-carbon` runs the same installer.
+  Zeigt die Modus-Auswahl unter der Eingabe **Auto**, waehle zuerst **Manual**: Der automatische Modus blockiert einen Befehl, der ein Skript herunterlaedt und ausfuehrt. Du kannst [install.sh](install.sh) vor dem Ausfuehren lesen.
+- **Mit Node.js:** `npx claude-carbon` fuehrt dasselbe Installationsprogramm aus.
 
-Use one way nur: das Plugin und the installer together would ausführen every Hook twice. Already installed mit the installer? Nothing to ändern, `/carbon-update` keeps it up to date.
+Verwende nur einen Weg: Plugin und Installationsprogramm zusammen wuerden jeden Hook zweimal ausfuehren. Bereits mit dem Installationsprogramm installiert? Dann ist nichts zu aendern, `/carbon-update` haelt es aktuell.
 
 </details>
 
-Not covered: the chat und Cowork tabs und the web app (claude.ai/code). Their Sitzungen ausführen on Anthropic's servers, so nothing reaches your machine to count.
+Nicht erfasst: die Tabs Chat und Cowork sowie die Web-App (claude.ai/code). Deren Sitzungen laufen auf Anthonics Servern, es erreicht also nichts deinen Rechner, was gezaehlt werden koennte.
 
-## Example report
+## Beispielbericht
 
 <p align="center">
-  <img src="docs/example-card.png" alt="claude-carbon summary card: 1190.3 kg of estimated CO2 from January to September 2026, a bar per month, then 25.3B tokens processed, 94% of them cache reads, a car equivalent, the API-price cost and a yearly projection" width="540">
+  <img src="docs/example-card.png" alt="claude-carbon-Zusammenfassungskarte: 1190,3 kg geschaetztes CO2 von Januar bis September 2026, ein Balken pro Monat, dann 25,3 Mrd. verarbeitete Tokens, 94 Prozent davon Cache-Lesezugriffe, ein Autovergleich, die API-Preiskosten und eine Jahresprojektion" width="540">
 </p>
 
-Generate yours mit `/carbon-card` in Claude Code. The summary und detailed PNGs land in
-`~/Downloads/claude-carbon/` (the Windows Downloads Ordner follows the system setting, so a
-OneDrive-redirected one is honoured) und the Ordner öffnet in your Datei manager, mit the
-card selected on macOS. `CLAUDE_CARBON_EXPORT_DIR` picks another Ordner;
-`CLAUDE_CARBON_NO_OPEN=1` skips the opening.
+Erstelle deine Karte mit `/carbon-card` in Claude Code. Die Zusammenfassung und die detaillierten PNGs landen in
+`~/Downloads/claude-carbon/` (der Windows-Downloads-Ordner folgt der Systemeinstellung, ein auf OneDrive umgeleiteter wird also beruecksichtigt), und der Ordner oeffnet sich in deinem Dateimanager, auf dem Mac mit ausgewaehlter Karte. `CLAUDE_CARBON_EXPORT_DIR` waehlt einen anderen Ordner;
+`CLAUDE_CARBON_NO_OPEN=1` unterdrueckt das Oeffnen.
 
-Without Playwright oder Chromium es gibt nein PNG und the Befehl still finishes: the summary
-card is gespeichert as an HTML page in the same Ordner und öffnet in your Browser, scaled to fit the
-Fenster, und a Screenshot of it does the job.
-The Token count on the card is every Token Claude processed, Cache liest included, as `ccusage` counts them; the grey Zeile under it gives the share of Cache liest. The card's footer says where to find the Werkzeug, `claude-carbon sur GitHub` / `claude-carbon on GitHub`, mit the address below it.
+Ohne Playwright oder Chromium gibt es kein PNG, der Befehl schliesst aber trotzdem ab: Die
+Zusammenfassungskarte wird als HTML-Seite im selben Ordner gespeichert und oeffnet sich in deinem Browser,
+passend zum Fenster skaliert, und ein Screenshot davon tut denselben Dienst.
+Die Token-Zahl auf der Karte ist jedes von Claude verarbeitete Token, einschliesslich Cache-Lesezugriffe, so wie `ccusage` sie zaehlt; die graue Zeile darunter nennt den Anteil der Cache-Lesezugriffe. Der Fuss der Karte sagt, wo man das Werkzeug findet, `claude-carbon sur GitHub` / `claude-carbon on GitHub`, mit der Adresse darunter.
 
-From the 1st to the 10th of jede month the Status Zeile ends mit `📊 September: 84.2kgCO₂ · /carbon-card`:
-the gesamt of the month just closed, the bar the card draws for it, in the same format as the
-Sitzung figure. Es ist lesen von carbon.db once a day while the nudge zeigt, und kept in
-`~/.claude/claude-carbon/last-month-total`. A month mit fewer than 7 days of Sitzungen gets nein
-nudge, so a fresh installieren is nicht pushed to share a near-empty card. Generating a card
-clears it for the month; it goes quiet on its own danach the 10th. In December it gives the year
-so far instead, `📊 2026: 1444.4kgCO₂ · /carbon-card`, und stays the whole month, the card covering
-the calendar year. From the 1st to the 10th of January it gives the year just ended, und over those
-days `/carbon-card` covers that year, whole, unless you pass a period oder that year has nein Sitzung (the
-card keeps those ten days even when the reminder is turned off). `CLAUDE_CARBON_CARD_NUDGE_UNTIL_DAY`
-moves the cut-off (0 removes the nudge, December included), `CLAUDE_CARBON_NO_CARD_NUDGE=1` removes the nudge. Nothing is posted anywhere:
-sharing stays a human decision.
+Vom 1. bis zum 10. jedes Monats endet die Statuszeile mit `📊 September: 84.2kgCO₂ · /carbon-card`:
+der Gesamtsumme des gerade abgelaufenen Monats, dem Balken, den die Karte dafuer zeichnet, im selben Format wie die Sitzungszahl. Sie wird einmal taeglich aus carbon.db gelesen, solange der Hinweis erscheint, und in
+`~/.claude/claude-carbon/last-month-total` gespeichert. Ein Monat mit weniger als 7 Tagen mit Sitzungen erhaelt keinen Hinweis, damit eine frische Installation nicht gedraengt wird, eine fast leere Karte zu teilen. Das Erstellen einer Karte loescht den Hinweis fuer den Monat; nach dem 10. verstummt er von selbst. Im Dezember nennt er stattdessen das laufende Jahr, `📊 2026: 1444.4kgCO₂ · /carbon-card`, und bleibt den ganzen Monat, da sich die Karte auf das Kalenderjahr bezieht. Vom 1. bis zum 10. Januar nennt er das gerade beendete Jahr, und in diesen Tagen deckt `/carbon-card` dieses ganze Jahr ab, sofern du keinen Zeitraum uebergibst oder das Jahr keine Sitzung hatte (die Karte behaelte diese zehn Tage selbst bei abgeschaltetem Hinweis). `CLAUDE_CARBON_CARD_NUDGE_UNTIL_DAY`
+verschiebt die Grenze (0 entfernt den Hinweis, Dezember eingeschlossen), `CLAUDE_CARBON_NO_CARD_NUDGE=1` entfernt ihn ganz. Nichts wird irgendwo veroeffentlicht:
+Das Teilen bleibt eine menschliche Entscheidung.
 
 <details>
-<summary>Advanced options (CLI)</summary>
+<summary>Erweiterte Optionen (CLI)</summary>
 
 ```bash
-# Since a specific date
+# Ab einem bestimmten Datum
 bash ~/code/claude-carbon/scripts/generate-report.sh --since 2026-03-01
 
-# All time
+# Gesamte Zeit
 bash ~/code/claude-carbon/scripts/generate-report.sh --all
 
-# A closed period (--until is an exclusive upper bound: this one stops at June 30th)
+# Ein abgeschlossener Zeitraum (--until ist eine exklusive obere Grenze: dieser endet am 30. Juni)
 bash ~/code/claude-carbon/scripts/generate-report.sh --since 2026-01-01 --until 2026-07-01
 ```
 
 </details>
 
 <details>
-<summary>Custom installieren Verzeichnis</summary>
+<summary>Eigenes Installationsverzeichnis</summary>
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/gwittebolle/claude-carbon/main/install.sh | CLAUDE_CARBON_DIR=~/my-path/claude-carbon bash
 ```
 
-The env var has to sit on the `bash` side of the pipe, nicht the `curl` side, oder the installer nie sees it.
+Die Umgebungsvariable muss auf der `bash`-Seite der Pipeline stehen, nicht auf der `curl`-Seite, sonst sieht das Installationsprogramm sie nie.
 
 </details>
 
 <details>
-<summary>Second Claude environment (CLAUDE_CONFIG_DIR)</summary>
+<summary>Zweite Claude-Umgebung (CLAUDE_CONFIG_DIR)</summary>
 
-Wenn du ausführen a second Claude Code environment out of its own config Verzeichnis, e.g.
+Wenn du eine zweite Claude-Code-Umgebung mit eigenem Konfigurationsverzeichnis betreibst, zum Beispiel
 
 ```bash
 alias claude-work="CLAUDE_CONFIG_DIR=~/.claude-work claude"
 ```
 
-installieren claude-carbon in that same Verzeichnis by passing `CLAUDE_CONFIG_DIR` to the installer:
+installiere claude-carbon in dasselbe Verzeichnis, indem du `CLAUDE_CONFIG_DIR` an das Installationsprogramm uebergibst:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/gwittebolle/claude-carbon/main/install.sh | CLAUDE_CONFIG_DIR=~/.claude-work bash
 ```
 
-The Status Zeile, the Hooks, the database und the `/carbon-*` commands alle live under that config dir, so jede environment tracks its own Sitzungen independently. When `CLAUDE_CONFIG_DIR` is unset everything falls zurück to `~/.claude` as vorher.
+Statuszeile, Hooks, Datenbank und die `/carbon-*`-Befehle liegen alle unter diesem Konfigurationsverzeichnis, sodass jede Umgebung ihre Sitzungen unabhaengig erfasst. Ist `CLAUDE_CONFIG_DIR` nicht gesetzt, faellt alles wie zuvor auf `~/.claude` zurueck.
 
 </details>
 
 <details>
-<summary>Manual installieren</summary>
+<summary>Manuelle Installation</summary>
 
 ```bash
 git clone https://github.com/gwittebolle/claude-carbon.git ~/code/claude-carbon
@@ -165,7 +156,7 @@ bash ~/code/claude-carbon/scripts/setup.sh
 bash ~/code/claude-carbon/scripts/configure-settings.sh
 ```
 
-The second script merges the block below in `~/.claude/settings.json` (additively: an existing Status Zeile oder third-party Hooks are left alone) und symlinks the `/carbon-*` commands. To wire it by hand instead, überspringen it und hinzufügen:
+Das zweite Skript fuegt den Block unten in `~/.claude/settings.json` ein (zustaetzlich: eine vorhandene Statuszeile oder Hooks von Drittanbietern bleiben unberuehrt) und verknuepft die `/carbon-*`-Befehle. Wenn du es von Hand eintragen willst, ueberspringe das Skript und ergaenze:
 
 ```json
 {
@@ -222,24 +213,24 @@ The second script merges the block below in `~/.claude/settings.json` (additivel
 }
 ```
 
-The `Stop` Hook records the Sitzung danach jede Zug, und `SessionEnd` records it once mehr as it closes, so a letzte Zug interrupted vorher `Stop` fired is still counted. The `SessionStart` one re-scans for Sitzungen both missed (crash, kill) und drives the daily aktualisieren prüfen the Status Zeile liest; ohne it you are nie told a neu version exists. `SubagentStop` records the Branch an Agent worked on, for `/carbon-pr`.
+Der `Stop`-Hook speichert die Sitzung nach jeder Runde, und `SessionEnd` speichert sie beim Schliessen noch einmal, damit auch eine letzte, vor `Stop` unterbrochene Runde gezaehlt wird. Der `SessionStart`-Hook sucht nach verpassten Sitzungen (Absturz, Kill) und treibt die taegliche Aktualisierungspruefung an, die die Statuszeile liest; ohne ihn erfaehrst du nie, dass es eine neuere Version gibt. `SubagentStop` speichert den Branch, auf dem ein Agent gearbeitet hat, fuer `/carbon-pr`.
 
-Restart Claude Code.
+Starte Claude Code neu.
 
 </details>
 
-## For teams
+## Fuer Teams
 
-claude-carbon measures one developer's Sitzungen, locally. If the Frage comes von your CTO, a Client RFP oder a CSR committee, the same methodology exists as a hosted layer:
+claude-carbon misst die Sitzungen eines Entwicklers, lokal. Kommt die Frage von deinem CTO, einer Kundenausschreibung oder einem CSR-Gremium, gibt es dieselbe Methodik auch als gehostete Ebene:
 
-- [Free calculator](https://tokenclimate.com/en/calculator?ref=github) und [per-model factor sheets](https://tokenclimate.com/en/models?ref=github) - the exact versioned factors of this repo, browsable.
-- [TokenClimate](https://tokenclimate.com/en?ref=github) - hosted team dashboards. Both sides share this repo's golden vectors, verified weekly in CI.
+- [Kostenloser Rechner](https://tokenclimate.com/en/calculator?ref=github) und [Faktentabellen pro Modell](https://tokenclimate.com/en/models?ref=github) – die exakten versionierten Faktoren dieses Repositories, zum Nachschlagen.
+- [TokenClimate](https://tokenclimate.com/en?ref=github) – gehostete Team-Dashboards. Beide Seiten nutzen die Golden Vectors dieses Repositories, die woechtentlich in CI geprueft werden.
 
-The OSS points there von five places: a one-line footer in `/carbon-report`, a small credit on the `/carbon-card` PNGs, the letzte Zeile of a `/carbon-pr` comment, the foot of the `/carbon-panel` pane und the `url` field of `CITATION.cff`. No Status-line promo, nein email capture: nothing leaves your machine.
+Das OSS verweist an fuenf Stellen darauf: eine einzeilige Fusszeile in `/carbon-report`, ein kleiner Hinweis auf den `/carbon-card`-PNGs, die letzte Zeile eines `/carbon-pr`-Kommentars, der Fuss des `/carbon-panel`-Bereichs und das `url`-Feld in `CITATION.cff`. Keine Werbung in der Statuszeile, keine E-Mail-Erfassung: nichts verlaesst deinen Rechner.
 
-### PR dev footprint (/carbon-pr)
+### PR-Entwicklungsfussabdruck (/carbon-pr)
 
-The number reviewers rarely see is what the PR Kosten to develop: your local Claude Code Sitzungen while building the Branch. `/carbon-pr` (oder `scripts/generate-pr-report.sh`) sums the recorded Sitzungen of the aktuell Branch und posts one sticky comment on its öffnen PR, through your own `gh` auth. Run it danach your push; läuft it erneut updates the same comment in place.
+Die Zahl, die Reviewer selten sehen, ist, was der PR an Entwicklung gekostet hat: deine lokalen Claude-Code-Sitzungen waehrend der Arbeit am Branch. `/carbon-pr` (oder `scripts/generate-pr-report.sh`) summiert die gespeicherten Sitzungen des aktuellen Branches und postet einen haftenden Kommentar im offenen PR – ueber deine eigene `gh`-Anmeldung. Fuehre es nach deinem Push aus; ein erneuter Aufruf aktualisiert denselben Kommentar.
 
 ```
 **Claude Code carbon report** · developing this PR
@@ -249,39 +240,39 @@ The number reviewers rarely see is what the PR Kosten to develop: your local Cla
 | **124 g** | $3.00 | 180k | 1.5M | 2 |
 ```
 
-Under the table come the car equivalence, a foldable Token detail per Modell und a one-line footer.
+Unter der Tabelle folgen der Autovergleich, ein aufklappbares Token-Detail pro Modell und eine einzeilige Fusszeile.
 
-How the Sitzungen are attributed: the Stop Hook stores jede Sitzung's git Branch (lesen von the transcript), und the report selects `project + branch`. Sessions recorded vorher this column existed carry nein Branch; `scripts/backfill.sh` repairs them while their transcripts are still on disk (about 30 days). A Sitzung whose letzte Ordner is a subdirectory of the repo is stored under the subdirectory's Name und stays out of the sum. A Sitzung that ends on another Branch than it started is attributed to where it fertig.
+Wie die Sitzungen zugeordnet werden: Der Stop-Hook speichert den git-Branch jeder Sitzung (aus dem Transkript gelesen), und der Bericht waehlt `project + branch`. Sitzungen, die vor dieser Spalte gespeichert wurden, haben keinen Branch; `scripts/backfill.sh` repariert sie, solange ihre Transkripte noch auf der Platte liegen (etwa 30 Tage). Eine Sitzung, deren letzter Ordner ein Unterordner des Repositories ist, wird unter dem Namen des Unterordners gespeichert und bleibt aus der Summe draussen. Eine Sitzung, die auf einem anderen Branch endet als sie begann, wird dorthin gezaehlt, wo sie fertig wurde.
 
-How its Agenten are attributed: an Agent counts mit its Sitzung, unless it worked on a Branch of its own. A Sitzung on `main` that sendet Agenten to build a PR in a worktree puts their share on the PR's Branch, und the comment dann says how many Sitzungen recorded elsewhere it includes. A `SubagentStop` Hook (`agent-stop.sh`) liest the Branch as jede Agent ends, while its worktree still exists:
+Wie ihre Agenten zugeordnet werden: Ein Agent zaehlt mit seiner Sitzung, sofern er nicht auf einem eigenen Branch gearbeitet hat. Eine Sitzung auf `main`, die Agenten in einem Worktree an einem PR bauen laesst, schreibt deren Anteil auf den Branch des PRs, und der Kommentar sagt dann, wie viele anderswo gespeicherte Sitzungen er einschliesst. Ein `SubagentStop`-Hook (`agent-stop.sh`) liest den Branch, wenn jeder Agent endet, solange sein Worktree noch existiert:
 
-- an Agent that ran in a worktree of its own (Claude Code's isolated und workflow Agenten) counts on the Branch that worktree has dann, unless Claude Code named it (`worktree-agent-*`, `worktree-wf_*`) oder es ist detached;
-- an Agent that ran in the Sitzung's Ordner counts on the worktree its Werkzeug calls Name in at least half of those that give a place (a Befehl, a Datei Pfad), und nein other as often: absolute paths, `~/`, `../` von the Repository's Ordner when the worktree sits beside it, `./` when it sits inside. Never the Repository's main Ordner, nor the Sitzung's own. This one is a deduction von the Agent's commands.
+- Ein Agent, der in einem eigenen Worktree lief (Claude Codes isolierte und Workflow-Agenten), zaehlt auf dem Branch, den dieser Worktree dann hat, es sei denn, Claude Code hat ihn benannt (`worktree-agent-*`, `worktree-wf_*`) oder er ist detached;
+- ein Agent, der im Ordner der Sitzung lief, zaehlt auf den Worktree, den seine Werkzeugaufrufe in mindestens der Haelfte der Aufrufe mit Ortsangabe nennen (ein Befehl, ein Dateipfad), und auf keinen anderen ebenso oft: absolute Pfade, `~/`, `../` vom Repository-Ordner, wenn der Worktree daneben liegt, `./`, wenn er darin liegt. Nie der Hauptordner des Repositories oder der der Sitzung. Dies ist eine Ableitung aus den Befehlen des Agenten.
 
-The Hook stores that Agent's Tokens, CO2 und Kosten, per Modell, in an `agent_usage` table, mit the Repository und the worktree's Ordner; the Sitzung's own row does nicht ändern. The report takes those Agenten out of their Sitzung's Branch und adds them to theirs, as long as the Sitzung's row holds alle its Agenten (`agents_collected = 2`: the Stop Hook oder the rescan lesen every Agent transcript), was written danach the Agent ended (in a later second) und was recorded mit the aktuell method (nicht a v1 row). An Agent that worked in another Repository than its Sitzung's is nicht recorded, und one recorded vorher its Repository was moved stays mit its Sitzung. Forks are left out (they replay their parent's Nachrichten), und so is the work a Sitzung does itself in a worktree. Only Agenten that end mit this version installed are attributed: nothing is rebuilt for past Sitzungen.
+Der Hook speichert die Tokens, den CO2 und die Kosten dieses Agenten, pro Modell, in einer `agent_usage`-Tabelle, zusammen mit dem Repository und dem Ordner des Worktrees; die eigene Zeile der Sitzung bleibt unveraendert. Der Bericht nimmt diese Agenten aus dem Branch ihrer Sitzung heraus und schreibt sie ihrem eigenen zu, sofern die Zeile der Sitzung alle ihre Agenten enthaelt (`agents_collected = 2`: der Stop-Hook oder die Neusuche hat jedes Agenten-Transkript gelesen), der Eintrag nach dem Ende des Agenten geschrieben wurde (in einer spaeteren Sekunde) und mit der aktuellen Methode gespeichert wurde (keine v1-Zeile). Ein Agent, der in einem anderen Repository als seine Sitzung arbeitete, wird nicht gespeichert, und einer, der vor dem Umzug seines Repositories gespeichert wurde, bleibt bei seiner Sitzung. Forks bleiben draussen (sie wiederholen die Nachrichten ihres Elternteils), ebenso die Arbeit, die eine Sitzung selbst in einem Worktree verrichtet. Nur Agenten, die mit dieser Version installiert enden, werden zugeordnet: fuer vergangene Sitzungen wird nichts nachgebaut.
 
-The Hook needs Claude Code 2.1.69 oder later, the erste to give `SubagentStop` the Agent's type (its id und transcript came in 2.0.42); mit an older one it records nothing. Claude Code's own Agenten (Prompt suggestions, `/btw`) are left out. In a Sitzung ausführen ohne `--agent` their type is empty: the Hook's matcher skips them von 2.1.275, the script itself vorher that. With `--agent` they carry that Agent's Name und pass the matcher; the script skips them because their transcript is nicht one the Sitzung's row liest.
+Der Hook braucht Claude Code 2.1.69 oder neuer, als erste Version, die `SubagentStop` den Typ des Agenten gibt (seine ID und sein Transkript kamen in 2.0.42); mit einer aelteren wird nichts gespeichert. Claude Codes eigene Agenten (Prompt-Vorschlaege, `/btw`) bleiben draussen. In einer Sitzung ohne `--agent` ist ihr Typ leer: Der Matcher des Hooks ueberspringt sie ab 2.1.275, das Skript selbst schon vorher. Mit `--agent` tragen sie den Namen dieses Agenten und bestehen den Matcher; das Skript ueberspringt sie, weil ihr Transkript nicht eines ist, das die Zeile der Sitzung liest.
 
-The Hook runs synchronously, vorher the Agent's Ergebnis reaches the Sitzung: on a Mac, about 0.1 to 0.3 s for most Agenten, up to about 1 to 2 s for one whose transcript passes 100 MB, since it liest that transcript whole. Claude Code schreibt transcripts asynchronously: when the Agent's final Nachricht is nicht in it yet, the Hook liest it erneut every 0.2 s, for 1 s at most, dann counts what is there. A database kept busy for mehr than about 10 s (a long lesen elsewhere) loses the record, und the Agent counts mit its Sitzung.
+Der Hook laeuft synchron, bevor das Ergebnis des Agenten die Sitzung erreicht: auf einem Mac etwa 0,1 bis 0,3 Sekunden fuer die meisten Agenten, bis zu 1 bis 2 Sekunden fuer einen, dessen Transkript 100 MB uebersteigt, da er es vollstaendig liest. Claude Code schreibt Transkripte asynchron: Ist die letzte Nachricht des Agenten noch nicht darin, liest der Hook es alle 0,2 Sekunden erneut, hoechstens eine Sekunde lang, und zaehlt dann, was da ist. Eine Datenbank, die laenger als etwa 10 Sekunden beschaeftigt bleibt (ein langer Lesezugriff anderswo), verliert den Eintrag, und der Agent zaehlt mit seiner Sitzung.
 
-#### For every PR of a Repository
+#### Fuer jeden PR eines Repositories
 
-A Repository can ask for the report on its pull requests. Its maintainers Commit this in `.claude/settings.json`, a ändern the team reviews like any other:
+Ein Repository kann den Bericht fuer seine Pull Requests anfordern. Seine Maintainers committen dazu dies in `.claude/settings.json`, eine Aenderung, die das Team wie jede andere prueft:
 
 ```json
 { "env": { "CLAUDE_CARBON_PR": "1" } }
 ```
 
-Nothing is posted on that alone. The erste Zeit a developer who has das Plugin öffnet a pull request there mit Claude Code (`gh pr create`), Claude asks them once whether to post the report of their own Sitzungen under their own GitHub account. Their Antwort stays on their machine, per Repository (`pr-consent.tsv` in the data Ordner):
+Allein wird dadurch nichts gepostet. Beim ersten Mal, dass ein Entwickler mit dem Plugin dort mit Claude Code einen Pull Request oeffnet (`gh pr create`), fragt Claude ihn einmal, ob er den Bericht seiner eigenen Sitzungen unter seinem eigenen GitHub-Konto veröffentlichen will. Seine Antwort bleibt auf seinem Rechner, pro Repository (`pr-consent.tsv` im Datenordner):
 
-- **ja**: the comment is posted when that Antwort ends, dann updated in place danach jede `git push` oder `gh pr create` Claude runs there, once the Antwort that pushed is recorded und while the pushed Branch is still the one checked out. A push you type yourself in a terminal triggers nothing. One comment per PR, und nie by itself on a PR whose Branch lives in a fork.
-- **nein**, oder nein Antwort: nothing is posted und the Frage does nicht come zurück. `/carbon-pr` still works when they ausführen it.
+- **ja**: Der Kommentar wird nach dieser Antwort gepostet, danach bei jedem `git push` oder `gh pr create`, den Claude dort ausfuehrt, aktualisiert – sobald die Antwort, die gepusht hat, gespeichert ist und solange der gepushte Branch noch ausgecheckt ist. Ein Push, den du selbst im Terminal eingibst, loest nichts aus. Ein Kommentar pro PR und nie von selbst bei einem PR, dessen Branch in einem Fork liegt.
+- **nein** oder keine Antwort: Es wird nichts gepostet und die Frage kommt nicht zurueck. `/carbon-pr` funktioniert weiter, wenn er es selbst ausfuehrt.
 
-Change your Antwort von the Repository mit `scripts/generate-pr-report.sh --consent yes` oder `--consent never` (danach a ja typed in a terminal, the erste comment comes mit your nächste push oder `gh pr create` in Claude Code); a ja is nur taken once the Frage was put to you there, which auch covers a Frage that nie showed because the Zug was interrupted. The Antwort is kept under the Repository's `origin` URL (ohne credentials): rename the remote und the Frage comes zurück once. A Repository cannot Antwort for you: the answers are nie lesen von a config Ordner oder a database placed inside the Repository, und posted by itself the comment nur goes to the Repository `origin` names, whatever `GH_REPO` says. `CLAUDE_CARBON_NO_PR_AUTO=1` in your own environment turns the Frage und the posting off everywhere. To stoppen it for the Repository, entfernen the `CLAUDE_CARBON_PR` Zeile. It needs das Plugin's Hooks (a marketplace installieren): an installer-only clone is nicht asked und posts nothing by itself. Es ist meant for a team's Repository; on a public Projekt, contributors von outside would see comments they did nicht ask for.
+Aendere deine Antwort fuer das Repository mit `scripts/generate-pr-report.sh --consent yes` oder `--consent never` (nach einem im Terminal eingegebenen Ja kommt der erste Kommentar mit deinem naechsten Push oder `gh pr create` in Claude Code); ein Ja gilt erst, wenn die Frage dir dort gestellt wurde – dazu zaehlt auch eine Frage, die wegen einer unterbrochenen Runde nie erschien. Die Antwort wird unter der `origin`-URL des Repositories gespeichert (ohne Zugangsdaten): Benenne den Remote um, und die Frage kommt einmal zurueck. Ein Repository kann nicht fuer dich antworten: Die Antworten werden nie aus einem Konfigurationsordner oder einer Datenbank im Repository gelesen, und der Kommentar geht von selbst nur an die von `origin` genannten Repositories, egal was `GH_REPO` sagt. `CLAUDE_CARBON_NO_PR_AUTO=1` in deiner eigenen Umgebung schaltet Frage und Posting ueberall ab. Um es fuer das Repository zu beenden, entferne die `CLAUDE_CARBON_PR`-Zeile. Dafuer sind die Hooks des Plugins noetig (eine Marketplace-Installation): Ein reiner Installer-Klon wird nicht gefragt und postet nichts von selbst. Die Funktion ist fuer ein Team-Repository gedacht; in einem oeffentlichen Projekt wuerden externe Mitwirkende Kommentare sehen, die sie nicht angefordert haben.
 
-#### The Repository's gesamt
+#### Die Gesamtsumme des Repositories
 
-`scripts/generate-pr-report.sh --summary` liest zurück, through `gh`, the reports already posted on the Repository's merged pull requests und totals them per month merged und per author. `--since 2026-10-01` narrows it. It prints in your terminal nur, posts nothing und does nicht lesen your database: the figures are the ones jede author posted.
+`scripts/generate-pr-report.sh --summary` liest ueber `gh` die bereits geposteten Berichte der gemergten Pull Requests des Repositories zurueck und summiert sie pro Merge-Monat und pro Autor. `--since 2026-10-01` engt ein. Es gibt nur in deinem Terminal aus, postet nichts und liest deine Datenbank nicht: Die Zahlen sind die, die jeder Autor gepostet hat.
 
 ```
 Month merged             PRs  Sessions       CO2e       Cost
@@ -295,134 +286,140 @@ bob-dev                    1         3     1.2 kg     $40.00
 Total: 3 PRs, 5 sessions, 1.8 kg CO2e, $59.18 at API list price.
 ```
 
-A comment in the older one-line form, oder edited by hand, is counted as unread und left out. It covers the pull requests that carry a report, nicht the Repository's whole footprint, und liest at most 100 of them at a Zeit.
+Ein Kommentar in der alten einzeiligen Form oder einer von Hand bearbeiteter gilt als unlesbar und bleibt aussen vor. Es deckt die Pull Requests mit einem Bericht ab, nicht den gesamten Fussabdruck des Repositories, und liest hoechstens 100 davon gleichzeitig.
 
-Outside such a Repository, turning it off is the default: nothing is posted unless you ausführen it. `--dry-run` previews the comment, `--pr <number>` targets a specific PR of the Repository (one opened von a fork is refused: ausführen the Befehl von the fork's clone instead), und deleting the comment on GitHub is the full cleanup. Once Agenten of the Repository are on record, the report counts, von whichever Ordner it runs, the Sitzungen of the Repository's main Ordner, of the worktree the Branch is checked out in und of the worktrees its Agenten worked in, even removed since. A Branch checked out nowhere whose Name Sitzungen of other folders auch carry is refused: nothing is posted rather than a figure that may lack them.
+Ausserhalb eines solchen Repositories ist Abschalten der Standard: nichts wird gepostet, solange du es nicht selbst ausfuehrst. `--dry-run` zeigt eine Vorschau des Kommentars, `--pr <number>` zielt auf einen bestimmten PR des Repositories (einer aus einem Fork wird abgelehnt: fuehre den Befehl im Klon des Forks aus), und das Loeschen des Kommentars auf GitHub ist die vollstaendige Bereinigung. Sobald Agenten des Repositories erfasst sind, zaehlt der Bericht – von jedem Ordner aus, in dem er laeuft – die Sitzungen des Hauptordners des Repositories, des Worktrees, in dem der Branch ausgecheckt ist, und der Worktrees, in denen seine Agenten arbeiteten, selbst wenn sie inzwischen entfernt wurden. Ein Branch, der nirgends ausgecheckt ist und dessen Namen auch Sitzungen anderer Ordner tragen, wird abgelehnt: Es wird nichts gepostet statt einer Zahl, die diese Sitzungen vermissen koennte.
 
 ## So funktioniert es
 
-![claude-carbon data flow: Claude Code transcripts and status line JSON to a local SQLite database and a CO2 estimate](docs/data-flow.svg)
+![claude-carbon-Datenfluss: Claude-Code-Transkripte und Statuszeilen-JSON in eine lokale SQLite-Datenbank und eine CO2-Schaetzung](docs/data-flow.svg)
 
-**Three data paths, two levels of accuracy:**
+**Drei Datenwege, zwei Genauigkeitsstufen:**
 
-| Script               | Trigger                 | Data source           | Subagents    | Cache liest         | Accuracy      |
-| -------------------- | ----------------------- | --------------------- | ------------ | ------------------- | ------------- |
-| `backfill.sh`        | Manual / setup          | JSONL Dateien           | Included     | Counted (8% energy) | Best estimate |
-| `persist-session.sh` | Stop + SessionEnd Hooks | JSONL Dateien           | Included     | Counted (8% energy) | Best estimate |
-| `statusline.sh`      | Every Zug (live)       | `carbon.db` row       | Included     | Counted (8% energy) | One Zug late |
+| Skript | Ausloeser | Datenquelle | Subagenten | Cache-Lesezugriffe | Genauigkeit |
+| --- | --- | --- | --- | --- | --- |
+| `backfill.sh` | Manuell / Setup | JSONL-Dateien | Enthalten | Gezaehlt (8 % Energie) | Beste Schaetzung |
+| `persist-session.sh` | Stop + SessionEnd Hooks | JSONL-Dateien | Enthalten | Gezaehlt (8 % Energie) | Beste Schaetzung |
+| `statusline.sh` | Jede Runde (live) | `carbon.db`-Zeile | Enthalten | Gezaehlt (8 % Energie) | Eine Runde spaeter |
 
-**backfill** und **persist-session** parse the raw JSONL transcripts (main Sitzung, Subagent Dateien und the transcripts of the Agenten a workflow starts), applying per-model emission factors. They deduplicate assistant Nachrichten by `(message.id, requestId)`, so resumed und compacted Sitzungen are nicht double-counted (this matches `ccusage`; ohne it the Token sum inflates roughly 3x). Each Sitzung stores its raw Token breakdown (Eingabe, Cache schreiben, Cache lesen, Ausgabe), which feeds the SQLite database used by reports.
+**backfill** und **persist-session** parsen die rohen JSONL-Transkripte (Hauptsitzung, Subagenten-Dateien und die Transkripte der von einem Workflow gestarteten Agenten) und wenden emissionsfaktoren pro Modell an. Sie entfernen doppelte Assistant-Nachrichten anhand von `(message.id, requestId)`, damit fortgesetzte und kompaktierte Sitzungen nicht doppelt gezaehlt werden (das entspricht `ccusage`; ohne die Entfernung waere die Tokensumme etwa dreifach zu hoch). Jede Sitzung speichert ihre rohe Token-Aufteilung (Eingabe, Cache-Schreiben, Cache-Lesen, Ausgabe), die in die SQLite-Datenbank fuer die Berichte fliesst.
 
-An Agent's transcript stops changing once the Agent is fertig, so its totals are kept in `~/.claude/claude-carbon/usage-cache/` (one small Datei per Sitzung, removed by the daily re-scan 45 days danach it was letzte written) und lesen erneut nur when the Datei's size, modification oder ändern Zeit, oder inode ändert (the Datei a symlink points to). An Agent mit a Zeile that does nicht parse yet, cut by a schreiben in progress, is nie kept. The main transcript is immer lesen in full. `CLAUDE_CARBON_NO_USAGE_CACHE=1` liest everything every Zeit und schreibt nein Cache.
+Das Transkript eines Agenten aendert sich nicht mehr, sobald er fertig ist, deshalb werden seine Summen in `~/.claude/claude-carbon/usage-cache/` gespeichert (eine kleine Datei pro Sitzung, die bei der taeglichen Neusuche 45 Tage nach dem letzten Schreiben entfernt wird) und nur erneut gelesen, wenn Groesse, Aenderungszeit oder Inode der Datei sich aendern (der Datei, auf die ein Symlink zeigt). Ein Agent mit einer Zeile, die noch nicht parsebar ist, weil ein Schreiben laeuft, wird nie gespeichert. Das Haupttranskript wird immer vollstaendig gelesen. `CLAUDE_CARBON_NO_USAGE_CACHE=1` liest jedes Mal alles und schreibt keinen Cache.
 
-**Cost** is the theoretical API list value (pay-as-you-go), nicht your subscription price: Eingabe, Ausgabe, Cache schreiben, und Cache lesen (0.1x Eingabe) at aktuell Anthropic rates, set in `data/prices.json`. Cache schreibt are billed per TTL tier, 1.25x Eingabe for the 5-minute tier und 2x for the 1-hour one; jede Sitzung's split is lesen von its transcript rather than assumed (Claude Code schreibt at the 1-hour tier). On deduplicated data it matches `ccusage`.
+**Kosten** ist der theoretische API-Listenwert (pay-as-you-go), nicht dein Abo-Preis: Eingabe, Ausgabe, Cache-Schreiben und Cache-Lesen (0,1-fache Eingabe) zu aktuellen Anthropic-Tarifen, festgelegt in `data/prices.json`. Cache-Schreiben werden pro TTL-Stufe berechnet, das 1,25-Fache der Eingabe fuer die 5-Minuten- und das 2-Fache fuer die 1-Stunden-Stufe; die Aufteilung jeder Sitzung wird aus ihrem Transkript gelesen statt angenommen (Claude Code schreibt auf der 1-Stunden-Stufe). Auf entdoppelten Daten entspricht es `ccusage`.
 
-**statusline** liest this Sitzung's row von `carbon.db` at jede Zug, so the CO2 it zeigt is the Sitzung gesamt on the same basis as the reports, one Zug behind at most. Before that row exists (erste Zug, oder nein database yet) it falls zurück to an estimate von `context_window.total_input_tokens`, which is the size of the aktuell Kontext rather than a läuft gesamt: Subagenten are invisible to it und every compaction sendet it zurück down. Either way the Status Zeile displays, it nie feeds the reports.
+**statusline** liest bei jeder Runde die Zeile dieser Sitzung aus `carbon.db`, der angezeigte CO2 ist also die Sitzungssumme auf derselben Grundlage wie in den Berichten, hoechstens eine Runde zurueck. Bevor die Zeile existiert (erste Runde oder noch keine Datenbank), greift sie auf eine Schaetzung aus `context_window.total_input_tokens` zurueck, also die Groesse des aktuellen Kontexts statt einer laufenden Summe: Subagenten sind unsichtbar, und jede Kompaktierung setzt den Wert zurueck. Wie auch immer die Statuszeile anzeigt, sie fliesst nie in die Berichte ein.
 
-### The Status Zeile
+### Die Statuszeile
 
-Segments, left to right: Projekt + git Branch, Modell + Kontext Fenster %, API-equivalent Sitzung Kosten + CO2, subscription quota % + zurücksetzen Zeit. The quota is the 5-hour Fenster, oder the weekly one when nein 5-hour Fenster ist öffnen (immer, on a verified Ultra account; on Pro und Max, between a 5-hour Fenster's zurücksetzen und your nächste request): `Use 41% 7d ↻Thu`, the zurücksetzen as a weekday while es ist mehr than a day away. A 🔥 prefix appears when the sustained burn rate would overshoot 100% of the limit by the end of the Fenster (once Nutzung reaches 15%, danach a grace of 15 min for the 5-hour Fenster und of a day for the weekly one).
+Segmente von links nach rechts: Projekt + git-Branch, Modell + Kontextfenster-Prozent, API-äquivalente Sitzungskosten + CO2, Abo-Kontingent-Prozent + Zurücksetzungszeit. Das Kontingent ist das 5-Stunden-Fenster oder das Wochenfenster, wenn kein 5-Stunden-Fenster offen ist (immer auf einem verifizierten Ultra-Konto; bei Pro und Max zwischen der Zurücksetzung eines 5-Stunden-Fensters und deiner nächsten Anfrage): `Use 41% 7d ↻Thu`, die Rücksetzung als Wochentag, solange sie mehr als einen Tag entfernt ist. Ein 🔥-Praefix erscheint, wenn die anhaltende Verbrauchsrate das Limit bis zum Fensterende ueberschreiten wuerde (sobald der Verbrauch 15 % erreicht, nach einer Karenz von 15 Minuten beim 5-Stunden- und einem Tag beim Wochenfenster).
 
-> **Where the CO2 zeigt up.** The Status Zeile is a feature of the Claude Code terminal UI. Es ist displayed nur when you ausführen `claude` in a terminal, including the integrated terminal of VS Code oder JetBrains. The IDE extensions' chat Bereich has nein Status Zeile at alle, so nothing is displayed there even though the Hooks still ausführen und your Sitzungen are recorded: `/carbon-report` covers them. Wenn du verwenden the VS Code Bereich und want the live CO2, öffnen a terminal in VS Code (`` Ctrl+` ``) and run `claude` von there. The web app (claude.ai/code) runs neither the Status Zeile nor the Hooks, so nothing is displayed oder recorded there. The desktop app does nicht display the Status Zeile either; das Plugin's [mod](#the-mod-carbon-panel-and-the-co2-of-each-answer) draws the CO2 in its Code tab.
+> **Wo der CO2 erscheint.** Die Statuszeile ist eine Funktion der Claude-Code-Terminal-Oberflaeche. Sie wird nur angezeigt, wenn du `claude` in einem Terminal ausfuehrst, einschliesslich des integrierten Terminals von VS Code oder JetBrains. Der Chat-Bereich der IDE-Erweiterungen hat gar keine Statuszeile, dort erscheint also nichts, obwohl die Hooks weiterlaufen und deine Sitzungen gespeichert werden: `/carbon-report` deckt sie ab. Wenn du den VS-Code-Bereich nutzt und den Live-CO2 willst, oeffne in VS Code ein Terminal (`` Ctrl+` ``) und starte `claude` dort. Die Web-App (claude.ai/code) fuehrt weder Statuszeile noch Hooks aus, dort wird nichts angezeigt oder gespeichert. Auch die Desktop-App zeigt die Statuszeile nicht; der [Mod](#der-mod-carbon-panel-und-der-co2-jeder-antwort) des Plugins zeichnet den CO2 in seinem Code-Tab.
 
-**Quota source.** The percentage is Anthropic's own, the same data Claude Code displays in `/usage`. No heuristic, nein Token-limit Datei to seed. Two sources in order:
+**Kontingentquelle.** Der Prozentsatz stammt von Anthropic selbst, denselben Daten, die Claude Code in `/usage` zeigt. Keine Heuristik, keine Token-Limit-Datei als Startwert. Zwei Quellen in dieser Reihenfolge:
 
-1. **stdin** (preferred): the `rate_limits` Claude Code passes in the statusline JSON, `five_hour` erste, else `seven_day`. When `rate_limits` is there, a Fenster it leaves out does nicht exist, und nothing else is asked.
-2. **OAuth API fallback**, nur when stdin has nein `rate_limits` (vorher the Sitzung's erste response, oder mit an older Claude Code): `GET https://api.anthropic.com/api/oauth/usage` mit the bearer Token von macOS Keychain, `CLAUDE_CODE_OAUTH_TOKEN`, oder `~/.claude/.credentials.json`, at most once a minute whether it answers oder nicht. The Antwort is cached in `~/.claude/claude-carbon/oauth-usage.json`; a Fenster ohne a zurücksetzen Zeit, oder whose zurücksetzen has passed, is left out.
+1. **stdin** (bevorzugt): die `rate_limits`, die Claude Code im Statuszeilen-JSON uebergibt, `five_hour` zuerst, sonst `seven_day`. Sind `rate_limits` vorhanden, gibt es ein nicht enthaltenes Fenster nicht, und es wird nichts anderes abgefragt.
+2. **OAuth-API-Ersatz**, nur wenn stdin keine `rate_limits` hat (vor der ersten Antwort der Sitzung oder mit aelterem Claude Code): `GET https://api.anthropic.com/api/oauth/usage` mit dem Bearer-Token aus macOS Keychain, `CLAUDE_CODE_OAUTH_TOKEN` oder `~/.claude/.credentials.json`, hoechstens einmal pro Minute, unabhaengig davon, ob es antwortet. Die Antwort wird in `~/.claude/claude-carbon/oauth-usage.json` zwischengespeichert; ein Fenster ohne Ruecksetzungszeit oder dessen Ruecksetzung vergangen ist, bleibt aussen vor.
 
-Accurate on Pro, Max und Ultra.
+Genau bei Pro, Max und Ultra.
 
-### Surviving the 30-day transcript purge
+### Die 30-Tage-Loeschung der Transkripte ueberleben
 
-Claude Code deletes JSONL transcripts danach about 30 days, so the SQLite database is the durable record. The `Stop` und `SessionEnd` Hooks capture jede Sitzung vorher its transcript ages out, und a once-a-day background re-scan (`SessionStart` Hook, `safety-rescan.sh`) catches any Sitzung they missed while its transcript still exists, including one whose transcript kept growing danach its row was written. Because jede row stores raw Token counts, `recompute.sh` regenerates Kosten und CO2 von `data/factors.json` + `data/prices.json` at any Zeit, mit nein transcript needed. When Anthropic ändert a price oder a factor is revised, edit the config und ausführen:
+Claude Code loescht JSONL-Transkripte nach etwa 30 Tagen, die SQLite-Datenbank ist also die dauerhafte Aufzeichnung. Die `Stop`- und `SessionEnd`-Hooks erfassen jede Sitzung, bevor ihr Transkript zu alt wird, und eine taegliche Hintergrund-Neusuche (`SessionStart`-Hook, `safety-rescan.sh`) findet Sitzungen, die sie verpasst haben, solange das Transkript noch existiert – auch solche, deren Transkript nach dem Schreiben ihrer Zeile weitergewachsen ist. Da jede Zeile rohe Token-Zahlen speichert, kann `recompute.sh` Kosten und CO2 jederzeit aus `data/factors.json` + `data/prices.json` neu erzeugen, ohne Transkript. Wenn Anthropic einen Preis aendert oder ein Faktor ueberarbeitet wird, bearbeite die Konfiguration und fuehre aus:
 
 ```bash
 bash scripts/recompute.sh
 ```
 
-Sessions recorded since September 2026 are re-derived Modell by Modell, exactly. Older Sitzungen ohne a per-model split behalten their stored values; `--include-unsplit` re-derives them at their dominant Modell, an approximation (see METHODOLOGY.md, "Surviving the 30-day transcript purge").
+Seit September 2026 gespeicherte Sitzungen werden modellweise exakt neu hergeleitet. Aeltere Sitzungen ohne Aufteilung pro Modell behalten ihre gespeicherten Werte; `--include-unsplit` leitet sie mit dem dominierenden Modell neu her, eine Naeherung (siehe METHODOLOGY.md).
 
 ## Befehle
 
-| Command          | What it does                                        |
-| ---------------- | --------------------------------------------------- |
-| `/carbon-report` | Text report mit totals, car equivalent, share of a 2 t budget, top Sitzungen |
-| `/carbon-card`   | Generate shareable PNG report cards                 |
-| `/carbon-badge`  | Shields.io badge of your gesamt footprint for your READMEs |
-| `/carbon-pr`     | Post the dev footprint of the aktuell Branch on its PR |
-| `/carbon-update` | Update to the latest version, whichever way you installed |
+| Befehl | Was er tut |
+| --- | --- |
+| `/carbon-report` | Textbericht mit Summen, Autovergleich, Anteil an einem 2-t-Budget, Top-Sitzungen |
+| `/carbon-card` | Teilbare PNG-Berichtskarten erzeugen |
+| `/carbon-badge` | Shields.io-Badge deines gesamten Fussabdrucks fuer deine READMEs |
+| `/carbon-pr` | Entwicklungsfussabdruck des aktuellen Branches in seinem PR posten |
+| `/carbon-update` | Auf die neueste Version aktualisieren, unabhaengig von der Installationsart |
 
 <details>
-<summary>Scripts (ausführen automatisch, rarely needed manuell)</summary>
+<summary>Skripte (laufen automatisch, selten von Hand noetig)</summary>
 
-| Script               | What it does                                                                              |
-| -------------------- | ----------------------------------------------------------------------------------------- |
-| `setup.sh`           | Init database, backfill historical Sitzungen, zeigen gesamt                                   |
-| `statusline.sh`      | Status Zeile script (called automatisch by Claude Code)                                  |
-| `persist-session.sh` | Stop Hook (saves Sitzung data danach jede Zug)                                            |
-| `persist-on-exit.sh` | SessionEnd Hook (saves the Sitzung once mehr as it closes, in the background)             |
-| `safety-rescan.sh`   | SessionStart Hook (throttled background re-scan, catches missed Sitzungen)                 |
-| `agent-stop.sh`      | SubagentStop Hook (the Branch an Agent worked on, for `/carbon-pr`)                       |
-| `backfill.sh`        | Re-parse alle historical JSONL transcripts (incl. Subagenten)                               |
-| `recompute.sh`       | Re-derive Kosten/CO2 von stored Tokens danach a price/factor ändern (nein transcripts needed) |
-| `generate-report.sh` | Export PNG report cards (CLI, mit `--since` / `--until` / `--all`)                                   |
-| `generate-badge.sh`  | Print the shields.io badge markdown + URL (CLI)                                           |
-| `generate-pr-report.sh` | Post the Branch's dev footprint on its PR (CLI, `--dry-run` / `--pr`)                  |
+| Skript | Was es tut |
+| --- | --- |
+| `setup.sh` | Datenbank initialisieren, historische Sitzungen nachfuellen, Summe zeigen |
+| `statusline.sh` | Statuszeilen-Skript (von Claude Code automatisch aufgerufen) |
+| `persist-session.sh` | Stop-Hook (speichert Sitzungsdaten nach jeder Runde) |
+| `persist-on-exit.sh` | SessionEnd-Hook (speichert die Sitzung beim Schliessen noch einmal, im Hintergrund) |
+| `safety-rescan.sh` | SessionStart-Hook (gedrosselte Hintergrund-Neusuche, findet verpasste Sitzungen) |
+| `agent-stop.sh` | SubagentStop-Hook (der Branch, auf dem ein Agent arbeitete, fuer `/carbon-pr`) |
+| `backfill.sh` | Alle historischen JSONL-Transkripte erneut parsen (inkl. Subagenten) |
+| `recompute.sh` | Kosten/CO2 aus gespeicherten Tokens nach Preis-/Faktoraenderung neu herleiten (keine Transkripte noetig) |
+| `generate-report.sh` | PNG-Berichtskarten exportieren (CLI, mit `--since` / `--until` / `--all`) |
+| `generate-badge.sh` | shields.io-Badge-Markdown + URL ausgeben (CLI) |
+| `generate-pr-report.sh` | Entwicklungsfussabdruck des Branches in seinem PR posten (CLI, `--dry-run` / `--pr`) |
 
-Hinweis: backfill jetzt derives Projekt names von the transcript's `cwd` (matching the live Hook). Sessions backfilled vorher this ändern behalten their alt, possibly truncated names; delete those rows und re-run `backfill.sh` to normalize them.
+Hinweis: backfill leitet Projekt Namen jetzt aus dem `cwd` des Transkripts ab (passend zum Live-Hook). Sitzungen, die vor dieser Aenderung nachgefuellt wurden, behalten ihre alten, moeglicherweise gekuerzten Namen; loesche diese Zeilen und fuehre `backfill.sh` erneut aus, um sie zu vereinheitlichen.
 
 </details>
 
 ## Badge
 
-`/carbon-badge` prints a bereit-to-paste shields.io badge mit your measured alle-time footprint und the month it was taken, clickable to the methodology:
+`/carbon-badge` gibt ein einfuegbares shields.io-Badge mit deinem gemessenen Gesamtfussabdruck und dem Monat der Messung aus, anklickbar zur Methodik:
 
 [![Claude Code carbon footprint](https://img.shields.io/badge/claude--carbon-1139.2%20kg%20CO2e%2C%202026--09-2f6f4f)](https://github.com/gwittebolle/claude-carbon/blob/main/METHODOLOGY.md)
 
-<sub>That badge is live, nicht a mockup: the author's own gesamt, 1,208 Sitzungen measured between 15 January 2026 und 16 September 2026. Es ist one developer's footprint, nicht the Projekt's.</sub>
+<sub>Dieses Badge ist echt, kein Entwurf: der eigene Gesamtwert des Autors, 1.208 Sitzungen zwischen dem 15. Januar 2026 und dem 16. September 2026. Es ist der Fussabdruck eines Entwicklers, nicht der des Projekts.</sub>
 
 ```markdown
 [![Claude Code carbon footprint](https://img.shields.io/badge/claude--carbon-1139.2%20kg%20CO2e%2C%202026--09-2f6f4f)](https://github.com/gwittebolle/claude-carbon/blob/main/METHODOLOGY.md)
 ```
 
-The badge is a static Bild built von your local database, so the number is measured, nicht estimated on the fly, und nothing is sent anywhere. The month in the Nachricht says how alt the figure is; re-run `/carbon-badge` whenever you want to refresh both.
+Das Badge ist ein statisches Bild aus deiner lokalen Datenbank, die Zahl ist also gemessen, nicht unterwegs geschaetzt, und nichts wird irgendwohin gesendet. Der Monat in der Aufschrift sagt, wie alt die Zahl ist; fuehre `/carbon-badge` erneut aus, wenn du beide aktualisieren willst.
 
-Es ist one developer's gesamt, so it belongs in your profile README oder a personal Projekt. In a team oder organisation Repository, reviewers will ask what produced the number und why it links out of the organisation, und they will be right to.
+Es ist der Gesamtwert eines Entwicklers und gehoert daher in deine Profil-README oder ein persoenliches Projekt. In einem Team- oder Organisations-Repository werden Reviewer fragen, was die Zahl erzeugt hat und warum sie aus der Organisation heraus verlinkt – und sie haben recht damit.
 
-Numbers follow the locale the report verwendet (`fr` prints `12,4 kg`, `us` und the world default print `12.4 kg`); `CLAUDE_CARBON_LOCALE` forces a set.
+Zahlen folgen der Spracheinstellung des Berichts (`fr` gibt `12,4 kg` aus, `us` und die Weltvorgabe `12.4 kg`); `CLAUDE_CARBON_LOCALE` erzwingt eine Einstellung.
 
-## Der Mod: /carbon-panel und the CO2 of jede Antwort
+## Der Mod: /carbon-panel und der CO2 jeder Antwort
 
-The claude-carbon plugin auch holds a [Claude Code mod](https://code.claude.com/docs/en/plugins/mods/overview) that zeigt the CO2 of jede Antwort when it ends, computed locally mit the same formula und factors as the Status Zeile, und the Sitzung's gesamt mit its API-price Kosten.
+Das claude-carbon-Plugin enthaelt auch einen [Claude-Code-Mod](https://code.claude.com/docs/en/plugins/mods/overview), der den CO2 jeder Antwort zeigt, sobald sie endet – lokal mit derselben Formel und denselben Faktoren berechnet wie in der Statuszeile – sowie die Gesamtsumme der Sitzung mit ihren API-Preiskosten.
 
-- **Terminal**, including the integrated terminal of an editor und the JetBrains plugin: at the right end of the Zeile that closes jede Antwort, `✻ Worked for 38s · done 10:32 PM          16 gCO₂`. A Zeile keeps its own Antwort's figure when es ist drawn erneut (a resize, a scroll, ctrl+o); a Zeile drawn for the erste Zeit later, such as one nur ctrl+o zeigt, gets nein figure.
-- **Desktop app, Code tab**: a Zeile under the Antwort, nur for an unusual Antwort.
-- **An unusual Antwort** zeigt the ratio, und the Subagenten' share when they weighed on it: `230 gCO₂ · 14× your median`. An Antwort is unusual when es ist above the 97th percentile of your letzte 200 answers, over 3× their median und at least 10 g, which is about one Antwort in 27; keine is flagged vorher 50 answers are recorded.
-- **The Sitzung gesamt** is pinned under the Prompt, CO2 und API-price Kosten: `This session: 142 gCO₂ · $3.41`, in French `Cette session : 142 gCO₂ · 3,41 $`. It zeigt unless the claude-carbon Status Zeile already gives it oder the `showSessionTotal` Option is off (both in a terminal nur, see [ccstatusline](#using-with-ccstatusline)). The Kosten is the pay-as-you-go API list price of the same requests as the CO2, von `data/prices.json` mit the formula of `/carbon-report`, Cache schreibt at the 1-hour tier Claude Code verwendet; under a cent it liest `< $0.01`, und es ist left out when the price list cannot be lesen, dann until the gesamt starts over, so the Kosten nie covers nur part of the requests. Es ist what the Nutzung would Kosten on the API, nicht what a subscription bills. On a subscription the entry ends mit the quota as the Status Zeile zeigt it, `Use 23% ↻14:00` (`Usage 23 % ↻14:00`): the share of the 5-hour Fenster used und the local Zeit it resets, oder ohne a 5-hour Fenster the weekly one, `Use 41% 7d ↻Sat` (`Usage 41 % 7j ↻sam.`), lesen von Claude Code itself danach jede Antwort, mit nein network call. Then come the Status Zeile's two hints: `⬆ 1.18.0 /carbon-update` when a newer version is out, und von the 1st to the 10th of the month the month just closed mit its gesamt, `📊 September: 84.2 kgCO₂ · /carbon-card`, until you make the card. Background Subagenten, which is how Claude Code starts most of them, count in the Sitzung gesamt nur: nie in an Antwort, nor in your median. A foreground Subagent counts in the Antwort that started it, nicht in the nächste one.
-- **`/carbon-panel` öffnet a pane** mit the mascot, a pixel CO2 molecule. Its colour compares this Sitzung mit the median of your past Sitzungen, von dark blue (under an eighth of it) to dark red (over eight times it). Until 10 Sitzungen are recorded it compares mit a starting reference of 0.5 kgCO₂ instead, so it has a colour von the erste Antwort. It hops a pixel up und down while Claude works, faster as it gets redder, und pulls faces as it goes: it looks around vorher the erste Antwort, blinks und glances aside at work, smiles through a light Sitzung und sweats through a heavy one, reacts to jede Antwort, winks at rest, und falls asleep danach five minutes ohne a Zug.
+- **Terminal**, einschliesslich des integrierten Terminals eines Editors und des JetBrains-Plugins: am rechten Ende der Zeile, die jede Antwort abschliesst, `✻ Worked for 38s · done 10:32 PM          16 gCO₂`. Eine Zeile behaelt die Zahl ihrer eigenen Antwort, wenn sie neu gezeichnet wird (Groessenänderung, Scrollen, Strg+O); eine Zeile, die erst spaeter zum ersten Mal gezeichnet wird, etwa nur durch Strg+O, erhaelt keine Zahl.
+- **Desktop-App, Code-Tab**: eine Zeile unter der Antwort, nur bei einer ungewöhnlichen Antwort.
+- **Eine ungewöhnliche Antwort** zeigt das Verhaeltnis und den Anteil der Subagenten, wenn sie ins Gewicht gefallen sind: `230 gCO₂ · 14× your median`. Eine Antwort ist ungewöhnlich, wenn sie ueber dem 97. Perzentil deiner letzten 200 Antworten liegt, mehr als das 3-Fache ihres Medians und mindestens 10 g beträgt – etwa eine Antwort von 27. Vor 50 gespeicherten Antworten wird keine markiert.
+- **Die Sitzungssumme** ist unter der Eingabe angeheftet, CO2 und API-Preiskosten: `This session: 142 gCO₂ · $3.41`, auf Franzoesisch `Cette session : 142 gCO₂ · 3,41 $`. Sie erscheint, sofern die claude-carbon-Statuszeile sie nicht schon nennt oder die Option `showSessionTotal` aus ist (beides nur im Terminal, siehe [ccstatusline](#verwendung-mit-ccstatusline)). Die Kosten sind der pay-as-you-go-API-Listenpreis derselben Anfragen wie der CO2, aus `data/prices.json` mit der Formel von `/carbon-report`, Cache-Schreiben auf der 1-Stunden-Stufe, die Claude Code verwendet; unter einem Cent liest es `< $0.01`, und es bleibt weg, wenn die Preistabelle nicht gelesen werden kann – dann bis die Summe neu beginnt, damit die Kosten nie nur einen Teil der Anfragen abdecken. Es ist, was die Nutzung auf der API kosten wuerde, nicht was ein Abo in Rechnung stellt. Bei einem Abo endet der Eintrag mit dem Kontingent, wie es die Statuszeile zeigt, `Use 23% ↻14:00` (`Usage 23 % ↻14:00`): der Anteil des genutzten 5-Stunden-Fensters und die lokale Uhrzeit der Ruecksetzung, oder ohne 5-Stunden-Fenster das Wochenfenster, `Use 41% 7d ↻Sat` (`Usage 41 % 7j ↻sam.`), von Claude Code selbst nach jeder Antwort gelesen, ohne Netzwerkanruf. Danach kommen die beiden Hinweise der Statuszeile: `⬆ 1.18.0 /carbon-update`, wenn eine neuere Version da ist, und vom 1. bis zum 10. des Monats der gerade abgelaufene Monat mit seiner Summe, `📊 September: 84.2 kgCO₂ · /carbon-card`, bis du die Karte erstellst. Hintergrund-Subagenten, so startet Claude Code die meisten, zaehlen nur in die Sitzungssumme: nie in eine Antwort, noch in deinen Median. Ein Subagent im Vordergrund zaehlt in die Antwort, die ihn gestartet hat, nicht in die naechste.
 
-  <p align="center"><img src="docs/molecule-moods.svg" width="560" alt="The molecule's eight moods: it looks around before the first answer, glances aside at work, smiles through a light session, sweats through a heavy one, smiles or startles after an answer, winks at rest and falls asleep after five idle minutes"></p>
+- **`/carbon-panel` oeffnet einen Bereich** mit dem Maskottchen, einem Pixel-CO2-Molekül. Seine Farbe vergleicht diese Sitzung mit dem Median deiner bisherigen Sitzungen, von Dunkelblau (unter einem Achtel davon) bis Dunkelrot (über dem Achtfachen). Bis 10 Sitzungen gespeichert sind, vergleicht es stattdessen mit einem Startwert von 0,5 kgCO₂, damit es von der ersten Antwort an eine Farbe hat. Es hoppelt während Claudes Arbeit ein Pixel auf und ab, schneller, je roeter es wird, und zieht dabei Gesichter: Vor der ersten Antwort schaut es sich um, bei der Arbeit blinkt es und blickt zur Seite, in einer leichten Sitzung laechelt es und in einer schweren schwitzt es, es reagiert auf jede Antwort, zwinkert im Ruhezustand und schlaeft nach fuenf Minuten ohne Runde ein.
 
-  - **In the desktop app** the pane öffnet on the right, its tab titled "claude-carbon", in two blocks. Under the molecule, the colour scale, the eight colours von blue to red, mit a marker under this Sitzung's. *This Sitzung*: its CO2, answers, Subagenten und Modell, its Kontext Fenster's fill und API-price value, und a small molecule per Subagent, coloured by its own CO2. *My Nutzung*: the period you pick (the letzte 7 oder 30 days, 12 months, everything, oder two dates you type, `01/05/2026`), its figures as tiles (CO2 as the reports sum it, ändern against the same length of Zeit vorher, Sitzungen, API-price value, car equivalence), dann warming stripes of that period, a day, a week oder a month a stripe danach its length, jede coloured against the median of the periods shown. The stripe under the pointer lights up und its date, gesamt und Sitzungen zeigen under the stripes. A tile mit an (i) zeigt its note when you klicken the (i), und hides it at a second klicken: the API-price value is what this Nutzung costs billed through the API, und a Pro, Max oder Ultra subscription covers some oder alle of it (which Sitzung was billed how is nicht recorded, so the pane nie says what you paid). A gear beside "My Nutzung" turns the ändern, the API-price value, the car, the split by Projekt (off until you Zug it on, jede Ordner mit its share und kgCO2) und the detail on oder off; the pane keeps your choices for the nächste Sitzung. The detail (off until you Zug it on) splits the period by kind of Token, uncached Eingabe, Cache schreibt, Cache liest und Ausgabe: two coloured bars give jede kind's share of the Tokens und of the CO2 (the part under the pointer lights up und its figures zeigen under the bar), dann a Zeile per kind its Tokens, energy und CO2 mit their shares. The CO2 of jede Sitzung is the one stored, split mit the weights the factors give jede kind (Cache liest 0.08 of an Eingabe Token, Ausgabe about 21 times one), so the parts hinzufügen up to what was stored; a Sitzung stored mit older factors (vorher July 2026), whose CO2 nein longer matches its Tokens, is left out und the block says over how many Sitzungen it splits; the energy is the one the factors starten von (energy per Token, PUE included, converted to CO2 mit the AWS us-east grid at 287 gCO2/kWh), found zurück by dividing that CO2 by the same intensity. It needs the Tokens by kind in `sessions-history.tsv`, which the Hooks schreiben von this version on: danach an aktualisieren, the detail zeigt von the nächste Antwort. A "Get my 2026 card" Schaltfläche puts `/carbon-card` in an empty Prompt for you to senden (the card covers the calendar year so far, whatever range the pane zeigt); it nie sendet it und leaves a draft you have started alone. A few short Zeilen at the foot link to dieses Repository, the author's LinkedIn profile und TokenClimate, the business version.
-  - **In the terminal** `/carbon-panel` typed at the Prompt zeigt this Sitzung in the Leiste right above it, in the classic und the fullscreen rendering alike (sent von the desktop app oder a phone to a Sitzung läuft in a terminal, through Remote Control, it öffnet the side pane there instead): a small molecule of 13 columns by 4 rows in half blocks, und beside it the Sitzung's CO2, answers, Subagenten (a dot jede, in its colour), Modell, Kontext Fenster und API-price value. The period und the stripes live in the desktop app.
-  - Run `/carbon-panel` erneut to schließen the pane oder leeren the Leiste. The Befehl is auch a Skill of das Plugin, so the desktop app lists it; where der Mod does nicht ausführen (the VS Code chat Bereich, a cloud Sitzung) it nur says where the pane öffnet.
-- **The stripes' history** ist `sessions-history.tsv`, which the Stop Hook schreibt nächste to `carbon.db` danach jede Antwort, lesen-only on the database. Every recorded Sitzung is in it, older rows as they were stored (they behalten the factors of their Zeit und are nie recomputed), so the stripes, the median und the totals count what `/carbon-report` counts. Another Sitzung läuft at the same Zeit counts mit its gesamt so far. With nein database yet (vorher the erste Sitzung starten of a plugin installed alone, oder mit `jq` oder `sqlite3` missing), the pane zeigt the molecule und says what the history waits for.
+  <p align="center"><img src="docs/molecule-moods.svg" width="560" alt="Die acht Stimmungen des Moleküls: es schaut sich vor der ersten Antwort um, blickt bei der Arbeit zur Seite, laechelt in einer leichten Sitzung, schwitzt in einer schweren, laechelt oder erschrickt nach einer Antwort, zwinkert in Ruhe und schlaeft nach fuenf ruhigen Minuten ein"></p>
 
-Claude Code draws mods in the terminal und in the desktop app's Code tab nur: nothing appears in the VS Code extension's chat Bereich, in cloud Sitzungen oder mit `claude -p`. Mods need Claude Code 2.1.287 oder later (2.1.286 in the desktop app).
+  <p align="center"><img src="docs/molecule-moods.svg" width="560" alt="Die acht Stimmungen des Moleküls: es schaut sich vor der ersten Antwort um, blickt bei der Arbeit zur Seite, laechelt in einer leichten Sitzung, schwitzt in einer schweren, laechelt oder erschrickt nach einer Antwort, zwinkert in Ruhe und schlaeft nach fuenf ruhigen Minuten ein"></p>
 
-Der Mod comes mit das Plugin. Already installed von the marketplace: ausführen `/plugin marketplace update claude-carbon` und `/plugin update claude-carbon@claude-carbon`, dann neu starten Claude Code.
+  - **In der Desktop-App** oeffnet sich der Bereich rechts, sein Tab heisst claude-carbon, in zwei Bloecken. Unter dem Molekül die Farbskala, die acht Farben von Blau bis Rot, mit einer Markierung unter der aktuellen Sitzung. Diese Sitzung: ihr CO2, Antworten, Subagenten und Modell, die Fuellung ihres Kontextfensters und der API-Preiswert, dazu ein kleines Molekül pro Subagent, gefaerbt nach dessen eigenem CO2. Mein Verbrauch: der gewaehlte Zeitraum (die letzten 7 oder 30 Tage, 12 Monate, alles oder zwei eingegebene Daten, `01/05/2026`), seine Zahlen als Kacheln (CO2, wie ihn die Berichte summieren, Veraenderung gegenueber gleicher Zeit vorher, Sitzungen, API-Preiswert, Autovergleich), dann Erwärmungsstreifen dieses Zeitraums - ein Tag, eine Woche oder ein Monat je nach Laenge ein Streifen, jeder gefaerbt im Vergleich zum Median der gezeigten Zeiträume. Der Streifen unter dem Zeiger leuchtet, Datum, Summe und Sitzungen erscheinen unter den Streifen. Eine Kachel mit einem (i) zeigt ihre Notiz, wenn du auf das (i) klickst, und verbirgt sie beim zweiten Klick: Der API-Preiswert ist, was dieser Verbrauch bei Abrechnung ueber die API kosten wuerde, und ein Pro-, Max- oder Ultra-Abo deckt einen Teil oder alles ab (welche Sitzung wie abgerechnet wurde, ist nicht gespeichert, der Bereich sagt also nie, was du gezahlt hast). Ein Zahnrad neben Mein Verbrauch schaltet Veraenderung, API-Preiswert, Auto, Aufteilung nach Projekt (aus, bis du sie einschaltest, jeder Ordner mit seinem Anteil und kgCO2) und Detail ein oder aus; der Bereich behaelt deine Auswahl fuer die naechste Sitzung.
 
-Das Plugin alone records your Sitzungen, und sets the terminal Status Zeile when you have keine (see [Install](#install)):
+Das Detail (aus, bis du es einschaltest) zerlegt den Zeitraum nach Token-Arten – ungecachte Eingabe, Cache-Schreiben, Cache-Lesen und Ausgabe: zwei farbige Balken zeigen den Anteil jeder Art an den Tokens und am CO2 (der Teil unter dem Zeiger leuchtet, die Zahlen erscheinen unter dem Balken), dann eine Zeile pro Art mit Tokens, Energie und CO2 samt Anteilen. Der CO2 jeder Sitzung ist der gespeicherte, aufgeteilt mit den Gewichten, die die Faktoren jeder Art geben (Cache-Lesezugriffe 0,08 eines Eingabe-Tokens, Ausgabe etwa das 21-Fache), damit die Teile zum Gespeicherten addieren; eine mit aelteren Faktoren (vor Juli 2026) gespeicherte Sitzung, deren CO2 nicht mehr zu ihren Tokens passt, bleibt ausser vor und der Block sagt, ueber wie viele Sitzungen er aufteilt; die Energie ist die, von der die Faktoren ausgehen (Energie pro Token, PUE eingeschlossen, mit dem AWS-us-east-Netz zu 287 gCO2/kWh in CO2 umgerechnet), zurueckgewonnen durch Division dieses CO2 durch dieselbe Intensitaet. Dafuer braucht es die Tokens pro Art in `sessions-history.tsv`, die die Hooks ab dieser Version schreiben: nach einer Aktualisierung erscheint das Detail ab der naechsten Antwort. Eine Schaltflaeche Get my 2026 card setzt `/carbon-card` in eine leere Eingabe, damit du es sendest (die Karte deckt das laufende Kalenderjahr ab, egal welchen Zeitraum der Bereich zeigt); sie sendet es nie und laesst einen von dir begonnenen Entwurf in Ruhe. Ein paar kurze Zeilen am Fuss verlinken dieses Repository, das LinkedIn-Profil des Autors und TokenClimate, die Geschaeftsversion.
+
+  - **Im Terminal** zeigt `/carbon-panel`, an der Eingabe eingegeben, diese Sitzung in der Leiste direkt darueber – sowohl in der klassischen als auch in der Vollbild-Darstellung (von der Desktop-App oder einem Telefon ueber Remote Control an eine im Terminal laufende Sitzung gesandt, oeffnet es dort stattdessen den Seitenbereich): ein kleines Molekül aus 13 Spalten und 4 Zeilen in Halbblock-Zeichen, daneben CO2, Antworten, Subagenten (ein Punkt je, in seiner Farbe), Modell, Kontextfenster und API-Preiswert. Der Zeitraum und die Streifen bleiben der Desktop-App vorbehalten.
+  - Fuehre `/carbon-panel` erneut aus, um den Bereich zu schliessen oder die Leiste zu leeren. Der Befehl ist auch ein Skill des Plugins, deshalb fuehrt ihn die Desktop-App auf; wo der Mod nicht laeuft (VS-Code-Chat-Bereich, Cloud-Sitzung), sagt er nur, wo der Bereich geoeffnet wird.
+- **Die Historie der Streifen** ist `sessions-history.tsv`, die der Stop-Hook nach jeder Antwort neben `carbon.db` schreibt, schreibgeschuetzt gegenueber der Datenbank. Jede gespeicherte Sitzung steht darin, aeltere Zeilen so, wie sie gespeichert wurden (sie behalten die Faktoren ihrer Zeit und werden nie neu berechnet), damit Streifen, Median und Summen das zaehlen, was `/carbon-report` zaehlt. Eine gleichzeitig laufende andere Sitzung zaehlt mit ihrer bisherigen Summe. Ohne Datenbank noch (vor dem ersten Sitzungsstart eines allein installierten Plugins oder mit fehlendem `jq` oder `sqlite3`) zeigt der Bereich das Molekül und sagt, worauf die Historie wartet.
+
+Claude Code zeichnet Mods nur im Terminal und im Code-Tab der Desktop-App: nichts erscheint im Chat-Bereich der VS-Code-Erweiterung, in Cloud-Sitzungen oder mit `claude -p`. Mods brauchen Claude Code 2.1.287 oder neuer (2.1.286 in der Desktop-App).
+
+Der Mod gehoert zum Plugin. Bereits aus dem Marketplace installiert? Fuehre `/plugin marketplace update claude-carbon` und `/plugin update claude-carbon@claude-carbon` aus und starte Claude Code neu.
+
+Das Plugin allein erfasst deine Sitzungen und setzt die Terminal-Statuszeile, wenn du keine hast (siehe [Install](#install)):
 
 ```
 /plugin install claude-carbon --marketplace gwittebolle/claude-carbon
 ```
 
-At the erste Sitzung starten danach the installieren, das Plugin creates its database in `~/.claude/claude-carbon/` und fills it mit the Sitzungen whose transcripts are still on disk (about the letzte 30 days, every Projekt), dann records jede Sitzung as it goes. A one-time Nachricht says so at one of the nächste Sitzung starts. It needs `jq` und `sqlite3`: when one is missing nothing is created, und `/carbon-panel` names it. This happens once: a database you delete is nicht brought zurück (delete the `auto-setup` Datei beside it to ask for a neu one), a database Pfad set mit `CLAUDE_CARBON_DB` is nie created for you, und `CLAUDE_CARBON_NO_AUTOSETUP=1` turns it off. From dann on the daily background prüfen for a newer release runs as it does for the installer (`CLAUDE_CARBON_NO_UPDATE_NOTIFIER=1` to opt out).
+Beim ersten Sitzungsstart nach der Installation legt das Plugin seine Datenbank in `~/.claude/claude-carbon/` an und fuellt sie mit den Sitzungen, deren Transkripte noch auf der Platte liegen (etwa die letzten 30 Tage, jedes Projekt), danach erfasst es jede Sitzung laufend. Eine einmalige Nachricht sagt das bei einem der naechsten Sitzungsstarts. Es braucht `jq` und `sqlite3`: fehlt eines, wird nichts angelegt, und `/carbon-panel` nennt es. Das passiert einmal: eine geloeschte Datenbank wird nicht zurueckgeholt (loesche die `auto-setup`-Datei daneben, um eine neue anzufordern), ein mit `CLAUDE_CARBON_DB` gesetzter Datenbankpfad wird nie fuer dich angelegt, und `CLAUDE_CARBON_NO_AUTOSETUP=1` schaltet es ab. Von da an laeuft die taegliche Hintergrundpruefung auf eine neuere Version wie beim Installationsprogramm (`CLAUDE_CARBON_NO_UPDATE_NOTIFIER=1` zum Abmelden).
 
-#### In a team Repository
+#### In einem Team-Repository
 
-To offer das Plugin to everyone who works in a Repository, Commit this in its `.claude/settings.json`:
+Um das Plugin allen bereitzustellen, die in einem Repository arbeiten, committe dies in dessen `.claude/settings.json`:
 
 ```json
 {
@@ -433,122 +430,121 @@ To offer das Plugin to everyone who works in a Repository, Commit this in its `.
 }
 ```
 
-Enabling it in the Repository does nicht download it to anyone's machine, since das Plugin comes von a remote marketplace: jede collaborator runs `claude plugin install claude-carbon@claude-carbon --scope project` once in their clone, danach trusting the Ordner. Anyone who does nicht want it sets `"claude-carbon@claude-carbon": false` under `enabledPlugins` in their own `.claude/settings.local.json`. Each person's figures stay on their machine.
+Das Aktivieren im Repository laedt es auf niemandes Rechner herunter, da das Plugin aus einem entfernten Marketplace kommt: Jeder Mitwirkende fuehrt einmal `claude plugin install claude-carbon@claude-carbon --scope project` in seinem Klon aus, nachdem er dem Ordner vertraut hat. Wer es nicht will, setzt `"claude-carbon@claude-carbon": false` unter `enabledPlugins` in seiner eigenen `.claude/settings.local.json`. Die Zahlen bleiben bei jedem auf dem eigenen Rechner.
 
-The curl, PowerShell und npm installers set up the Status Zeile, the database und the Hooks, und copy der Mod alone to `~/.claude/skills/claude-carbon/`, which Claude Code loads as `claude-carbon@skills-dir`. `/carbon-update` keeps that copy up to date. The copy holds nein Hook, so nothing runs twice. Restart Claude Code danach the installieren; der Mod loads once the Ordner you öffnen is trusted. Its median starts von zero: answers recorded by another installieren of der Mod do nicht carry over. With this copy der Mod zeigt in the terminal, in the editor's integrated terminal und in the desktop app's Code tab.
+Die curl-, PowerShell- und npm-Installationsprogramme richten Statuszeile, Datenbank und Hooks ein und kopieren den Mod allein nach `~/.claude/skills/claude-carbon/`, wo Claude Code ihn als `claude-carbon@skills-dir` laedt. `/carbon-update` haelt diese Kopie aktuell. Die Kopie enthaelt keinen Hook, nichts laeuft also zweimal. Starte Claude Code nach der Installation neu; der Mod laedt, sobald dem geoeffneten Ordner vertraut wird. Sein Median beginnt bei null: von einer anderen Installation des Mods gespeicherte Antworten wandern nicht mit. Mit dieser Kopie zeigt der Mod sich im Terminal, im integrierten Terminal des Editors und im Code-Tab der Desktop-App.
 
-To Zug it off, ausführen `claude plugin disable claude-carbon@skills-dir`. To entfernen it, ausführen the installer mit `CLAUDE_CARBON_NO_MOD=1` on the `bash` side (`curl … | CLAUDE_CARBON_NO_MOD=1 bash`); behalten the variable set, in your shell oder in the `env` block of `settings.json`, oder the nächste `/carbon-update` puts it zurück. The installer leaves alone a `skills/claude-carbon/` Ordner it did nicht make, und skips the copy while the claude-carbon plugin is aktiviert. Pick one of the two: das Plugin added on top of an installer runs the Hooks twice.
+Um ihn abzuschalten, fuehre `claude plugin disable claude-carbon@skills-dir` aus. Um ihn zu entfernen, fuehre das Installationsprogramm mit `CLAUDE_CARBON_NO_MOD=1` auf der `bash`-Seite aus (`curl … | CLAUDE_CARBON_NO_MOD=1 bash`); behalte die Variable in deiner Shell oder im `env`-Block von `settings.json`, sonst setzt der naechste `/carbon-update` sie zurueck. Einen `skills/claude-carbon/`-Ordner, den es nicht selbst erstellt hat, laesst das Installationsprogramm in Ruhe, und es ueberspringt die Kopie, solange das claude-carbon-Plugin aktiviert ist. Waehle eines von beidem: Das Plugin zusaetzlich zu einer Installer-Installation laeuft die Hooks zweimal.
 
-Turn the per-answer figure off mit the `showPerTurn` Option in `/config`. Der Mod schreibt nein database, starts nein process, makes nein network call und nie ändert what Claude does; besides its own data Dateien, it liest nur `sessions-history.tsv`, the two release flags of the daily prüfen (`plugin-update-check.json`, `update-check.json`), `last-card-month`, und the two Dateien the SessionStart Hook leaves when it finds nein database (`setup-needed`, `auto-setup`). Text is in French when the erste of `CLAUDE_CARBON_LOCALE`, `LC_ALL`, `LC_MESSAGES` und `LANG` that is set starts mit `fr`, und in English otherwise. When keine is set, as in the desktop app und often on Windows, the `language` setting decides (`Français`, `English`), dann French.
+Schalte die Zahl pro Antwort mit der Option `showPerTurn` in `/config` aus. Der Mod schreibt keine Datenbank, startet keinen Prozess, macht keinen Netzwerkanruf und aendert nie, was Claude tut; ausser seinen eigenen Datendateien liest er nur `sessions-history.tsv`, die beiden Release-Markierungen der taeglichen Pruefung (`plugin-update-check.json`, `update-check.json`), `last-card-month` und die zwei Dateien, die der SessionStart-Hook anlegt, wenn er keine Datenbank findet (`setup-needed`, `auto-setup`). Der Text ist auf Franzoesisch, wenn die erste der gesetzten Variablen `CLAUDE_CARBON_LOCALE`, `LC_ALL`, `LC_MESSAGES` und `LANG` mit `fr` beginnt, sonst auf Englisch. Wenn keine gesetzt ist, wie in der Desktop-App und oft unter Windows, entscheidet die Einstellung `language` (`Français`, `English`), dann Franzoesisch.
 
-Der Mod's own tests ausführen mit `bash tests/run-mod-kit.sh`, under `claude plugin test`, which mocks the engine: nein login needed. CI runs them on every push mit Claude Code 2.1.296.
+Die eigenen Tests des Mods laufen mit `bash tests/run-mod-kit.sh` unter `claude plugin test`, was die Engine nachbildet: keine Anmeldung noetig. CI fuehrt sie bei jedem Push mit Claude Code 2.1.296 aus.
 
-## Using mit ccstatusline
+## Verwendung mit ccstatusline
 
-Claude Code accepts a single `statusLine` Befehl, so claude-carbon's full Status Zeile und [ccstatusline](https://github.com/sirmalloc/ccstatusline) cannot ausführen side by side. If ccstatusline drives your Status Zeile, embed the CO2 segment instead: in the ccstatusline TUI, hinzufügen a `Custom Command` widget pointing to
+Claude Code akzeptiert nur einen `statusLine`-Befehl, die vollstaendige claude-carbon-Statuszeile und [ccstatusline](https://github.com/sirmalloc/ccstatusline) koennen also nicht nebeneinander laufen. Wenn ccstatusline deine Statuszeile steuert, bette stattdessen das CO2-Segment ein: Fuege in der ccstatusline-TUI ein `Custom Command`-Widget hinzu, das auf zeigt
 
 ```
 ~/code/claude-carbon/scripts/statusline.sh --segment
 ```
 
-(adjust the Pfad wenn du installed mit `CLAUDE_CARBON_DIR`). The widget receives the same Status JSON on stdin und prints just the Kosten + CO2 pair, e.g. `$0.68 · 35gCO₂`. Segment mode nie touches the network. Recording to the local database is unaffected either way: persistence runs von Hooks, nicht von the Status Zeile.
+(passe den Pfad an, wenn du mit `CLAUDE_CARBON_DIR` installiert hast). Das Widget erhaelt dasselbe Status-JSON ueber stdin und gibt nur das Paar Kosten + CO2 aus, etwa `$0.68 · 35gCO₂`. Der Segment-Modus beruehrt nie das Netzwerk. Die Speicherung in der lokalen Datenbank bleibt davon unberuehrt: Sie laeuft ueber Hooks, nicht ueber die Statuszeile.
 
-With the segment in ccstatusline, the [mod](#the-mod-carbon-panel-and-the-co2-of-each-answer)'s Sitzung entry under the Prompt zeigt the gesamt a second Zeit. Turn it off mit the `showSessionTotal` Option in `/config`; the desktop app, which has nein Status Zeile, keeps it.
+Mit dem Segment in ccstatusline zeigt der [Mod](#der-mod-carbon-panel-und-der-co2-jeder-antwort) die Sitzungssumme unter der Eingabe ein zweites Mal. Schalte sie mit der Option `showSessionTotal` in `/config` aus; die Desktop-App ohne Statuszeile behaelt sie.
 
-## Emission factors
+## Emissionsfaktoren
 
-Factors von [Jegham et al. 2025](https://arxiv.org/abs/2505.09598), an arXiv preprint that estimates the energy consumption of LLM inference on AWS infrastructure von public API performance data (latency, throughput) over inferred hardware configurations.
+Die Faktoren stammen von [Jegham et al. 2025](https://arxiv.org/abs/2505.09598), einem arXiv-Preprint, der den Energieverbrauch von LLM-Inferenz auf AWS-Infrastruktur aus oeffentlichen API-Leistungsdaten (Latenz, Durchsatz) ueber abgeleitete Hardwarekonfigurationen schaetzt.
 
-| Model  | Read for the erste Zeit (Eingabe, Cache schreiben) | Re-read (Cache lesen) | Written (Ausgabe) | Basis                       |
-| ------ | -------------------------------------------- | -------------------- | ---------------- | --------------------------- |
-| Fable  | 156                                          | 12.5                 | 3304             | Extrapolated (2x Opus)      |
-| Opus   | 78                                           | 6.2                  | 1652             | Extrapolated (2x Sonnet)    |
-| Sonnet | 39                                           | 3.1                  | 826              | 3-point fit (Jegham v6)     |
-| Haiku  | 10                                           | 0.8                  | 207              | Extrapolated (0.25x Sonnet) |
+| Modell | Erstes Lesen (Eingabe, Cache-Schreiben) | Erneutes Lesen (Cache-Lesen) | Geschrieben (Ausgabe) | Grundlage |
+| --- | --- | --- | --- | --- |
+| Fable | 156 | 12,5 | 3304 | Extrapoliert (2x Opus) |
+| Opus | 78 | 6,2 | 1652 | Extrapoliert (2x Sonnet) |
+| Sonnet | 39 | 3,1 | 826 | 3-Punkte-Anpassung (Jegham v6) |
+| Haiku | 10 | 0,8 | 207 | Extrapoliert (0,25x Sonnet) |
 
-In gCO2e per million Tokens. In a Claude Code Sitzung, about 98% of the Tokens are Kontext Claude re-reads at jede step. Each of them weighs little, aber together they make about 60% of the CO2; the Text Claude schreibt is under 1% of the Tokens und about 30% of the CO2 (30 days of the author's Sitzungen, October 2026).
+In gCO2e pro Million Tokens. In einer Claude-Code-Sitzung sind etwa 98 % der Tokens Kontext, den Claude bei jedem Schritt erneut liest. Jedes davon wiegt wenig, zusammen machen sie aber etwa 60 % des CO2 aus; der Text, den Claude schreibt, sind unter 1 % der Tokens und etwa 30 % des CO2 (30 Tage der Sitzungen des Autors, Oktober 2026).
 
-**Wichtig: these are order-of-magnitude estimates, nicht precise measurements.**
+**Wichtig: Das sind Größenordnungs-Schaetzungen, keine praezisen Messungen.**
 
-- Sonnet factors are a 3-point least-squares fit to the three Claude 3.7 Sonnet per-query energies estimated in Jegham et al. v6 (0.950 / 2.989 / 5.671 Wh), giving a ~21:1 Ausgabe:Eingabe ratio; independent public estimates land within the same order of magnitude. Fable, Opus und Haiku are extrapolated (nein public data von Anthropic on per-model energy consumption): Opus = 2x Sonnet (honest Leiste 2x-5x), Haiku = 0.25x, Fable = 2x Opus. See [METHODOLOGY.md](METHODOLOGY.md).
-- Sessions ausführen on non-Anthropic Modelle (e.g. local Modelle behind `ANTHROPIC_BASE_URL`) are stored mit their raw Tokens aber zero Kosten/CO2 und excluded von reports - a datacenter factor doesn't apply to them. Add patterns to `exclude_models` in `data/factors.json` to exclude mehr Modelle by Name.
-- Cache lesen Tokens are counted at a reduced factor (default 0.08 of an Eingabe Token, set in `data/factors.json`). A cached Token skips most of the prefill compute; the factor is the residual. Das ist an engineering estimate derived von the literature, nicht Anthropic's 0.1x billing ratio. The decode-phase re-read of the Cache grows mit Kontext length x generated Tokens und is nicht modelled yet; every Sitzung stores that product (`output_context_sum`) so a calibrated term can be applied to history later. See [METHODOLOGY.md](METHODOLOGY.md).
-- Reviewed against the April-September 2026 literature (measurement papers, provider disclosures, the Watershed framework) mit a sensitivity ausführen on 30 days of real transcripts: nein factor moved, the displayed figure is mehr likely low than high, nächste review March 2027. See [Where the estimate stands](METHODOLOGY.md#where-the-estimate-stands-september-2026).
-- Carbon intensity verwendet the AWS region grid (location-based, 0.287 kgCO2e/kWh), nicht real-time grid data. This sits at the low end of the location-based range; the US national average ist ~380 g/kWh.
-- Anthropic does nicht publish Scope 1, 2, oder 3 emissions. These estimates are independent und based on academic research, nicht provider data.
+- Die Sonnet-Faktoren sind eine 3-Punkte-Mindestquadrat-Anpassung an die drei in Jegham et al. v6 geschaetzten Energiewerte pro Claude-3.7-Sonnet-Anfrage (0,950 / 2,989 / 5,671 Wh), was ein Verhaeltnis Ausgabe:Eingabe von etwa 21:1 ergibt; unabhaengige oeffentliche Schaetzungen liegen in derselben Groessenordnung. Fable, Opus und Haiku sind extrapoliert (keine oeffentlichen Daten von Anthropic zum Energieverbrauch pro Modell): Opus = 2x Sonnet (ehrliche Spanne 2x–5x), Haiku = 0,25x, Fable = 2x Opus. Siehe [METHODOLOGY.md](METHODOLOGY.md).
+- Sitzungen mit Nicht-Anthropic-Modellen (etwa lokale Modelle hinter `ANTHROPIC_BASE_URL`) werden mit ihren rohen Tokens, aber null Kosten/CO2 gespeichert und aus den Berichten ausgeschlossen – ein Rechenzentrumsfaktor passt nicht auf sie. Ergänze Muster in `exclude_models` in `data/factors.json`, um weitere Modelle nach Namen auszuschliessen.
+- Cache-Lese-Tokens werden mit einem reduzierten Faktor gezaehlt (standardmaessig 0,08 eines Eingabe-Tokens, festgelegt in `data/factors.json`). Ein gecachtes Token ueberspringt den Grossteil der Prefill-Berechnung; der Faktor ist der Rest. Das ist eine technische Schaetzung aus der Literatur, nicht Anthonics Abrechnungsverhaeltnis von 0,1x. Das erneute Lesen des Caches in der Dekodierphase waechst mit Kontextlaenge mal generierten Tokens und ist noch nicht modelliert; jede Sitzung speichert dieses Produkt (`output_context_sum`), damit spaeter ein kalibrierter Term auf die Historie angewendet werden kann. Siehe [METHODOLOGY.md](METHODOLOGY.md).
 
-The car equivalent in reports und cards follows your locale, since a km by car emits up to ~1.7x mehr in one country than in another: ADEME's 142 gCO2e/km on a French oder undetected locale, EPA's 393 gCO2e/mile on a US locale, a 200 gCO2/km world average otherwise. Force a set mit `CLAUDE_CARBON_LOCALE` (`fr`, `us`, `world`, oder any locale string). The factors live in `data/factors.json` under `equivalences`.
+- Geprueft gegen die Literatur von April bis September 2026 (Messarbeiten, Anbieterangaben, das Watershed-Framework) mit einer Sensitivitaetslaeufen ueber 30 Tage echte Transkripte: kein Faktor wurde verschoben, der angezeigte Wert ist eher zu niedrig als zu hoch, naechste Pruefung Maerz 2027. Siehe [Where the estimate stands](METHODOLOGY.md#where-the-estimate-stands-september-2026).
+- Die Kohlenstoffintensitaet nutzt das AWS-Regionsnetz (standortbasiert, 0,287 kgCO2e/kWh), keine Echtzeit-Netzdaten. Das liegt am unteren Ende der standortbasierten Spanne; der US-Landesdurchschnitt liegt bei etwa 380 g/kWh.
+- Anthropic veroeffentlicht keine Emissionen nach Scope 1, 2 oder 3. Diese Schaetzungen sind unabhaengig und beruhen auf akademischer Forschung, nicht auf Anbieterdaten.
 
-`/carbon-report` auch gives this calendar year's gesamt as a share of 2 tCO2e, the 2050 per-person target for a whole footprint (ADEME, [Nos Gestes Climat](https://nosgestesclimat.fr/blog/environnement/reduire-empreinte-carbone-objectif-deux-tonnes), von the IPCC 1.5 °C scenarios; auch Carbone 4, *Faire sa part ?*, 2019). Es ist there for scale: the 2 t covers everything a person emits in a year, AI included. Sources und caveats: [METHODOLOGY.md](METHODOLOGY.md#annual-budget-line).
+Der Autovergleich in Berichten und Karten folgt deiner Spracheinstellung, da ein Autokilometer in einem Land bis zu 1,7-mal mehr Emissionen verursacht als in einem anderen: ADEMEs 142 gCO2e/km bei franzoesischer oder unerkannter Einstellung, EPAs 393 gCO2e/Meile bei US-Einstellung, sonst ein Weltmittel von 200 gCO2/km. Erzwinge eine mit `CLAUDE_CARBON_LOCALE` (`fr`, `us`, `world` oder eine beliebige Locale-Zeichenkette). Die Faktoren liegen in `data/factors.json` unter `equivalences`.
 
-Factors are editable in `data/factors.json`. See [METHODOLOGY.md](METHODOLOGY.md) for the full scientific basis, formula, und equivalences.
+`/carbon-report` nennt auch die Summe dieses Kalenderjahres als Anteil an 2 tCO2e, dem Pro-Kopf-Ziel 2050 fuer einen gesamten Fussabdruck (ADEME, [Nos Gestes Climat](https://nosgestesclimat.fr/blog/environnement/reduire-empreinte-carbone-objectif-deux-tonnes), aus den IPCC-1,5-°C-Szenarien; auch Carbone 4, *Faire sa part ?*, 2019). Das dient als Massstab: die 2 t umfassen alles, was ein Mensch in einem Jahr emittiert, KI eingeschlossen. Quellen und Vorbehalte: [METHODOLOGY.md](METHODOLOGY.md#annual-budget-line).
 
-### Golden vectors
+Faktoren sind in `data/factors.json` bearbeitbar. Die vollstaendige wissenschaftliche Grundlage, Formel und Vergleiche stehen in [METHODOLOGY.md](METHODOLOGY.md).
 
-The methodology is pinned by golden test vectors in [`tests/methodology-vectors.json`](tests/methodology-vectors.json): hand-computed expected CO2/Kosten values for known Token breakdowns, replayed by `bash tests/run-vectors.sh` in CI on every push. Downstream consumers (such as TokenClimate) behalten a copy of this Datei und verify weekly that their implementation produces the same numbers. Wenn du edit `data/factors.json` oder `data/prices.json`, aktualisieren the vectors in the same Commit, otherwise CI fails.
+### Golden Vectors
 
-## Updating
+Die Methodik ist durch goldene Testvektoren in [`tests/methodology-vectors.json`](tests/methodology-vectors.json) festgenagelt: handberechnete erwartete CO2-/Kostenwerte fuer bekannte Token-Aufteilungen, die bei jedem Push in CI durch `bash tests/run-vectors.sh` nachgespielt werden. Nachgelagerte Nutzer (wie TokenClimate) bewahren eine Kopie dieser Datei auf und pruefen woechtentlich, dass ihre Implementierung dieselben Zahlen liefert. Wenn du `data/factors.json` oder `data/prices.json` bearbeitest, aktualisiere die Vektoren im selben Commit, sonst scheitert CI.
 
-When a newer version is available, the Status Zeile zeigt a discreet `⬆ /carbon-update` hint. The prüfen runs in the background (at most once a day, nie on the Status Zeile's hot Pfad); opt out mit `CLAUDE_CARBON_NO_UPDATE_NOTIFIER=1`.
+## Aktualisieren
 
-- **In a terminal mit a git-clone installieren**, that hint appears at the end of the Status Zeile, naming the neu version.
-- **Everywhere der Mod runs** (the desktop app, und a terminal ohne the claude-carbon Status Zeile), the same hint ends the Sitzung entry under the Prompt, und the `/carbon-panel` pane names the version at the top of its foot. For a plugin installieren, the same daily background prüfen asks GitHub for the release tags nur und nie touches Claude Code's plugin Cache.
-- **Installed vorher the summer of 2026** (version 1.0, nein hint at alle)? Run the installieren erneut, von the app oder the terminal, as in [Install](#install).
+Wenn eine neuere Version verfuegbar ist, zeigt die Statuszeile einen dezenten Hinweis `⬆ /carbon-update`. Die Pruefung laeuft im Hintergrund (hoechstens einmal taeglich, nie auf dem Hot-Pfad der Statuszeile); mit `CLAUDE_CARBON_NO_UPDATE_NOTIFIER=1` kannst du sie abstellen.
 
-To aktualisieren, ausführen `/carbon-update` in Claude Code, whichever way you installed: for das Plugin it runs Claude Code's `claude plugin marketplace update claude-carbon` und `claude plugin update claude-carbon@claude-carbon`, for the installer's clone its own updater. Restart Claude Code afterwards. With both installs, as when the Status Zeile runs von a clone, nur das Plugin is updated und the Befehl gives the `git pull` for the clone. Du kannst auch re-run the installer:
+- **Im Terminal mit einer git-Klon-Installation** erscheint der Hinweis am Ende der Statuszeile und nennt die neue Version.
+- **Ueberall, wo der Mod laeuft** (Desktop-App und ein Terminal ohne die claude-carbon-Statuszeile), beendet derselbe Hinweis den Sitzungseintrag unter der Eingabe, und der `/carbon-panel`-Bereich nennt die Version oben im Fuss. Bei einer Plugin-Installation fragt dieselbe taegliche Hintergrundpruefung GitHub nur nach Release-Tags und beruehrt nie Claudes Plugin-Cache.
+- **Vor dem Sommer 2026 installiert** (Version 1.0, gar kein Hinweis)? Fuehre die Installation erneut aus, in der App oder im Terminal, wie unter [Install](#install).
+
+Fuehre zum Aktualisieren `/carbon-update` in Claude Code aus, unabhaengig von der Installationsart: beim Plugin laeuft es `claude plugin marketplace update claude-carbon` und `claude plugin update claude-carbon@claude-carbon`, beim Installer-Klon dessen eigener Updater. Starte Claude Code danach neu. Bei beiden Installationen – etwa wenn die Statuszeile aus einem Klon laeuft – wird nur das Plugin aktualisiert und der Befehl gibt das `git pull` fuer den Klon aus. Du kannst auch das Installationsprogramm erneut ausfuehren:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/gwittebolle/claude-carbon/main/install.sh | bash
 ```
 
-- Updating an installer's clone re-prices your stored history mit the neu factors automatisch (CO2 nur; Kosten figures are left intact); updating das Plugin does nicht. Run `scripts/recompute.sh --with-cost` yourself nur danach a price ändern.
-- Wenn du edited `data/factors.json` oder `data/prices.json` locally, the aktualisieren keeps your edits; on a conflict mit upstream it saves yours to `*.local.bak` und tells you.
-- The aktualisieren auch refreshes the [mod](#the-mod-carbon-panel-and-the-co2-of-each-answer)'s copy. When it asks for a neu starten (on Windows, a copy in verwenden cannot be replaced), neu starten Claude Code und ausführen it erneut; until dann the previous copy stays.
-- Installed von das Plugin marketplace, du kannst auch let Claude Code aktualisieren it by itself: in `/plugin`, tab **Marketplaces**, auswählen `claude-carbon`, dann **Enable automatisch-update**. The neu version loads mit the nächste Sitzung.
+- Eine Aktualisierung eines Installer-Klons bewertet deine gespeicherte Historie automatisch mit den neuen Faktoren neu (nur CO2; Kostenwerte bleiben unberuehrt); eine Aktualisierung des Plugins tut das nicht. Fuehre `scripts/recompute.sh --with-cost` selbst erst nach einer Preisänderung aus.
+- Wenn du `data/factors.json` oder `data/prices.json` lokal bearbeitet hast, behält die Aktualisierung deine Aenderungen; bei einem Konflikt mit upstream speichert sie deine Version als `*.local.bak` und sagt es dir.
+- Die Aktualisierung erneuert auch die Kopie des [Mods](#der-mod-carbon-panel-und-der-co2-jeder-antwort). Wenn sie zu einem Neustart auffordert (unter Windows laesst sich eine benutzte Kopie nicht ersetzen), starte Claude Code neu und fuehre sie erneut aus; bis dahin bleibt die vorherige Kopie.
+- Vom Plugin-Marketplace installiert, kannst du Claude Code die Aktualisierung auch selbst ueberlassen: In `/plugin`, Tab **Marketplaces**, `claude-carbon` auswaehlen und dann **Enable auto-update**. Die neue Version laedt mit der naechsten Sitzung.
 
-## Uninstalling
+## Deinstallieren
 
-For an installieren made by the curl, PowerShell oder npm installer:
+Bei einer Installation durch das curl-, PowerShell- oder npm-Installationsprogramm:
 
 ```bash
 bash ~/code/claude-carbon/scripts/configure-settings.sh --remove
 ```
 
-(adjust the Pfad wenn du installed mit `CLAUDE_CARBON_DIR`). It takes the Status Zeile, the Hooks, the `/carbon-*` commands und der Mod's copy out of `~/.claude`, und nothing that belongs to another Werkzeug: a Status Zeile that calls `statusline.sh --segment` stays, und so does any other Hook of a group it shared. Your history stays in `~/.claude/claude-carbon/`. To entfernen everything, delete that Ordner und the clone afterwards.
+(passe den Pfad an, wenn du mit `CLAUDE_CARBON_DIR` installiert hast). Es entfernt die Statuszeile, die Hooks, die `/carbon-*`-Befehle und die Mod-Kopie aus `~/.claude`, aber nichts, was einem anderen Werkzeug gehoert: eine Statuszeile, die `statusline.sh --segment` aufruft, bleibt, und ebenso jeder andere Hook einer geteilten Gruppe. Deine Historie bleibt in `~/.claude/claude-carbon/`. Um alles zu entfernen, loesche danach diesen Ordner und den Klon.
 
-For das Plugin: `claude plugin uninstall claude-carbon@claude-carbon`, dann take the `statusLine` entry that names `claude-carbon/statusline.sh` out of `~/.claude/settings.json`: das Plugin cannot do it as it goes, und once es ist gone that Status Zeile prints nothing. A plugin turned off rather than uninstalled keeps drawing it, until you take that entry out. `CLAUDE_CARBON_NO_STATUSLINE=1` keeps das Plugin von setting a Status Zeile at alle. Das Plugin sets it once: to have it set erneut danach you removed it, delete `~/.claude/claude-carbon/statusline-set`.
+Beim Plugin: `claude plugin uninstall claude-carbon@claude-carbon`, dann entferne den `statusLine`-Eintrag, der `claude-carbon/statusline.sh` nennt, aus `~/.claude/settings.json`: Das Plugin kann es beim Entfernen nicht selbst tun, und danach gibt die Statuszeile nichts mehr aus. Ein ausgeschaltetes statt deinstalliertes Plugin zeichnet sie weiter, bis du den Eintrag entfernt hast. `CLAUDE_CARBON_NO_STATUSLINE=1` verhindert, dass das Plugin ueberhaupt eine Statuszeile setzt. Das Plugin setzt sie einmalig: Wenn sie nach dem Entfernen wieder gesetzt werden soll, loesche `~/.claude/claude-carbon/statusline-set`.
 
-Installing a second copy on top of a erste one (another Ordner, oder the installer danach das Plugin's clone) would ausführen every Hook twice. The installer stops when it finds another installieren wired in `settings.json`, names it, und gives the Befehl that takes its place (`configure-settings.sh --replace`). Hooks left by an installieren whose Ordner was deleted are replaced ohne asking.
+Eine zweite Kopie ueber eine erste zu legen (ein anderer Ordner oder das Installationsprogramm nach dem Plugin-Klon) wuerde jeden Hook zweimal ausfuehren. Das Installationsprogramm stoppt, wenn es eine andereInstallation in `settings.json` findet, nennt sie und gibt den Befehl aus, der sie ersetzt (`configure-settings.sh --replace`). Von einer Installation zurueckgelassene Hooks, deren Ordner geloescht wurde, werden ohne Rueckfrage ersetzt.
 
-## Dependencies
+## Abhaengigkeiten
 
-- `jq` - JSON parsing
-- `sqlite3` - local database
-- `git` - Branch detection in Status Zeile (optional)
-- `curl` - subscription quota via Anthropic's `/api/oauth/usage` endpoint when Claude Code does nicht pass it (optional, at most once a minute)
-- `node` + Google Chrome, Microsoft Edge, Chromium oder Brave (oder `playwright-core` und its Chromium) - PNG export for `/carbon-card` (optional)
+- `jq` - JSON-Parsing
+- `sqlite3` - lokale Datenbank
+- `git` - Branch-Erkennung in der Statuszeile (optional)
+- `curl` - Abo-Kontingent ueber Anthonics `/api/oauth/usage`-Endpunkt, wenn Claude Code es nicht uebergibt (optional, hoechstens einmal pro Minute)
+- `node` + Google Chrome, Microsoft Edge, Chromium oder Brave (oder `playwright-core` und sein Chromium) - PNG-Export fuer `/carbon-card` (optional)
 
-`sqlite3` is pre-installed on every Mac, und `jq` von macOS 15 (Sequoia) on. On an older Mac mit nein `jq`, the installer downloads the official jq 1.8.1 binary for the Mac's processor, prüft it against the SHA-256 the jq Projekt publishes, und puts it in `~/.claude/claude-carbon/bin/`, where the scripts und the slash commands find it; a `jq` installed later (Homebrew, for one) takes precedence. On Linux: `apt install jq sqlite3`. On Windows, see below.
+`sqlite3` ist auf jedem Mac vorinstalliert, `jq` ab macOS 15 (Sequoia). Auf einem aelteren Mac ohne `jq` laedt das Installationsprogramm die offizielle jq-1.8.1-Binaerdatei fuer den Prozessor des Macs, prueft sie gegen die vom jq-Projekt veroeffentlichte SHA-256 und legt sie in `~/.claude/claude-carbon/bin/` ab, wo die Skripte und Slash-Befehle sie finden; ein spaeter installiertes `jq` (etwa Homebrew) hat Vorrang. Unter Linux: `apt install jq sqlite3`. Unter Windows siehe unten.
 
-`/carbon-card` draws its PNGs mit a Chromium-family Browser ausführen headless, in a throwaway profile. It verwendet Playwright's Chromium when `playwright-core` is installed (looked for in node's own resolution, the global npm root, `~/node_modules` und Homebrew's node modules), und otherwise the erste Browser found in its usual place: Google Chrome, Microsoft Edge, Chromium oder Brave on macOS, Chrome oder Edge on Windows, und on Linux the erste of them on the `PATH`. `CLAUDE_CARBON_BROWSER` names another one, by Pfad oder by Befehl, oder `none` to überspringen the lookup. A Browser that has drawn nothing danach 60 seconds is stopped und nicht tried erneut. With nein Browser at alle, the card öffnet in your default Browser as a page, und a Screenshot of es ist the card.
+`/carbon-card` zeichnet seine PNGs mit einem Chromium-Browser im Headless-Modus und einem temporaeren Profil. Es nutzt Playwrights Chromium, wenn `playwright-core` installiert ist (gesucht in Nodes eigener Modulauflösung, im globalen npm-Root, in `~/node_modules` und in Homebrews Node-Modulen), sonst den ersten Browser am ueblichen Ort: Google Chrome, Microsoft Edge, Chromium oder Brave unter macOS, Chrome oder Edge unter Windows und unter Linux den ersten davon auf dem `PATH`. `CLAUDE_CARBON_BROWSER` nennt einen anderen, nach Pfad oder Befehl, oder `none`, um die Suche zu ueberspringen. Ein Browser, der nach 60 Sekunden nichts gezeichnet hat, wird gestoppt und nicht erneut versucht. Ohne Browser oeffnet sich die Karte als Seite im Standardbrowser, und ein Screenshot davon ist die Karte.
 
 ## Windows
 
-claude-carbon is bash, und stays bash on Windows. That is deliberate rather than a
-shortcut: on native Windows, Claude Code runs Status Zeile und Hook commands through
-the bash that ships mit [Git for Windows](https://git-scm.com/downloads/win), falling
-zurück to PowerShell nur when Git Bash is absent
-([status line docs](https://code.claude.com/docs/en/statusline#windows-configuration),
-[hooks docs](https://code.claude.com/docs/en/hooks)). Das Plugin speaks the shell its
-host already spawns.
+claude-carbon ist bash und bleibt auch unter Windows bash. Das ist Absicht, keine Abkuerzung: Auf nativem Windows fuehrt Claude Code Statuszeilen- und Hook-Befehle ueber das bash aus, das mit [Git for Windows](https://git-scm.com/downloads/win) kommt, und greift nur auf PowerShell zurueck, wenn Git Bash fehlt
 
-**Native Windows.** Install Git for Windows erste, dann neu starten Claude Code damit it finds Git Bash:
+([Statuszeilen-Doku](https://code.claude.com/docs/en/statusline#windows-configuration),
+
+[Hook-Doku](https://code.claude.com/docs/en/hooks)). Das Plugin spricht die Shell, die sein Host ohnehin startet.
+
+**Natives Windows.** Installiere zuerst Git for Windows, dann starte Claude Code neu, damit es Git Bash findet:
 
 ```powershell
 winget install Git.Git --source winget
 ```
 
-Then, in the same terminal, installieren `jq` und `sqlite3`, the two commands Git for Windows does nicht ship, und ausführen the installer:
+Installiere danach im selben Terminal `jq` und `sqlite3`, die zwei Befehle, die Git for Windows nicht mitbringt, und fuehre das Installationsprogramm aus:
 
 ```powershell
 winget install jqlang.jq --source winget
@@ -556,102 +552,47 @@ winget install SQLite.SQLite --source winget
 irm https://raw.githubusercontent.com/gwittebolle/claude-carbon/main/install.ps1 | iex
 ```
 
-The installer prüft for both und prints the `winget` Befehl for any still missing; it does nicht ausführen `winget` itself.
+Das Installationsprogramm prueft beide und gibt fuer fehlende den `winget`-Befehl aus; es fuehrt `winget` selbst nicht aus.
 
-Everything else das Plugin needs - `bash`, `awk`, `sed`, `grep`, `date`, `curl`,
-`git`, `cygpath` - comes mit Git for Windows.
+Alles andere, was das Plugin braucht – `bash`, `awk`, `sed`, `grep`, `date`, `curl`,
 
-**WSL 2.** Nothing special: ausführen the `curl | bash` installer inside your distribution.
-Claude Code, its transcripts und claude-carbon alle live on the Linux side. Das ist
-the Pfad to pick if your Projekte are already in WSL. VS Code reaches it through the
-Remote - WSL extension.
+`git`, `cygpath` – kommt mit Git for Windows.
 
-**Marketplace installieren.** `/plugin install claude-carbon@claude-carbon` behaves the
-same as on macOS, once Git for Windows, `jq` und `sqlite3` are present.
+**WSL 2.** Nichts Besonderes: Fuehre das `curl | bash`-Installationsprogramm innerhalb deiner Distribution aus.
 
-### Windows specifics
+Claude Code, seine Transkripte und claude-carbon liegen alle auf der Linux-Seite. Das ist der richtige Weg, wenn deine Projekte schon in WSL liegen. VS Code erreicht es ueber die Erweiterung Remote - WSL.
 
-- **Git Bash is required.** Without it Claude Code routes commands to PowerShell,
-  which cannot ausführen a `.sh` Datei. `claude doctor` tells you which shell it picked. If
-  Git is installed somewhere unusual, point Claude Code at it in `settings.json`:
+**Marketplace-Installation.** `/plugin install claude-carbon@claude-carbon` verhaelt sich wie unter macOS, sobald Git for Windows, `jq` und `sqlite3` vorhanden sind.
+
+### Windows-Besonderheiten
+
+- **Git Bash ist erforderlich.** Ohne ihn leitet Claude Code Befehle an PowerShell, die keine `.sh`-Datei ausfuehren kann. `claude doctor` sagt dir, welche Shell gewaehlt wurde. Falls Git ungewoehnlich installiert ist, zeige Claude Code den Pfad in `settings.json`:
   `{"env": {"CLAUDE_CODE_GIT_BASH_PATH": "C:\\Program Files\\Git\\bin\\bash.exe"}}`.
-- **Paths in `settings.json` verwenden forward slashes** (`C:/Users/you/code/claude-carbon/...`).
-  Git Bash eats unquoted backslashes, und the Befehl dann fails mit nein visible Fehler.
-  The installer schreibt them correctly; nur hand-edits need the care.
-- **Slash commands are copied, nicht symlinked.** Git Bash cannot create a real symlink
-  ohne Developer Mode, so `/carbon-report` und friends are copied in
-  `~/.claude/commands/` und refreshed on every aktualisieren.
-- **Sandboxing is nicht available** on native Windows (a Claude Code limitation, nicht
-  dieses Plugin's). Use WSL 2 wenn du need it.
-- **`/carbon-card` additionally needs Node.js**: `winget install OpenJS.NodeJS --source winget`.
-- **`winget` answers "Access is denied" (`0x80070005`)**: security software on the PC is
-  blocking it, an antivirus's behaviour protection for one. Allow `winget` there und ausführen
-  the Befehl erneut.
-- **Behind a TLS-inspecting proxy oder antivirus**, the clone fails mit
+- **Pfade in `settings.json` verwenden Schraegstriche** (`C:/Users/you/code/claude-carbon/...`).
+  Git Bash verschluckt unmaskierte Rueckwaertsschraegstriche, und der Befehl scheitert ohne sichtbaren Fehler.
+  Das Installationsprogramm schreibt sie richtig; nur von Hand bearbeitete Dateien brauchen Sorgfalt.
+- **Slash-Befehle werden kopiert, nicht verknuepft.** Git Bash kann ohne Entwicklermodus keinen echten Symlink erstellen, deshalb werden `/carbon-report` und Genossen nach
+  `~/.claude/commands/` kopiert und bei jeder Aktualisierung erneuert.
+- **Sandboxing ist auf nativem Windows nicht verfuegbar** (eine Einschraenkung von Claude Code, nicht dieses Plugins). Nutze WSL 2, wenn du es brauchst.
+- **`/carbon-card` braucht zusaetzlich Node.js**: `winget install OpenJS.NodeJS --source winget`.
+- **`winget` antwortet "Access is denied" (`0x80070005`)**: Sicherheitssoftware auf dem PC blockiert es, etwa das Verhaltensschutz eines Antivirenprogramms. Erlaube `winget` dort und fuehre
+  den Befehl erneut aus.
+- **Hinter einem TLS-pruefenden Proxy oder Antivirenprogramm** scheitert der Klon mit
   `SSL certificate problem: unable to get local issuer certificate`. Git for Windows
-  prüft certificates against its own bundled CA list, which does nicht know the root
-  such Werkzeuge re-sign traffic mit; the Windows certificate store does. Switch git to
-  it (verification stays on) und rerun the installer:
-  `git config --global http.sslBackend schannel`. The installer prints this hint
-  when it detects the case. The same interception is why `winget` needs
-  `--source winget` on those machines: the Microsoft Store source fails its
-  certificate prüfen und, ohne an explicit source, winget aborts statt
-  falling zurück.
+  prueft Zertifikate gegen seine eigene CA-Liste, die die Wurzel solcher Werkzeuge nicht kennt, die den Datenverkehr neu signieren; der Windows-Zertifikatsspeicher schon. Stelle git darauf um
+  (die Pruefung bleibt aktiv) und fuehre das Installationsprogramm erneut aus:
+  `git config --global http.sslBackend schannel`. Das Installationsprogramm gibt diesen Hinweis
+  aus, wenn es den Fall erkennt. Dieselbe Abfangtechnik ist der Grund, warum `winget` auf solchen Maschinen
+  `--source winget` braucht: Die Microsoft-Store-Quelle besteht die Zertifikatspruefung nicht, und ohne explizite Quelle bricht winget ab, statt
+  zurueckzufallen.
 
-CI runs the full test suite on `windows-latest` under Git Bash, alongside Ubuntu,
-plus two Windows-only suites: `tests/run-windows-e2e.sh` (native paths through the Stop
-Hook und the Status Zeile, Hook manifests spawned the way Claude Code spawns them) und
-`tests/run-install-ps1-tests.ps1`.
+claude-carbon ist kostenlos und Open Source unter der [MIT-Lizenz](LICENSE). Beitraege willkommen.
 
-## Reduce your footprint
+<p align="center"><img src="docs/mascot-stripes.svg" width="696" alt="Acht Pixel-CO2-Moleküle, das Maskottchen von claude-carbon, von Dunkelblau nach Dunkelrot laufend, je roeter desto schneller: die blauen laecheln, die roten schwitzen"></p>
 
-Measuring is step one. The levers below are ordered by what the 2026 measurement literature und this Werkzeug's own sensitivity ausführen on real transcripts say matters most. None of them comes mit a percentage: the emission factors carry a wider uncertainty Leiste than any gain figure would. `/carbon-report` vorher und danach a ändern, over several Sitzungen, is the measurement that applies to you. The mechanism, the direction und the sources of jede lever are in [docs/reduce.md](docs/reduce.md).
+Die Streifen des Banners und von `/carbon-panel` sind von Ed Hawkins' [Erwärmungsstreifen](https://showyourstripes.info) inspiriert und hier aus deinen eigenen Sitzungen gezeichnet.
 
-- **Keep the Kontext short when the Modell generates.** Almost every Token of a Sitzung is a Cache lesen, und the energy of a generated Token grows mit the Kontext es ist generated in. One Sitzung per Aufgabe, `/clear` when the subject ändert, `/btw` for side Fragen, Subagenten for exploration und verbose operations.
-- **Compact on your terms.** `/compact <instructions>` at a natural break, `/rewind` when abandoning a Pfad, `/autocompact 150k` to bound the Fenster, `CLAUDE_CODE_DISABLE_1M_CONTEXT=1` on Modelle that ausführen at 1M standardmäßig.
-- **Trim what every Zug carries.** `/context` zeigt it. A short `CLAUDE.md` mit the rest in Skills, unused MCP servers off mit `/mcp`, a CLI over an MCP Server where both exist.
-- **Do nicht break the Cache mid-session.** Pick the Modell und the effort level at the starten; `/usage` zeigt the hit ratio und the likely cause of the letzte miss.
-- **Fewer turns, fewer failed loops.** A spec und a test the Agent can ausführen, a deterministic Werkzeug over a erneut versuchen, `/clear` danach two failed corrections, nein `/loop` left läuft on an idle Sitzung.
-- **Ask the Agent nur what needs an Agent.** An agentic Aufgabe runs on the order of a thousand times the Tokens of a chat exchange. A `--help` costs nothing.
-- **Match reasoning und Modell to the Aufgabe.** `/effort low` on routine work, set at Sitzung starten; Haiku for Subagenten via `CLAUDE_CODE_SUBAGENT_MODEL`.
-
-The same document covers what does nicht hold up (shell Ausgabe filters, Prompt compressors, adding up percentages), the harness as a lever, und what is out of your hands for jetzt.
-
-### Related Projekte
-
-- [EcoLogits](https://ecologits.ai) - Python library estimating the footprint of GenAI API calls across providers.
-- [CodeCarbon](https://github.com/mlco2/codecarbon) - measures the emissions of compute you ausführen yourself (training, local inference).
-- [ImpactIA](https://github.com/SNCFdevelopers/ImpactIA) - AI impact calculator und guide by SNCF, Wavestone und Resilio.
-- [green-claude](https://github.com/Institut-du-Numerique-Responsable/green-claude) - Claude Code Skill that steers generated code toward eco-design rules (RGESN, GR491).
-
-### Further reading
-
-- [IEA - Energy and AI (2025)](https://www.iea.org/reports/energy-and-ai/) - data center projections
-- [Jegham et al. - How Hungry is AI?](https://arxiv.org/abs/2505.09598) - per-model energy estimates
-- [UCL/UNESCO - 90% AI energy reduction](https://www.ucl.ac.uk/news/2025/jul/practical-changes-could-reduce-ai-energy-demand-90) - frugal AI approaches
-- [GreenIT.fr - AI impacts 2025-2030](https://www.greenit.fr/impacts-ia-monde-2025-2030-rapport/) - French data
-
-## Why
-
-Every Claude Code Sitzung verwendet real compute, real energy, real emissions. The number is small per query, aber it adds up. Making it visible is the erste step to owning it.
-
-## Citing
-
-If claude-carbon's numbers oder methodology end up in your article, talk oder product, a citation is appreciated. GitHub's "Cite dieses Repository" Schaltfläche generates BibTeX/APA von [CITATION.cff](CITATION.cff). Short form:
-
-> Wittebolle, G. (2026). claude-carbon: carbon footprint tracker for Claude Code Sitzungen. https://github.com/gwittebolle/claude-carbon
-
-The shareable report cards already carry this attribution in their footer, so reposting a card as-is credits the Werkzeug.
-
-## Open source
-
-claude-carbon is free und öffnen source under the [MIT license](LICENSE). Contributions welcome.
-
-<p align="center"><img src="docs/mascot-stripes.svg" width="696" alt="Eight pixel CO2 molecules, the claude-carbon mascot, walking from dark blue to dark red, the redder the faster: the blue ones smile, the red ones sweat"></p>
-
-The stripes of the banner und of `/carbon-panel` are inspired by Ed Hawkins' [warming stripes](https://showyourstripes.info), drawn here von your own Sitzungen.
-
-Built by [Gaëtan Wittebolle](https://gaetanwittebolle.com), carbon consultant turned solo builder in Bordeaux, France. Team version: [TokenClimate](https://tokenclimate.com).
+Erstellt von [Gaëtan Wittebolle](https://gaetanwittebolle.com), Kohlenstoffberater, der in Bordeaux, Frankreich, als Solo-Entwickler arbeitet. Team-Version: [TokenClimate](https://tokenclimate.com).
 
 ## Quelle und Lizenz
 
