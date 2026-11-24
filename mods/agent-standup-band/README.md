@@ -2,35 +2,35 @@
 
 ![Agent Standup](.claude-plugin/icon.png)
 
-A Zeile above your Claude Code Prompt when another Claude Code Sitzung on this computer needs you:
+Eine Zeile über deinem Prompt in Claude Code, wenn eine andere Claude-Code-Sitzung auf diesem Computer dich braucht:
 
     ✋ web-shop (VS Code) needs an approval
-    Agent Standup · /Agent-standup:öffnen zeigt them alle   Hide
+    Agent Standup · /agent-standup:open shows them all   Hide
 
-und a short toast when one starts waiting for you, oder finishes its Zug. You stay in the Sitzung you are working in, und still know when another one is stuck on a Frage oder an approval.
+und ein kurzer Toast, sobald eine Sitzung auf dich wartet oder ihren Zug beendet. Du bleibst in der Sitzung, an der du arbeitest, und weißt trotzdem, wann eine andere an einer Frage oder einer Freigabe hängt.
 
-Es ist a mod: a plugin of Claude Code's function Hooks. It draws in the terminal und in the Claude desktop app's Code tab. In VS Code, the [Agent Standup extension](https://marketplace.visualstudio.com/items?itemName=DoubleGeste.agent-standup) zeigt the same in its Status bar.
+Es ist ein Mod: ein Plugin der Funktions-Hooks von Claude Code. Es zeichnet im Terminal und im Code-Tab der Claude-Desktop-App. In VS Code zeigt die [Agent-Standup-Erweiterung](https://marketplace.visualstudio.com/items?itemName=DoubleGeste.agent-standup) dasselbe in ihrer Statusleiste.
 
 ## Install
 
-In Claude Code 2.1.294 oder later:
+In Claude Code 2.1.294 oder neuer:
 
-    /plugin installieren Agent-standup-band --marketplace Atoll92/Agent-standup
+    /plugin install agent-standup-band --marketplace Atoll92/agent-standup
 
-With an earlier version it loads und does nothing: those versions do nicht ausführen mods (und vorher 2.1.221 in the terminal, 2.1.269 elsewhere, they do nicht schreiben the Status it liest either).
+Mit einer früheren Version lädt es und tut nichts: Diese Versionen führen Mods nicht aus (und vor 2.1.221 im Terminal bzw. 2.1.269 anderswo schreiben sie auch den Status nicht, den es liest).
 
-To see every Sitzung as a live team call, installieren the main plugin too: `/plugin install agent-standup --marketplace Atoll92/agent-standup`, dann `/agent-standup:open`.
+Um jede Sitzung als Live-Team-Call zu sehen, installiere zusätzlich das Haupt-Plugin: `/plugin install agent-standup --marketplace Atoll92/agent-standup`, danach `/agent-standup:open`.
 
-## What it liest und runs
+## Was es liest und ausführt
 
-- Every 4 seconds, the Status Datei Claude Code keeps for jede öffnen Sitzung, in `~/.claude/sessions/<pid>.json` (oder under `CLAUDE_CONFIG_DIR`): which Sitzung, its Ordner, und whether es ist busy, idle oder waiting for you. Not the conversations. A Sitzung started by a program mit `claude -p` is left out: its Fragen go to that program. An Agent SDK app (Zed, a home-made app) is kept, since it may zeigen its menus to a person.
-- `ps`, to prüfen that a Sitzung said to be waiting still runs: a Sitzung that crashed leaves its Datei behind.
+- Alle 4 Sekunden die Statusdatei, die Claude Code für jede offene Sitzung führt, in `~/.claude/sessions/<pid>.json` (oder unter `CLAUDE_CONFIG_DIR`): welche Sitzung es ist, ihr Ordner und ob sie beschäftigt, untätig oder auf dich wartend ist. Nicht die Unterhaltungen. Eine Sitzung, die ein Programm mit `claude -p` gestartet hat, bleibt außen vor: Ihre Fragen gehen an dieses Programm. Eine Agent-SDK-App (Zed, eine selbst gebaute App) bleibt erhalten, da sie ihre Menüs einem Menschen zeigen kann.
+- `ps`, um zu prüfen, ob eine Sitzung, die auf dich wartet, noch läuft: Eine abgestürzte Sitzung lässt ihre Datei zurück.
 
-It schreibt nothing und sendet nothing anywhere.
+Es schreibt nichts und sendet nichts irgendwohin.
 
-## More
+## Mehr
 
-Source und Issues: https://github.com/Atoll92/agent-standup. Unofficial: nicht affiliated mit oder endorsed by Anthropic. MIT licensed.
+Quellen und Issues: https://github.com/Atoll92/agent-standup. Inoffiziell: nicht mit Anthropic verbunden und von Anthropic nicht unterstützt. MIT-lizenziert.
 
 ## Quelle und Lizenz
 

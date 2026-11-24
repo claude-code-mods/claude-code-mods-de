@@ -1,8 +1,8 @@
-# Agent-usage-guard
+# agent-usage-guard
 
-> Stops Claude Code von spending your five-hour Nutzung Fenster in ten minutes.
+> Verhindert, dass Claude Code dein Fünf-Stunden-Nutzungsfenster in zehn Minuten verbraucht.
 
-`agent-usage-guard` is a Claude Code [mod](https://code.claude.com/docs/en/plugins/mods/overview): it runs inside Claude Code und holds runaway spend vorher it happens. It liest your plan's live Nutzung, und it holds Subagent fan-out, heavy-context churn und erneut versuchen loops.
+`agent-usage-guard` ist ein Claude-Code-[Mod](https://code.claude.com/docs/en/plugins/mods/overview): Es läuft innerhalb von Claude Code und bremst ausufernde Ausgaben, bevor sie entstehen. Es liest die aktuelle Nutzung deines Plans und deckelt Subagenten-Fan-out, das Hin- und Herschieben großer Kontexte und Wiederholungsschleifen.
 
 <p align="center">
   <a href="https://www.producthunt.com/products/agent-usage-guard?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-agent-usage-guard" target="_blank" rel="noopener noreferrer">
@@ -18,19 +18,19 @@
 </p>
 
 <p align="center">
-  <sub>Recorded von Claude Code's interactive UI mit the guard loaded. A <a href="demo/scripted-api.ts">scripted local API</a> stands in for Claude, so the Sitzungen und Token counts are staged und nein Nutzung is spent. Every Frage on screen is the guard's own. <a href="demo/render.sh">Rebuild it</a> von the <a href="demo/fixture/northstar-api">Northstar fixture</a>.</sub>
+  <sub>Aufgezeichnet aus der interaktiven Oberfläche von Claude Code mit geladenem Guard. Eine <a href="demo/scripted-api.ts">geskriptete lokale API</a> steht anstelle von Claude, die Sitzungen und Tokenzahlen sind also gestellt und es wird keine Nutzung verbraucht. Jede Frage auf dem Bildschirm stammt vom Guard selbst. <a href="demo/render.sh">Neu bauen</a> aus dem <a href="demo/fixture/northstar-api">Northstar-Fixture</a>.</sub>
 </p>
 
-It acts vorher the spend, nicht danach it: vorher an Agent starts, a Prompt is sent, oder a Werkzeug call runs. Agent limits hold across every Claude Code Sitzung on your machine, und fan-out und heavy Kontext are capped at any Nutzung level, nicht nur near the limit. When you are at the keyboard it asks you, in Claude Code's own Frage dialog. When nobody can Antwort, it refuses und tells Claude why, so the Modell can wait, batch the work, oder stoppen. `/agent-guard report` zeigt what it did.
+Es greift vor den Ausgaben ein, nicht danach: bevor ein Agent startet, ein Prompt gesendet wird oder ein Werkzeugaufruf läuft. Agentenlimits gelten über jede Claude-Code-Sitzung auf deinem Rechner, und Fan-out sowie große Kontexte werden bei jeder Nutzungsstufe begrenzt, nicht nur kurz vor dem Limit. Wenn du an der Tastatur bist, fragt es dich im eigenen Frage-Dialog von Claude Code. Wenn niemand antworten kann, lehnt es ab und nennt Claude den Grund, damit das Modell warten, die Arbeit bündeln oder aufhören kann. `/agent-guard report` zeigt, was es getan hat.
 
-- **Plan-aware.** It liest the 5-hour und weekly percentages Claude Code reports, und keeps the end of the Fenster for you.
-- **One Antwort covers a while.** An approval lifts its condition until it clears oder times out, so the same Frage does nicht come zurück call danach call.
-- **Local und privacy-minimal.** No network, nein processes. It stores counts und coarse buckets, nie Prompt Text, Werkzeug inputs oder Modell Ausgabe.
-- **Fails öffnen.** If one of its Hooks fails, the event goes ahead: a broken guard nie breaks your Sitzung. The one exception is an Agent it could nicht judge, which is refused damit Claude starts it erneut.
+- **Planbewusst.** Es liest die Prozentwerte für 5 Stunden und Woche, die Claude Code meldet, und hält das Ende des Fensters für dich frei.
+- **Eine Antwort gilt für eine Weile.** Eine Freigabe hebt ihre Bedingung auf, bis sie verfällt oder eine Zeitüberschreitung eintritt, sodass dieselbe Frage nicht bei jedem Aufruf erneut auftaucht.
+- **Lokal und sparsam mit Daten.** Kein Netzwerk, keine Prozesse. Es speichert Zähler und grobe Kategorien, niemals Prompt-Text, Werkzeugeingaben oder Modellausgaben.
+- **Fehlertolerant nach außen.** Schlägt einer seiner Hooks fehl, läuft das Ereignis weiter: Ein defekter Guard zerstört nie deine Sitzung. Die einzige Ausnahme ist ein Agent, den es nicht beurteilen konnte; dieser wird abgelehnt, damit Claude ihn erneut startet.
 
 ## Install
 
-Run these commands inside Claude Code v2.1.287 oder later:
+Führe diese Befehle innerhalb von Claude Code v2.1.287 oder neuer aus:
 
 ```text
 /plugin marketplace add rbartoli/agent-usage-guard
@@ -38,145 +38,145 @@ Run these commands inside Claude Code v2.1.287 oder later:
 /reload-plugins
 ```
 
-Then ausführen `/agent-guard` to see what it sees, und `/agent-guard simulate concurrency` to see the Frage it asks when too many Agenten ausführen, mit nothing held oder spent. Mods are on standardmäßig; the [overview](https://code.claude.com/docs/en/plugins/mods/overview#turn-mods-on-or-off) lists the settings that Zug them off.
+Danach führe `/agent-guard` aus, um zu sehen, was es sieht, und `/agent-guard simulate concurrency`, um die Frage zu sehen, die es stellt, wenn zu viele Agenten laufen – ohne dass etwas gehalten oder verbraucht wird. Mods sind standardmäßig aktiv; die [Übersicht](https://code.claude.com/docs/en/plugins/mods/overview#turn-mods-on-or-off) listet die Einstellungen, die sie abschalten.
 
-## Why this exists
+## Warum es das gibt
 
-One afternoon I gave Claude Code a research Prompt at max effort. It spawned **394 Subagent calls, 341 of them läuft at once, und pushed 84M Kontext Tokens through the API in ten minutes.** Session over: *"Claude Nutzung limit reached."* Locked out until the Fenster zurücksetzen.
+Eines Nachmittags gab ich Claude Code einen Recherche-Prompt mit maximalem Aufwand. Es erzeugte **394 Subagenten-Aufrufe, 341 davon gleichzeitig, und schob in zehn Minuten 84 Mio. Kontext-Token durch die API.** Sitzung beendet: *„Claude usage limit reached.“* Ausgesperrt, bis das Fenster zurücksetzte.
 
-That wasn't a one-off. Sixty days of my own logs held **12 lockouts** und 166 ten-minute windows mit Agent bursts. The failure mode multiplies: *a large Kontext × rapid Werkzeug loops × parallel Agenten × blind retries*. Each protection below removes one factor.
+Das war kein Einzelfall. Sechzig Tage meiner eigenen Protokolle enthielten **12 Sperren** und 166 Zehn-Minuten-Fenster mit Agenten-Ausbrüchen. Das Fehlermuster multipliziert sich: *großer Kontext × schnelle Werkzeugschleifen × parallele Agenten × blindes Wiederholen*. Jede der folgenden Absicherungen nimmt einen Faktor heraus.
 
-And it's nicht just me: [339 subagents from a single prompt](https://www.reddit.com/r/ClaudeAI/comments/1u5d02w/), [half a weekly Max plan consumed by recursive spawning](https://github.com/anthropics/claude-code/issues/68619), und multi-agent runs using [~15× the tokens of a chat session](https://www.anthropic.com/engineering/built-multi-agent-research-system).
+Und es betrifft nicht nur mich: [339 Subagenten aus einem einzigen Prompt](https://www.reddit.com/r/ClaudeAI/comments/1u5d02w/), [eine halbe wöchentliche Max-Stufe durch rekursives Spawn verbraucht](https://github.com/anthropics/claude-code/issues/68619) und Multi-Agenten-Läufe mit [rund 15× der Token einer Chat-Sitzung](https://www.anthropic.com/engineering/built-multi-agent-research-system).
 
-## What it does
+## Was es tut
 
-| Area | Rule | Default | What happens |
+| Bereich | Regel | Standard | Was passiert |
 |---|---|---|---|
-| Plan windows | New Agenten need approval once a Fenster is this full | 80% | asks; approval lasts until that Fenster resets |
-| | New Agenten are refused once a Fenster is this full | 95% | refuses |
-| | `ScheduleWakeup` und `CronCreate` are refused once a Fenster is this full, so nein Zug starts itself in the limit | 95% | refuses |
-| | Each Sitzung is told once to finish its step und say what is left | 95% | adds a note to the nächste Prompt |
-| | New Agenten need approval when the 5-hour Fenster rises this fast | 20 points / 10 min | asks |
-| | New Agenten need approval when the 5-hour Fenster's pace over the letzte 10 minutes would fill it within the hour, vorher it resets | at least 2 points over 2 min | asks |
-| Agents | Agents läuft at once, across every Sitzung on this machine | 4 | asks |
-| | Agents started oder resumed per 10 minutes, across this machine | 12 | asks |
-| | Tokens processed by Subagenten per 10 minutes, across this machine; an approval lasts an hour | 10M | asks |
-| | Subagents may nicht starten their own Agenten | depth 1 | refuses |
-| Context | Claude is told once to behalten the Zug bounded | 300k Tokens | adds a note to the Prompt |
-| | A Prompt that would re-read this much Kontext | 500k Tokens | asks: compact dann senden, senden anyway, oder abbrechen |
-| | Tool calls per 10 minutes while a Gespräch oder Agent carries this much | 20 calls at 400k | asks: behalten going, compact danach this Zug, oder stoppen |
-| | A heavy Sitzung idle long enough for its Prompt Cache to expire | 150k Tokens, 1 h idle | asks vorher re-writing the Cache |
-| Loops | The same Werkzeug call failing erneut und erneut, mit nein other call in between | 3 identical failures | refuses the identical erneut versuchen |
-| | Refused Agent calls within 10 minutes | 5 | pauses Agent spawns for 10 min |
+| Planfenster | Neue Agenten brauchen eine Freigabe, sobald ein Fenster so voll ist | 80% | fragt; die Freigabe gilt bis zum Zurücksetzen dieses Fensters |
+| | Neue Agenten werden abgelehnt, sobald ein Fenster so voll ist | 95% | lehnt ab |
+| | `ScheduleWakeup` und `CronCreate` werden abgelehnt, sobald ein Fenster so voll ist, damit kein Zug sich selbst ins Limit startet | 95% | lehnt ab |
+| | Jede Sitzung wird einmal aufgefordert, ihren Schritt zu beenden und zu sagen, was übrig ist | 95% | ergänzt eine Notiz im nächsten Prompt |
+| | Neue Agenten brauchen eine Freigabe, wenn das 5-Stunden-Fenster so schnell steigt | 20 Punkte / 10 Min. | fragt |
+| | Neue Agenten brauchen eine Freigabe, wenn das Tempo des 5-Stunden-Fensters in den letzten 10 Minuten es innerhalb einer Stunde füllen würde, bevor es zurücksetzt | mindestens 2 Punkte in 2 Min. | fragt |
+| Agenten | Gleichzeitig laufende Agenten, über alle Sitzungen auf diesem Rechner | 4 | fragt |
+| | Gestartete oder fortgesetzte Agenten pro 10 Minuten, auf diesem Rechner | 12 | fragt |
+| | Von Subagenten verarbeitete Token pro 10 Minuten, auf diesem Rechner; eine Freigabe gilt eine Stunde | 10 Mio. | fragt |
+| | Subagenten dürfen keine eigenen Agenten starten | Tiefe 1 | lehnt ab |
+| Kontext | Claude wird einmal darauf hingewiesen, den Zug begrenzt zu halten | 300k Token | ergänzt eine Notiz im Prompt |
+| | Ein Prompt, der so viel Kontext erneut lesen würde | 500k Token | fragt: erst komprimieren, trotzdem senden oder abbrechen |
+| | Werkzeugaufrufe pro 10 Minuten, während eine Unterhaltung oder ein Agent so viel trägt | 20 Aufrufe bei 400k | fragt: weitermachen, nach diesem Zug komprimieren oder aufhören |
+| | Eine große Sitzung, die lange genug untätig ist, dass ihr Prompt-Cache abläuft | 150k Token, 1 Std. untätig | fragt, bevor der Cache neu geschrieben wird |
+| Schleifen | Derselbe Werkzeugaufruf scheitert wieder und wieder, ohne anderen Aufruf dazwischen | 3 identische Fehlschläge | lehnt den identischen Wiederholungsversuch ab |
+| | Abgelehnte Agenten-Aufrufe innerhalb von 10 Minuten | 5 | pausiert das Starten von Agenten für 10 Min. |
 
-Agents covers Subagenten, Agent-team teammates, workflow Agenten, und fertig Subagenten resumed mit `SendMessage`. Haiku Agenten stay out of the läuft und starts limits, whether Claude asks for Haiku oder the Agent's own definition picks it; they still count toward the Subagent Token budget und every plan-window rule. Each Werkzeug call is judged on the Kontext of the loop that makes it, so a small Subagent nie inherits the main Gespräch's size.
+Agenten umfasst Subagenten, Agent-Team-Mitglieder, Workflow-Agenten und beendete Subagenten, die mit `SendMessage` fortgesetzt werden. Haiku-Agenten bleiben aus den Limits für laufende und gestartete Agenten heraus, egal ob Claude Haiku anfordert oder die Definition des Agenten es wählt; sie zählen weiterhin zum Subagenten-Token-Budget und zu jeder Planfenster-Regel. Jeder Werkzeugaufruf wird anhand des Kontexts der Schleife beurteilt, die ihn auslöst, sodass ein kleiner Subagent nie die Größe der Hauptunterhaltung erbt.
 
-**When it asks.** The Frage appears in Claude Code's own dialog, the one Claude verwendet to ask you something, und the call waits for your Antwort. Agents started in parallel while es ist öffnen are held zurück, und Claude starts them erneut once you Antwort. Wenn du erlauben it, that condition stays allowed for a while: a plan Fenster until it resets, a heavy Kontext until it shrinks (for Werkzeug calls, an hour at most), the Agent counts for 10 minutes. Wenn du decline oder dismiss the Frage, oder it closes ohne an Antwort for any other reason, Claude is told nicht to starten Agenten for the nächste 10 minutes (`AGENT_GUARD_WINDOW_SECONDS`), und is nicht asked erneut in that Zeit. Typed words reach Claude, so du kannst Antwort "verwenden haiku Agenten instead".
+**Wann es fragt.** Die Frage erscheint im eigenen Dialog von Claude Code, dem, den Claude nutzt, um dich etwas zu fragen, und der Aufruf wartet auf deine Antwort. Parallel gestartete Agenten werden zurückgehalten, solange er offen ist, und Claude startet sie erneut, sobald du geantwortet hast. Wenn du es erlaubst, bleibt diese Bedingung für eine Weile erlaubt: ein Planfenster bis zum Zurücksetzen, ein großer Kontext, bis er schrumpft (bei Werkzeugaufrufen höchstens eine Stunde), die Agentenzähler für 10 Minuten. Wenn du ablehnst oder die Frage wegwischst oder sie aus einem anderen Grund ohne Antwort schließt, wird Claude gesagt, für die nächsten 10 Minuten keine Agenten zu starten (`AGENT_GUARD_WINDOW_SECONDS`), und es wird in dieser Zeit nicht erneut gefragt. Getippte Worte erreichen Claude, du kannst also antworten „nimm stattdessen Haiku-Agenten“.
 
-**When nobody can Antwort.** In `claude -p`, the Agent SDK und `dontAsk` mode, an Agent oder Werkzeug gate refuses statt asking. A heavy Prompt is held mit the reason, und so is a dormant heavy resume once the machine-wide cap of one per 10 minutes is reached. Prompts that starten a einschalten their own, such as a schedule oder `/loop` firing, a Nachricht relayed von a channel like Slack, oder a Slack ping, are held the same way, even in a Sitzung someone could be asked in; they nie lift limits. Claude liest jede refusal as the Werkzeug's Ergebnis. Repeat refusals of the same condition are worded differently jede Zeit und escalate: the second says nothing has changed und to try something else, the third says to end the Zug. If a Stop Hook such as `/goal` keeps reopening the Zug, the refusal says the user has to decide.
+**Wenn niemand antworten kann.** In `claude -p`, im Agent SDK und im `dontAsk`-Modus lehnt ein Agenten- oder Werkzeuggate ab, statt zu fragen. Ein großer Prompt wird mit Begründung gehalten, ebenso ein ruhender großer Fortsetzungsversuch, sobald das rechnerweite Limit von einem pro 10 Minuten erreicht ist. Prompts, die von sich aus einen Zug starten, etwa ein ausgelöster Zeitplan oder `/loop`, eine von einem Kanal wie Slack weitergeleitete Nachricht oder ein Slack-Ping, werden genauso gehalten, selbst in einer Sitzung, in der man jemanden fragen könnte; sie heben Limits nie auf. Claude liest jede Ablehnung als Ergebnis des Werkzeugs. Wiederholte Ablehnungen derselben Bedingung sind jedes Mal anders formuliert und eskalieren: Die zweite sagt, dass sich nichts geändert hat, und rate zu etwas anderem, die dritte sagt, der Zug solle beendet werden. Wenn ein Stop-Hook wie `/goal` den Zug immer wieder öffnet, sagt die Ablehnung, dass der Nutzer entscheiden muss.
 
-**What it zeigt.** While Agenten ausführen on this machine, oder the guard is holding oder has just refused something, a Zeile above the Prompt zeigt it: `Usage guard · 3 of 4 agents running · 5 of 12 started in the last 10 min · last refusal 14:22: concurrency`. Es ist bold once a limit is reached oder something is held, und gone when es gibt nothing to say. Claude Code's `[-]` beside it collapses it. Plan windows und Kontext stay in the Status Zeile.
+**Was es anzeigt.** Während Agenten auf diesem Rechner laufen oder der Guard gerade etwas hält oder eben abgelehnt hat, zeigt eine Zeile über dem Prompt es an: `Usage guard · 3 of 4 agents running · 5 of 12 started in the last 10 min · last refusal 14:22: concurrency`. Sobald ein Limit erreicht ist oder etwas gehalten wird, ist sie fett, und sie verschwindet, wenn es nichts zu sagen gibt. Das `[-]` daneben in Claude Code klappt sie ein. Planfenster und Kontext bleiben in der Statuszeile.
 
-**What it leaves alone.** It nie holds a background Aufgabe's Benachrichtigung oder another Sitzung's Nachricht, because that would lose the Ergebnis. It nein longer blocks prompts danach a Nutzung limit: since v2.1.234, Claude Code waits at a limit und continues at zurücksetzen on its own (`autoContinueAtUsageLimit`). The guard's job is to behalten you von reaching the limit, und its journal counts the lockouts it did nicht prevent. Near the limit it nur adds a note: von 95%, jede Sitzung's nächste Prompt tells Claude to finish the step in progress, starten nothing large, und end the Zug mit what is fertig und what is left, so a lockout finds every Sitzung at a clean stoppen.
+**Was es in Ruhe lässt.** Es hält nie die Benachrichtigung einer Hintergrundaufgabe oder die Nachricht einer anderen Sitzung an, weil das das Ergebnis verlieren würde. Es blockiert seit v2.1.234 auch keine Prompts mehr nach einem Nutzungslimit: Claude Code wartet an einem Limit und setzt seitdem bei dessen Zurücksetzen von selbst fort (`autoContinueAtUsageLimit`). Die Aufgabe des Guards ist es, dich gar nicht erst an das Limit kommen zu lassen, und sein Journal zählt die Sperren, die es nicht verhindert hat. Nahe am Limit ergänzt es nur eine Notiz: ab 95% sagt der nächste Prompt jeder Sitzung Claude, den laufenden Schritt zu beenden, nichts Großes zu beginnen und den Zug mit dem zu beenden, was fertig und was übrig ist, damit eine Sperre jede Sitzung an einem sauberen Haltepunkt findet.
 
-**Idle compaction.** Since v2.1.299, Claude Code compacts a Gespräch of 200k Tokens oder mehr that sits idle for about 54 minutes, vorher its one-hour Prompt Cache expires (`idleCompaction`, on standardmäßig). The guard liest the compacted size, so it does nicht ask about that Sitzung. Since v2.1.314 it auch runs in VS Code und Claude Desktop's Code tab, for subscribers mit telemetry turned off, und on Bedrock, Vertex, Foundry und LLM gateways once the one-hour Prompt Cache is on. Its dormant Frage covers what idle compaction leaves out: conversations von 150k to 200k Tokens, `claude -p` und SDK Sitzungen, a machine that was asleep at the 54-minute mark, und setups mit idle compaction oder automatisch-compaction turned off.
+**Untätigkeits-Komprimierung.** Seit v2.1.299 komprimiert Claude Code eine Unterhaltung mit 200k Token oder mehr, die etwa 54 Minuten untätig ist, bevor ihr einstündiger Prompt-Cache abläuft (`idleCompaction`, standardmäßig an). Der Guard liest die komprimierte Größe und fragt deshalb nicht nach dieser Sitzung. Seit v2.1.314 läuft sie auch in VS Code und im Code-Tab von Claude Desktop, für Abonnenten mit ausgeschalteter Telemetrie, und auf Bedrock, Vertex, Foundry und LLM-Gateways, sobald der einstündige Prompt-Cache aktiv ist. Seine ruhende Frage deckt ab, was die Untätigkeits-Komprimierung auslässt: Unterhaltungen von 150k bis 200k Token, `claude -p`- und SDK-Sitzungen, ein Rechner, der bei 54 Minuten schlief, und Setups mit ausgeschalteter Untätigkeits- oder Auto-Komprimierung.
 
-**Claude Code's own resume Warnung.** Since v2.1.304, on Pro und Max plans, Claude Code warns vorher resuming an inactive Gespräch, oder sending to one whose Cache went cold while idle, when that would verwenden a noticeable share of your 5-hour limit: you resume anyway oder starten a neu Gespräch. It zeigt nur von a minimum share, which Anthropic sets per plan und Modell, so for most Modelle it zeigt nur on very large conversations. The guard's dormant Frage asks von 150k Tokens, so it still covers most cold resumes, und on the largest you may see both.
+**Die eigene Fortsetzungswarnung von Claude Code.** Seit v2.1.304 warnt Claude Code in Pro- und Max-Plänen, bevor eine inaktive Unterhaltung fortgesetzt oder an eine gesendet wird, deren Cache während der Untätigkeit kalt wurde, wenn das einen spürbaren Anteil deines 5-Stunden-Limits verbrauchen würde: Du setzt trotzdem fort oder beginnst eine neue Unterhaltung. Es erscheint erst ab einem Mindestanteil, den Anthropic je Plan und Modell festlegt, für die meisten Modelle also nur bei sehr großen Unterhaltungen. Die ruhende Frage des Guards greift ab 150k Token, deckt also weiterhin die meisten kalten Fortsetzungen ab, und bei den größten siehst du möglicherweise beides.
 
 ## Befehle
 
 ```text
-/agent-guard [status]                          what the guard sees right now
-/agent-guard allow [agents|context] [minutes]  lift its limits for this session (default: all, 10 min)
-/agent-guard pause [minutes]                   the same as allow, for every limit
-/agent-guard resume                            end an allow early, lift the agent pause, and let declined questions ask again
-/agent-guard report [days]                     what it did on this machine (default: 7 days)
-/agent-guard simulate <rule>                   show what a rule does, with nothing held or spent
-/agent-guard help                              these commands
+/agent-guard [status]                          was der Guard gerade sieht
+/agent-guard allow [agents|context] [minutes]  hebt seine Limits für diese Sitzung auf (Standard: alle, 10 Min.)
+/agent-guard pause [minutes]                   dasselbe wie allow, für jedes Limit
+/agent-guard resume                            beendet eine allow-Freigabe vorzeitig, hebt die Agenten-Pause auf und lässt abgelehnte Fragen wieder fragen
+/agent-guard report [days]                     was er auf diesem Rechner getan hat (Standard: 7 Tage)
+/agent-guard simulate <rule>                   zeigt, was eine Regel tut, ohne dass etwas gehalten oder verbraucht wird
+/agent-guard help                              diese Befehle
 ```
 
-`/agent-guard` runs at once, even mid-turn, und nie starts a Modell Zug, so Claude nie sees an override und cannot take one as permission. Only du kannst lift limits: when another plugin runs `/agent-guard allow` oder `pause`, the guard refuses und says so in the transcript. Sending `[allow-usage-guard]` oder `[allow-agent-burst]` alone as a Prompt, the markers of earlier versions, does the same as `/agent-guard allow` oder `allow agents`.
+`/agent-guard` läuft sofort, auch mitten im Zug, und startet nie einen Modell-Zug, sodass Claude nie ein Override sieht und es nicht als Erlaubnis nehmen kann. Nur du kannst Limits aufheben: Wenn ein anderes Plugin `/agent-guard allow` oder `pause` ausführt, lehnt der Guard ab und sagt das im Transkript. `[allow-usage-guard]` oder `[allow-agent-burst]` allein als Prompt zu senden, die Marker früherer Versionen, bewirkt dasselbe wie `/agent-guard allow` oder `allow agents`.
 
-## What it can und cannot see
+## Was es sehen kann und was nicht
 
-Checked against Claude Code v2.1.316:
+Geprüft gegen Claude Code v2.1.316:
 
-| Path | Coverage |
+| Pfad | Abdeckung |
 |---|---|
-| Subagents, teammates und workflow Agenten | Held vorher they starten (`agent.spawn`) |
-| A fertig Subagent sent neu work mit `SendMessage` | Held vorher it resumes, und counted as a starten, once |
-| A teammate brought zurück von disk (Claude Code 2.1.299 oder later) | Held vorher it resumes, und counted as a starten |
-| `/subtask` forks, und anything else that starts ohne `agent.spawn` | Counted when they starten, nie held: Claude Code offers nein event vorher they do. Forks Claude starts through the Agent Werkzeug are held like any Agent |
-| Claude Code's internal Agenten (Prompt suggestions, compaction) | Not counted |
-| Plan-window percentages | From the letzte API response on a subscription, in `claude -p` too. API-key Sitzungen report keine, so nur the Token und count budgets apply |
-| Teammates läuft in their own terminal panes | Not visible: their loops ausführen in other processes |
-| Sessions on other machines | Not counted: the cross-session records live in this machine's mod store |
-| Tools the API runs itself, such as the advisor | Not holdable: nein Werkzeug event fires for them |
+| Subagenten, Teammitglieder und Workflow-Agenten | Gehalten, bevor sie starten (`agent.spawn`) |
+| Ein beendeter Subagent, der mit `SendMessage` neue Arbeit erhält | Gehalten, bevor er fortsetzt, und einmal als Start gezählt |
+| Ein von der Platte zurückgeholtes Teammitglied (Claude Code 2.1.299 oder neuer) | Gehalten, bevor es fortsetzt, und als Start gezählt |
+| `/subtask`-Forks und alles andere, das ohne `agent.spawn` startet | Beim Start gezählt, nie gehalten: Claude Code bietet davor kein Ereignis. Von Claude über das Agent-Werkzeug gestartete Forks werden wie jeder Agent gehalten |
+| Interne Agenten von Claude Code (Prompt-Vorschläge, Komprimierung) | Nicht gezählt |
+| Prozentwerte des Planfensters | Aus der letzten API-Antwort bei einem Abo, auch in `claude -p`. API-Key-Sitzungen melden keine, daher gelten nur die Token- und Zähler-Budgets |
+| Teammitglieder, die in eigenen Terminal-Panes laufen | Nicht sichtbar: ihre Schleifen laufen in anderen Prozessen |
+| Sitzungen auf anderen Rechnern | Nicht gezählt: die sitzungsübergreifenden Datensätze liegen im Mod-Speicher dieses Rechners |
+| Werkzeuge, die die API selbst ausführt, etwa der advisor | Nicht haltbar: dafür feuert kein Werkzeug-Ereignis |
 
-Mods ausführen in `claude` in a terminal, in the Desktop app's Code tab, in `claude -p` und the Agent SDK. They don't ausführen in a Desktop-app WSL Sitzung ([where mods run](https://code.claude.com/docs/en/plugins/mods/overview#where-mods-run)).
+Mods laufen in `claude` im Terminal, im Code-Tab der Desktop-App, in `claude -p` und im Agent SDK. Sie laufen nicht in einer WSL-Sitzung der Desktop-App ([wo Mods laufen](https://code.claude.com/docs/en/plugins/mods/overview#where-mods-run)).
 
-**On Team und Enterprise plans**, und on machines mit managed settings, Claude Code runs its built-in `cc-plugin-sec-default` plugin ahead of every other, unless managed `prependPlugins` leaves it out. That plugin sendet Claude Code's classic Hook events on past user plugins, und Claude Code zeigt a Zeile for jede of the guard's it skipped, such as "Agent-usage-guard: its classic.PostToolUse Hook was skipped". The guard follows compactions, lockouts, `/clear` und resumes, und Stop Hooks that reopen a Zug through events that still reach it. Two things need the classic events: the permission mode reaches the guard nur when an Agent starts, so it may ask you in `dontAsk` mode, und `/subtask` forks go uncounted.
+**In Team- und Enterprise-Plänen** sowie auf Rechnern mit verwalteten Einstellungen führt Claude Code sein eingebautes Plugin `cc-plugin-sec-default` vor jedem anderen aus, sofern verwaltetes `prependPlugins` es nicht auslässt. Dieses Plugin sendet die klassischen Hook-Ereignisse von Claude Code weiter, vorbei an Nutzer-Plugins, und Claude Code zeigt für jedes übersprungene eine Zeile, etwa „agent-usage-guard: its classic.PostToolUse hook was skipped“. Der Guard verfolgt Komprimierungen, Sperren, `/clear` und Fortsetzungen sowie Stop-Hooks, die einen Zug erneut öffnen, über Ereignisse, die ihn noch erreichen. Zwei Dinge brauchen die klassischen Ereignisse: Der Berechtigungsmodus erreicht den Guard nur, wenn ein Agent startet, er kann dich also im `dontAsk`-Modus fragen, und `/subtask`-Forks bleiben unzählig.
 
-**Native limits still matter.** Claude Code caps a Sitzung at 20 concurrent Subagenten (`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`) und three layers of nesting (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`). It has nein limit on the gesamt number of Agenten a Sitzung starts. Since v2.1.316, `CLAUDE_CODE_SUBAGENT_EFFORT` sets the effort Subagenten ausführen at when nothing else names one, statt the Sitzung's: a lower one makes jede Agent cheaper, und the guard still limits how many ausführen. The guard's defaults are stricter und span Sitzungen; the native caps remain the outer wall for the paths the guard nur counts.
+**Native Limits bleiben wichtig.** Claude Code begrenzt eine Sitzung auf 20 gleichzeitige Subagenten (`CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS`) und drei Verschachtelungsebenen (`CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH`). Die Gesamtzahl der Agenten, die eine Sitzung startet, ist unbegrenzt. Seit v2.1.316 legt `CLAUDE_CODE_SUBAGENT_EFFORT` den Aufwand fest, mit dem Subagenten laufen, wenn nichts anderes einen benennt, statt des Werts der Sitzung: ein niedrigerer macht jeden Agenten billiger, und der Guard begrenzt weiterhin, wie viele laufen. Die Standards des Guards sind strenger und reichen über Sitzungen; die nativen Limits bleiben die äußere Mauer für die Pfade, die der Guard nur zählt.
 
-## See what it did
+## Sieh, was es getan hat
 
 ```text
 /agent-guard report 30
 ```
 
-The report counts Nutzung-limit lockouts (jede locked Fenster once), plan-window threshold crossings, wind-down notes, und every Frage und refusal by rule, mit what you answered. It liest every Sitzung's journal on this machine und nie leaves it. Set `AGENT_GUARD_JOURNAL=0` to stoppen recording.
+Der Bericht zählt Sperren durch Nutzungslimits (jedes gesperrte Fenster einmal), Überschreitungen der Planfenster-Schwellen, Hinweise zum Auslaufen sowie jede Frage und Ablehnung nach Regel, mit deiner Antwort. Er liest das Journal jeder Sitzung auf diesem Rechner und verlässt ihn nie. Setze `AGENT_GUARD_JOURNAL=0`, um die Aufzeichnung zu beenden.
 
-## Security und privacy
+## Sicherheit und Datenschutz
 
-A mod runs inside Claude Code mit your permissions; lesen [what a mod can reach](https://code.claude.com/docs/en/plugins/mods/overview#what-a-mod-can-reach) vorher you installieren one. This one is about 3,000 Zeilen of TypeScript mit nein dependencies, und `claude plugin validate .` lists every API it calls und every environment variable it liest:
+Ein Mod läuft innerhalb von Claude Code mit deinen Berechtigungen; lies [was ein Mod erreichen kann](https://code.claude.com/docs/en/plugins/mods/overview#what-a-mod-can-reach), bevor du eines installierst. Dieses hier ist etwa 3.000 Zeilen TypeScript ohne Abhängigkeiten, und `claude plugin validate .` listet jede API, die es aufruft, und jede Umgebungsvariable, die es liest:
 
-- It makes nein network requests und starts nein processes. The nur Datei it liest is its own `plugin.json`, for the version `/agent-guard status` zeigt.
-- It decides nur what the rules above describe: whether an Agent starts, a Prompt is sent, oder a Werkzeug call runs. It asks you whenever du kannst Antwort, und gives the reason when it refuses. It liest permission modes aber nie ändert them, und it schreibt nein settings.
-- The nur Prompt it submits is your own. After "Compact, dann senden", it takes the Prompt you typed out of the Eingabe box und sendet it unchanged once compaction finishes, oder puts it zurück if compaction fails. A Prompt mit an Bild oder an @ mention stays in the Eingabe box for you to senden, since a resend would drop them.
-- Its Prompt Hook passes your Prompt on unchanged, adds a one-time note for Claude when the Kontext passes 300k oder a plan Fenster reaches 95%, oder holds the Prompt to ask you erste (when nobody can Antwort, it says why instead). Its `SessionStart` Hook ändert nothing.
-- It keeps its state in der Mod store, a JSON Datei under `~/.claude/plugins/store/`. Each Sitzung schreibt its own counts (läuft Agenten, recent starts und dormant resumes, Subagent Tokens per minute, its latest 5-hour reading), when it was letzte active (kept 30 days, so a resumed Sitzung knows how long it sat idle), und its journal rows (Zeit, a Sitzung-id prefix, rule, Werkzeug Name, Kontext bucket such as `400-500k`, plan Fenster und percentage, refusal number, und your Antwort). Each record is stored under the Sitzung's full id, which is auch the Name of that Sitzung's transcript Datei. If the store stops saving, such as when es ist full, the Status Zeile says so: other Sitzungen dann stoppen counting this one.
-- It nie stores Prompt Text, Werkzeug inputs, Fehler Text oder Modell Ausgabe. When a Zug ends on an API Fehler, it liest the Gespräch's letzte Nachricht, the Fehler Claude Code showed, to tell a Nutzung-limit lockout von other failures. A Werkzeug call is reduced to a 13-character fingerprint. Agent names stay in memory und are nie written.
-- Journal days older than 90 days are deleted (`AGENT_GUARD_JOURNAL_DAYS`).
-- `demo/`, which builds the GIF above, is nicht part of what runs. It starts Claude Code in a temporary home Verzeichnis mit a made-up API key for a scripted local API, und liest keine of your credentials.
+- Es stellt keine Netzwerkanfragen und startet keine Prozesse. Die einzige Datei, die es liest, ist sein eigenes `plugin.json`, für die Version, die `/agent-guard status` anzeigt.
+- Es entscheidet nur, was die obigen Regeln beschreiben: ob ein Agent startet, ein Prompt gesendet wird oder ein Werkzeugaufruf läuft. Es fragt dich, wann immer du antworten kannst, und nennt den Grund, wenn es ablehnt. Es liest Berechtigungsmodi, ändert sie aber nie und schreibt keine Einstellungen.
+- Der einzige Prompt, den es einreicht, ist deiner. Nach „Compact, dann senden“ nimmt es den Prompt, den du getippt hast, aus dem Eingabefeld und sendet ihn unverändert, sobald die Komprimierung fertig ist, oder legt ihn zurück, wenn die Komprimierung fehlschlägt. Ein Prompt mit einem Bild oder einer @-Erwähnung bleibt im Eingabefeld, damit du ihn senden kannst, da ein erneutes Senden sie verwerfen würde.
+- Sein Prompt-Hook reicht deinen Prompt unverändert weiter, ergänzt eine einmalige Notiz für Claude, wenn der Kontext 300k überschreitet oder ein Planfenster 95% erreicht, oder hält den Prompt an, um dich zuerst zu fragen (wenn niemand antworten kann, sagt er stattdessen, warum). Sein `SessionStart`-Hook ändert nichts.
+- Es hält seinen Zustand im Mod-Speicher, einer JSON-Datei unter `~/.claude/plugins/store/`. Jede Sitzung schreibt ihre eigenen Zähler (laufende Agenten, kürzliche Starts und ruhende Fortsetzungen, Subagenten-Token pro Minute, ihr letzter 5-Stunden-Wert), wann sie zuletzt aktiv war (30 Tage aufbewahrt, damit eine fortgesetzte Sitzung weiß, wie lange sie untätig war) und ihre Journalzeilen (Zeit, ein Sitzungs-ID-Präfix, Regel, Werkzeugname, Kontextkategorie wie `400-500k`, Planfenster und Prozentwert, Ablehnungsnummer und deine Antwort). Jeder Datensatz wird unter der vollständigen ID der Sitzung gespeichert, die auch der Name der Transkriptdatei dieser Sitzung ist. Wenn der Speicher nicht mehr schreiben kann, etwa weil er voll ist, sagt es die Statuszeile: andere Sitzungen zählen diese dann nicht mehr mit.
+- Es speichert nie Prompt-Text, Werkzeugeingaben, Fehlertext oder Modellausgaben. Wenn ein Zug mit einem API-Fehler endet, liest es die letzte Nachricht der Unterhaltung, den Fehler, den Claude Code gezeigt hat, um eine Sperre durch Nutzungslimit von anderen Fehlern zu unterscheiden. Ein Werkzeugaufruf wird auf einen 13-stelligen Fingerabdruck reduziert. Agentennamen bleiben im Speicher und werden nie geschrieben.
+- Journaltage, die älter als 90 Tage sind, werden gelöscht (`AGENT_GUARD_JOURNAL_DAYS`).
+- `demo/`, das das GIF oben baut, gehört nicht zu dem, was läuft. Es startet Claude Code in einem temporären Home-Verzeichnis mit einem erfundenen API-Key für eine geskriptete lokale API und liest keine deiner Zugangsdaten.
 
-Set `AGENT_GUARD=0` to Zug it off ohne uninstalling it.
+Setze `AGENT_GUARD=0`, um es abzuschalten, ohne es zu deinstallieren.
 
-## Configuration
+## Konfiguration
 
-Set these as environment variables, oder under `env` in `~/.claude/settings.json`. Times are in seconds; a value that isn't a number in range keeps its default, und `/agent-guard` says so.
+Setze diese als Umgebungsvariablen oder unter `env` in `~/.claude/settings.json`. Zeiten sind in Sekunden; ein Wert, der keine Zahl im gültigen Bereich ist, behält seinen Standard, und `/agent-guard` sagt das.
 
-| Variable | Meaning (default) |
+| Variable | Bedeutung (Standard) |
 |---|---|
-| `AGENT_GUARD` | `0`, `false`, `off` oder `no` turns the guard off (`1`) |
-| `AGENT_GUARD_JOURNAL` | `0` stops the journal (`1`) |
-| `AGENT_GUARD_HAIKU_EXEMPT` | `0` counts Haiku Agenten in the läuft und starts limits like any other (`1`: they stay out) |
-| `AGENT_GUARD_JOURNAL_DAYS` | Days of journal kept (`90`) |
-| `AGENT_GUARD_WINDOW_SECONDS` | Rolling Fenster for budgets, burn und refusals (`600`) |
-| `AGENT_GUARD_AGENT_MAX` | Agents läuft at once on this machine (`4`) |
-| `AGENT_GUARD_ROLLING_MAX` | Agent starts und resumes per Fenster on this machine (`12`) |
-| `AGENT_GUARD_AGENT_TOKENS_MAX` | Subagent Tokens per Fenster on this machine (`10000000`) |
-| `AGENT_GUARD_DEPTH_MAX` | Agent layers below the main Gespräch (`1`) |
-| `AGENT_GUARD_LIMIT_ASK_PERCENT` | Plan-window percentage von which neu Agenten ask (`80`) |
-| `AGENT_GUARD_LIMIT_DENY_PERCENT` | Plan-window percentage von which neu Agenten, wakeups und scheduled jobs are refused und jede Sitzung is told to wind down (`95`) |
-| `AGENT_GUARD_BURN_PERCENT` | 5-hour-window points per Fenster that make neu Agenten ask (`20`) |
-| `AGENT_GUARD_CONTEXT_WARN` | Context at which Claude is told once to behalten the Zug bounded (`300000`) |
-| `AGENT_GUARD_CONTEXT_HARD` | Context at which a Prompt asks vorher es ist sent (`500000`) |
-| `AGENT_GUARD_TOOL_CONTEXT` | Context above which Werkzeug calls count against the Werkzeug budget (`400000`) |
-| `AGENT_GUARD_TOOL_MAX` | Tool calls per Fenster above that Kontext (`20`) |
-| `AGENT_GUARD_DORMANT_SECONDS` | Idle Zeit danach which a heavy Sitzung's Cache counts as expired (`3600`) |
-| `AGENT_GUARD_DORMANT_CONTEXT` | Context at which an idle Sitzung counts as heavy (`150000`) |
-| `AGENT_GUARD_DORMANT_MAX` | Heavy dormant resumes per Fenster on this machine when nobody can be asked (`1`) |
-| `AGENT_GUARD_TOOL_FAILURE_MAX` | Identical failures vorher the identical erneut versuchen is refused (`3`) |
-| `AGENT_GUARD_FUSE_MAX` | Refused Agent calls per fuse period that pause spawns (`5`) |
-| `AGENT_GUARD_FUSE_SECONDS` | The fuse period, und how long the pause lasts (`600`) |
-| `AGENT_GUARD_PEER_TTL_SECONDS` | How long another Sitzung's counts, oder an Agent mit nein sign of activity, still count (`900`) |
+| `AGENT_GUARD` | `0`, `false`, `off` oder `no` schaltet den Guard ab (`1`) |
+| `AGENT_GUARD_JOURNAL` | `0` stoppt das Journal (`1`) |
+| `AGENT_GUARD_HAIKU_EXEMPT` | `0` zählt Haiku-Agenten in den Limits für laufende und Starts wie alle anderen (`1`: sie bleiben draußen) |
+| `AGENT_GUARD_JOURNAL_DAYS` | Aufbewahrte Tage des Journals (`90`) |
+| `AGENT_GUARD_WINDOW_SECONDS` | Gleitendes Fenster für Budgets, Verbrauch und Ablehnungen (`600`) |
+| `AGENT_GUARD_AGENT_MAX` | Gleichzeitig laufende Agenten auf diesem Rechner (`4`) |
+| `AGENT_GUARD_ROLLING_MAX` | Agenten-Starts und -Fortsetzungen pro Fenster auf diesem Rechner (`12`) |
+| `AGENT_GUARD_AGENT_TOKENS_MAX` | Subagenten-Token pro Fenster auf diesem Rechner (`10000000`) |
+| `AGENT_GUARD_DEPTH_MAX` | Agentenebenen unter der Hauptunterhaltung (`1`) |
+| `AGENT_GUARD_LIMIT_ASK_PERCENT` | Planfenster-Prozent, ab dem neue Agenten fragen (`80`) |
+| `AGENT_GUARD_LIMIT_DENY_PERCENT` | Planfenster-Prozent, ab dem neue Agenten, Weckrufe und geplante Jobs abgelehnt werden und jede Sitzung zum Auslaufen aufgefordert wird (`95`) |
+| `AGENT_GUARD_BURN_PERCENT` | Punkte des 5-Stunden-Fensters pro Fenster, ab denen neue Agenten fragen (`20`) |
+| `AGENT_GUARD_CONTEXT_WARN` | Kontext, ab dem Claude einmal gesagt wird, den Zug begrenzt zu halten (`300000`) |
+| `AGENT_GUARD_CONTEXT_HARD` | Kontext, ab dem ein Prompt vor dem Senden fragt (`500000`) |
+| `AGENT_GUARD_TOOL_CONTEXT` | Kontext, ab dem Werkzeugaufrufe gegen das Werkzeug-Budget zählen (`400000`) |
+| `AGENT_GUARD_TOOL_MAX` | Werkzeugaufrufe pro Fenster oberhalb dieses Kontexts (`20`) |
+| `AGENT_GUARD_DORMANT_SECONDS` | Untätigkeitszeit, nach der der Cache einer großen Sitzung als abgelaufen gilt (`3600`) |
+| `AGENT_GUARD_DORMANT_CONTEXT` | Kontext, ab dem eine untätige Sitzung als groß gilt (`150000`) |
+| `AGENT_GUARD_DORMANT_MAX` | Große ruhende Fortsetzungen pro Fenster auf diesem Rechner, wenn niemand gefragt werden kann (`1`) |
+| `AGENT_GUARD_TOOL_FAILURE_MAX` | Identische Fehlschläge, bevor der identische Wiederholungsversuch abgelehnt wird (`3`) |
+| `AGENT_GUARD_FUSE_MAX` | Abgelehnte Agenten-Aufrufe pro Sicherungsperiode, die Starts pausieren (`5`) |
+| `AGENT_GUARD_FUSE_SECONDS` | Die Sicherungsperiode und wie lange die Pause dauert (`600`) |
+| `AGENT_GUARD_PEER_TTL_SECONDS` | Wie lange die Zähler einer anderen Sitzung oder ein Agent ohne Aktivitätszeichen noch zählen (`900`) |
 
-The dormant default assumes the one-hour Prompt Cache that subscriptions get within plan Nutzung. With an API key oder extra Nutzung, the Cache lasts five minutes, so set `AGENT_GUARD_DORMANT_SECONDS=300`.
+Der Standard für ruhende Sitzungen setzt den einstündigen Prompt-Cache voraus, den Abos im Rahmen der Plannutzung erhalten. Mit API-Key oder Zusatznutzung hält der Cache fünf Minuten, setze dann `AGENT_GUARD_DORMANT_SECONDS=300`.
 
-## Beyond Claude Code
+## Jenseits von Claude Code
 
-The rules live in a harness-agnostic core (`core/`) that performs nein I/O. The Claude Code mod is its erste adapter. [docs/architecture.md](docs/architecture.md) describes the contract an adapter keeps und what another Agent harness must offer to carry jede rule.
+Die Regeln leben in einem harness-unabhängigen Kern (`core/`), der keine E/A ausführt. Der Claude-Code-Mod ist sein erster Adapter. [docs/architecture.md](docs/architecture.md) beschreibt den Vertrag, den ein Adapter einhält, und was ein anderer Agenten-Harness bieten muss, um jede Regel zu tragen.
 
 ## Tests
 
@@ -185,7 +185,7 @@ claude plugin validate . --strict
 claude plugin test
 ```
 
-`claude plugin test` runs the suite inside Claude Code's own test kit: unit tests of the core, und tests that fire real Claude Code events through the Hooks module mit nein Sitzung, Modell oder network. [TESTING.md](TESTING.md) covers the layers und what jede test proves.
+`claude plugin test` führt die Suite im eigenen Test-Kit von Claude Code aus: Unit-Tests des Kerns und Tests, die echte Claude-Code-Ereignisse über das Hook-Modul feuern, ohne Sitzung, Modell oder Netzwerk. [TESTING.md](TESTING.md) beschreibt die Ebenen und was jeder Test beweist.
 
 ## Lizenz
 

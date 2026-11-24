@@ -1,74 +1,74 @@
-# agentctl — Agent Control Plane for one Claude Code Sitzung
+# agentctl — Agent Control Plane für eine Claude-Code-Sitzung
 
-Tested mit **Claude Code 2.1.288** (headless) und **2.1.289** (interactive, danach the host automatisch-updated) (`claude plugin validate .`, `claude plugin test .`: 203 tests); 0.2.x re-verified live on 2.1.289 (§ Verified live, 0.2.x).
-The mods API is marked changeable between releases; the type declarations the host schreibt in
-`.claude-plugin/types/` are the authority for the installed version. Run `claude plugin validate .`
-danach every Claude Code upgrade.
+Getestet mit **Claude Code 2.1.288** (headless) und **2.1.289** (interaktiv, nachdem der Host sich automatisch aktualisiert hatte) (`claude plugin validate .`, `claude plugin test .`: 203 Tests); 0.2.x wurde am 2.1.289 erneut live verifiziert (§ Live verifiziert, 0.2.x).
+Die Mods-API ist als zwischen Releases veränderlich markiert; die Typdeklarationen, die der Host nach
+`.claude-plugin/types/` schreibt, sind maßgeblich für die installierte Version. Führe `claude plugin validate .`
+nach jedem Claude-Code-Upgrade aus.
 
-Design: `docs/features/agent-control-plane-mod/` in dieses Repository (requirements, feasibility study,
-tech spec, request tickets). This Verzeichnis is nicht part of the sd0x-dev-flow plugin: installing the
-plugin does nicht installieren der Mod. To installieren it, ausführen `/agentctl-setup` (it prüft the host, installs
-`agentctl@sd0xdev-marketplace` danach you genehmigen, und builds your erste Aufgabe Zeile; `/agentctl-setup --task`
-und the workflow Skills draft a proposal for you to accept instead), oder load it for one
+Design: `docs/features/agent-control-plane-mod/` in diesem Repository (Anforderungen, Machbarkeitsstudie,
+technische Spezifikation, Anforderungstickets). Dieses Verzeichnis gehört nicht zum sd0x-dev-flow-Plugin: Die Installation
+des Plugins installiert den Mod nicht. Um ihn zu installieren, führe `/agentctl-setup` aus (es prüft den Host, installiert
+`agentctl@sd0xdev-marketplace`, nachdem du zugestimmt hast, und baut deine erste Aufgaben-Zeile; `/agentctl-setup --task`
+und die Workflow-Skills entwerfen stattdessen einen Vorschlag für dich), oder lade ihn für eine
 Sitzung mit `claude --plugin-dir mods/agentctl`.
 
-## First ausführen
+## Erster Lauf
 
-Type what you are doing — you do nicht need any other Befehl:
+Tippe, was du tust — du brauchst keinen anderen Befehl:
 
 ```text
-/agentctl Dieses neue Feature ausprobieren
+/agentctl 測試一下這個新功能
 ```
 
-1. Der Mod puts a request for Claude in your Prompt box (it nie sendet it). Press **Enter**.
-2. Claude liest the Projekt und drafts a scope — what it may edit, which prüft count as evidence,
-   what "fertig" means — und schreibt it mit the helper bundled in der Mod (`bin/propose.mjs`). If
-   something is unclear it asks you statt inventing permissions.
-3. At the end of that reply der Mod zeigt the scope und offers `/agentctl accept <digest>` in the box:
-   **Tab**, dann **Enter**. Accepting binds the scope; it starts nein work.
-4. Ask Claude to begin. `/agentctl` zeigt where things stand und what to do nächste — ausführen the prüft,
-   dann `/agentctl handoff` — und `/agentctl help` lists the rest.
+1. Der Mod legt eine Anfrage für Claude in dein Prompt-Feld (er sendet sie nie). Drücke **Enter**.
+2. Claude liest das Projekt und entwirft einen Umfang — was es ändern darf, welche Prüfungen als Nachweis zählen,
+   was „fertig“ bedeutet — und schreibt ihn mit dem im Mod gebündelten Helfer (`bin/propose.mjs`). Wenn
+   etwas unklar ist, fragt es dich, statt Berechtigungen zu erfinden.
+3. Am Ende dieser Antwort zeigt der Mod den Umfang und bietet `/agentctl accept <digest>` im Feld an:
+   **Tab**, dann **Enter**. Das Akzeptieren bindet den Umfang; es startet keine Arbeit.
+4. Bitte Claude zu beginnen. `/agentctl` zeigt, wo die Dinge stehen und was als Nächstes zu tun ist — die Prüfungen
+   ausführen, dann `/agentctl handoff` — und `/agentctl help` listet den Rest.
 
-A tester who had nicht lesen the design walked steps 1–4 und the hand-over unaided (§ Uncoached ausführen).
+Ein Tester, der das Design nicht gelesen hatte, ging die Schritte 1–4 und die Übergabe ohne Hilfe durch (§ Unbegleiteter Lauf).
 
-Sending the request is an ordinary Claude Zug; der Mod itself calls nein Modell. Replies verwenden Traditional
-Chinese when your goal is written in Chinese, English otherwise — a simple heuristic, nicht locale
-detection.
+Das Senden der Anfrage ist ein gewöhnlicher Claude-Zug; der Mod selbst ruft kein Modell auf. Antworten verwenden Traditional
+Chinese, wenn dein Ziel auf Chinesisch geschrieben ist, sonst Englisch — eine einfache Heuristik, keine
+Sprachumgebungs-Erkennung.
 
-## What it does
+## Was es tut
 
-| Function | How |
+| Funktion | Wie |
 |---|---|
-| Task scope | Claude drafts a proposal (`/agentctl-setup --task`, oder `/feature-dev`, `/bug-fix`, `/refactor` when der Mod is installed); der Mod previews it und `/agentctl accept` typed at your own Prompt binds exactly what was previewed — see § Proposals. `/agentctl task set <json>` typed at your Prompt auch binds a Aufgabe to the worktree. Tool Ausgabe, Dateien und Nachrichten cannot ändern it — nur a Befehl you type. The binding is per worktree, so your own `task set` / `task clear` in another Sitzung on the same worktree does replace oder leeren it. Task records und hand-overs are kept per worktree, so the same Aufgabe id in two worktrees names two separate Aufgaben. A store Fehler is reported as such, und the previous Aufgabe keeps applying; a binding whose record is missing refuses everything aber liest in the worktree |
-| Refusal | A ablehnen-list. Recognized direct production schreibt und remote git schreibt are refused **mit oder ohne a Aufgabe**; while a Aufgabe is bound, its own `forbid` entries und edits outside its roots are refused too. Edit roots bind the edit Werkzeuge (Write, Edit, NotebookEdit); a Datei written through a shell redirect is a Bash Befehl der Mod cannot classify, so it goes to the host — the refusal tells Claude nicht to reach the same Ergebnis another way, aber roots are nicht a sandbox. Everything der Mod cannot classify — scripts, compound shell, unknown Werkzeuge — goes to Claude Code's own permission Prompt oder automatisch mode, recorded as `delegated`. A downstream ablehnen is nie weakened und an erlauben is nie created. **Best-effort**: der Mod liest jede Werkzeug call, nie a script's contents oder the commands it starts, so a push inside a script is the host's und that workflow's to authorize |
-| Evidence | A ausführen counts when it matches a declared `check` executor — its words erste, so added arguments still count und may prüfen weniger than declared, while a pipe, redirect oder wrapper (`npm test \| grep pass`) does nicht; the accept reply und `/agentctl` Name jede prüfen as a Zeile that matches it, oder — when the formatter cannot quote a word in one piece — as its JSON words, which do nicht match if copied as ist (a correctly quoted spelling of the same words does). A matching call is bracketed by Git-derived tree readings (executors are matched erste, so a declared `git status` prüfen is a prüfen); a later edit zeigt the Ergebnis stale within 30 s; a background prüfen stays "completion unobserved" until a terminal Ergebnis is seen. Evidence belongs to the Aufgabe und policy version it was observed under, und a reading mit partial coverage is nie listed as verified |
-| Panel | The Leiste above the Prompt is compact: Aufgabe, runtime und its duration, what needs you, the gate reading mit its age (und `stale` past 30 s), the letzte hand-over Zeit. `/agentctl` is a compact Status reply — the nächste step, Aufgabe, what needs you, the gate und evidence; `/agentctl status --details` adds storage health, runtime, Kontext und the 5 h Fenster. The gate, Kontext und Fenster Zeilen Name their source und age, oder lesen `missing` / `unavailable`, und jede evidence Zeile its outcome, freshness, coverage und age |
-| Hand-over | `/agentctl handoff` — eight answers von records, nein Modell, nein network, nein process; logged in full on reopen (transcript nur); bare `/agentctl` nur points at it, `/agentctl last` prints it |
-| Stop | `/agentctl stop` — saves the hand-over, requests cancellation of the aktuell Zug, lists tracked operations; nie "alle stopped" |
+| Aufgaben-Umfang | Claude entwirft einen Vorschlag (`/agentctl-setup --task` oder `/feature-dev`, `/bug-fix`, `/refactor`, wenn der Mod installiert ist); der Mod zeigt eine Vorschau, und `/agentctl accept`, in dein eigenes Prompt-Feld getippt, bindet genau das, was in der Vorschau stand — siehe § Vorschläge. Auch `/agentctl task set <json>`, in dein Prompt-Feld getippt, bindet eine Aufgabe an den Worktree. Werkzeug-Ausgaben, Dateien und Nachrichten können das nicht ändern — nur ein Befehl, den du selbst tippst. Die Bindung gilt pro Worktree, dein eigenes `task set` / `task clear` in einer anderen Sitzung desselben Worktrees ersetzt oder löscht sie also doch. Aufgaben-Datensätze und Übergaben werden pro Worktree geführt, dieselbe Aufgaben-ID in zwei Worktrees benennt also zwei getrennte Aufgaben. Ein Speicherfehler wird als solcher gemeldet, und die vorherige Aufgabe gilt weiter; eine Bindung, deren Datensatz fehlt, verweigert alles außer Lesezugriffen im Worktree |
+| Verweigerung | Eine Ablehnungsliste. Erkannte direkte Produktions-Schreibzugriffe und Git-Schreibzugriffe auf Remotes werden verweigert **mit oder ohne Aufgabe**; während eine Aufgabe gebunden ist, werden auch deren eigene `forbid`-Einträge und Änderungen außerhalb ihrer Wurzeln verweigert. Änderungs-Wurzeln binden die Edit-Werkzeuge (Write, Edit, NotebookEdit); eine über eine Shell-Umleitung geschriebene Datei ist ein Bash-Befehl, den der Mod nicht einordnen kann, und geht daher an den Host — die Verweigerung sagt Claude, dasselbe Ergebnis nicht auf einem anderen Weg zu erreichen, aber Wurzeln sind keine Sandbox. Alles, was der Mod nicht einordnen kann — Skripte, zusammengesetzte Shell, unbekannte Werkzeuge — geht an den eigenen Berechtigungsdialog oder Auto-Modus von Claude Code und wird als `delegated` protokolliert. Eine nachgelagerte Ablehnung wird nie abgeschwächt und eine Erlaubnis nie erzeugt. **Best-Effort**: Der Mod liest jeden Werkzeugaufruf, nie den Inhalt eines Skripts oder die von ihm gestarteten Befehle, ein Push in einem Skript ist also Sache des Hosts und jenes Workflows, ihn zu autorisieren |
+| Nachweise | Ein Lauf zählt, wenn er zu einem deklarierten `check`-Executor passt — zuerst seine Worte, sodass zusätzliche Argumente weiterhin zählen und er weniger prüfen darf als deklariert, während eine Pipe, Umleitung oder ein Wrapper (`npm test \| grep pass`) nicht zählt; die Accept-Antwort und `/agentctl` nennen jede Prüfung als eine Zeile, die zu ihr passt, oder — wenn der Formatterer ein Wort nicht in einem Stück zitieren kann — als ihre JSON-Worte, die nicht passen, wenn man sie unverändert kopiert (eine korrekt zitierte Schreibweise derselben Worte passt). Ein passender Aufruf wird von baumbezogenen Git-Ablesungen eingeschlossen (Executoren werden zuerst abgeglichen, eine deklarierte `git status`-Prüfung ist also eine Prüfung); eine spätere Änderung zeigt das Ergebnis binnen 30 s als veraltet; eine Hintergrundprüfung bleibt „Abschluss unbeobachtet“, bis ein terminales Ergebnis gesehen wird. Nachweise gehören zu der Aufgabe und der Policy-Version, unter der sie beobachtet wurden, und eine Ablesung mit teilweiser Abdeckung wird nie als verifiziert gelistet |
+| Leiste | Das Band über dem Prompt ist kompakt: Aufgabe, Laufzeit und deren Dauer, was dich braucht, die Gate-Ablesung mit ihrem Alter (und `stale` nach 30 s), die letzte Übergabezeit. `/agentctl` ist eine kompakte Statusantwort — der nächste Schritt, die Aufgabe, was dich braucht, das Gate und die Nachweise; `/agentctl status --details` ergänzt Speichergesundheit, Laufzeit, Kontext und das 5-h-Fenster. Die Zeilen für Gate, Kontext und Fenster nennen ihre Quelle und ihr Alter oder lauten `missing` / `unavailable`, und jede Nachweiszeile nennt ihr Ergebnis, ihre Frische, Abdeckung und ihr Alter |
+| Übergabe | `/agentctl handoff` — acht Antworten aus Datensätzen, kein Modell, kein Netzwerk, kein Prozess; beim Wiederöffnen vollständig protokolliert (nur Transkript); das bloße `/agentctl` zeigt nur darauf, `/agentctl last` gibt es aus |
+| Stopp | `/agentctl stop` — speichert die Übergabe, fordert den Abbruch des laufenden Zugs an, listet verfolgte Vorgänge; nie „alles gestoppt“ |
 
-## Proposals
+## Vorschläge
 
-Claude schreibt `~/.claude/agentctl/proposals/<URI-encoded worktree>.json` (outside the worktree) through
-der Mod's bundled `bin/propose.mjs` (the `/agentctl <goal>` Pfad) oder sd0x-dev-flow's
-`agentctl-setup.js propose` (setup und workflow Skills); both apply der Mod's own validation erste. At Sitzung starten und at the
-end of jede main Zug der Mod liest it once, validates it erneut, und keeps the **effective** object:
-the worktree comes von the Sitzung, a proposal naming another worktree, drafted against a Aufgabe that
-is nein longer bound, oder overlapping a built-in class is refused (the reason is logged). The preview
-lists every permission being accepted mit a SHA-256 digest (24 hex) in the transcript und the Leiste.
-Each entry is shown up to 160 characters; a longer one ends in `…`, und the digest — und what accept
-binds — still covers alle of it, so discard a draft whose entries you cannot see whole.
+Claude schreibt `~/.claude/agentctl/proposals/<URI-encoded worktree>.json` (außerhalb des Worktrees) über
+den gebündelten `bin/propose.mjs` des Mods (den `/agentctl <goal>`-Pfad) oder sd0x-dev-flows
+`agentctl-setup.js propose` (Setup und Workflow-Skills); beide wenden zuerst die eigene Validierung des Mods an. Bei Sitzungsbeginn und am
+Ende jedes Haupt-Zugs liest der Mod ihn einmal, validiert ihn erneut und behält das **tatsächlich gültige** Objekt:
+Der Worktree kommt aus der Sitzung, ein Vorschlag, der einen anderen Worktree benennt, gegen eine Aufgabe entworfen wurde,
+die nicht mehr gebunden ist, oder sich mit einer eingebauten Klasse überschneidet, wird verweigert (der Grund wird protokolliert). Die Vorschau
+listet jede akzeptierte Berechtigung mit einem SHA-256-Digest (24 Hex) im Transkript und im Band.
+Jeder Eintrag wird bis zu 160 Zeichen angezeigt; ein längerer endet mit `…`, und der Digest — und was accept
+bindet — umfasst weiterhin alles, verwirfe also einen Entwurf, dessen Einträge du nicht vollständig siehst.
 
-| Command | Who | Does |
+| Befehl | Wer | Tut |
 |---|---|---|
-| `/agentctl proposal` | anyone | Prints the waiting preview |
-| `/agentctl accept [digest prefix]` | **your Prompt nur** | Binds the retained object — nie the Datei re-read — if the bound Aufgabe has nicht changed since the preview |
-| `/agentctl discard` | anyone | Drops the waiting proposal; the bound Aufgabe stays |
+| `/agentctl proposal` | jeder | Gibt die wartende Vorschau aus |
+| `/agentctl accept [digest prefix]` | **nur dein Prompt-Feld** | Bindet das beibehaltene Objekt — nie die Datei erneut gelesen — wenn sich die gebundene Aufgabe seit der Vorschau nicht geändert hat |
+| `/agentctl discard` | jeder | Verwirft den wartenden Vorschlag; die gebundene Aufgabe bleibt |
 
-Changing the Datei later produces a neu preview und digest; an older digest nein longer matches.
-Concurrent Sitzungen on one worktree share one binding und one store, which is nicht atomic across
-Sitzungen: accept in the Sitzung that showed the preview.
+Eine spätere Änderung der Datei erzeugt eine neue Vorschau und einen neuen Digest; ein älterer Digest passt nicht mehr.
+Gleichzeitige Sitzungen an einem Worktree teilen sich eine Bindung und einen Speicher, die über
+Sitzungen hinweg nicht atomar sind: akzeptiere in der Sitzung, die die Vorschau gezeigt hat.
 
-## Task JSON
+## Aufgaben-JSON
 
 ```json
 {
@@ -83,141 +83,141 @@ Sitzungen: accept in the Sitzung that showed the preview.
 }
 ```
 
-Built-in forbidden classes apply mit oder ohne a Aufgabe, on top of a Aufgabe's own: production schreibt (`kubectl apply|delete|patch|rollout|scale|edit|replace`,
-`helm install|upgrade|uninstall|rollback`, `gcloud … deploy|delete|update`) und remote git schreibt
-(`git push`, `gh pr merge`). Secrets nie belong in a Aufgabe: a credential-like value in a policy field
-is refused.
+Eingebaute verbotene Klassen gelten mit oder ohne Aufgabe, zusätzlich zu den eigenen einer Aufgabe: Produktions-Schreibzugriffe (`kubectl apply|delete|patch|rollout|scale|edit|replace`,
+`helm install|upgrade|uninstall|rollback`, `gcloud … deploy|delete|update`) und Git-Schreibzugriffe auf Remotes
+(`git push`, `gh pr merge`). Geheimnisse gehören nie in eine Aufgabe: ein credential-artiger Wert in einem Policy-Feld
+wird verweigert.
 
-`needsUser` asks nur where a person was seen answering: the interactive terminal under the
-`default` (manuell), `acceptEdits` und `auto` permission modes (`lib/verdict.js`). The mode is lesen
-von the classic Hook inputs at jede Prompt und Werkzeug end; until one has been seen, und on every other
-surface oder mode — `-p`, `dontAsk`, `plan`, `bypassPermissions`, Desktop, VS Code, mobile — a
-`needsUser` call is refused. A mode switched in the middle of a Zug is seen at the nächste Werkzeug end.
+`needsUser` fragt nur dort, wo ein Mensch beim Antworten gesehen wurde: das interaktive Terminal unter den
+Berechtigungsmodi `default` (manuell), `acceptEdits` und `auto` (`lib/verdict.js`). Der Modus wird
+bei jedem Prompt und jedem Werkzeug-Ende aus den klassischen Hook-Eingaben gelesen; bis einer gesehen wurde, und auf jeder anderen
+Fläche oder in jedem anderen Modus — `-p`, `dontAsk`, `plan`, `bypassPermissions`, Desktop, VS Code, mobil — wird
+ein `needsUser`-Aufruf verweigert. Ein Moduswechsel mitten im Zug wird beim nächsten Werkzeug-Ende gesehen.
 
-## What es ist nicht
+## Was es nicht ist
 
-- **Not an isolation boundary.** It runs mit your permissions. Production lesen-only is the job of
-  your credentials und the target's IAM/RBAC.
-- **Not the nur Zeile.** If the host skips its Hook (mod deaktiviert, worker crash) nothing here refuses.
-  Keep named dangerous commands in your own `permissions.deny`, zum Beispiel:
+- **Keine Isolationsgrenze.** Es läuft mit deinen Berechtigungen. Produktions-Read-only ist die Aufgabe
+deiner Zugangsdaten und des IAM/RBAC des Ziels.
+- **Nicht die einzige Linie.** Wenn der Host seinen Hook überspringt (Mod deaktiviert, Worker-Absturz), verweigert hier nichts.
+  Halte benannte gefährliche Befehle in deinem eigenen `permissions.deny`, zum Beispiel:
 
   ```json
   { "permissions": { "deny": ["Bash(kubectl delete:*)", "Bash(kubectl rollout:*)", "Bash(helm upgrade:*)"] } }
   ```
 
-  Those rules match Befehl Text, nicht programs (`git -C . push` is a different Text), which is why
-  both layers exist. `Bash(git push:*)` is left out on purpose: sd0x-dev-flow's `/push-ci` runs it.
-- Another mod kann ändern a verdict at `tool.check`; dieser Mod discloses that in `/agentctl policy`.
-- Authorized executors (e.g. `npm test`) ausführen mit their effects unclassified.
+  Diese Regeln passen auf Befehlstext, nicht auf Programme (`git -C . push` ist ein anderer Text), weshalb
+  es beide Ebenen gibt. `Bash(git push:*)` bleibt absichtlich außen vor: sd0x-dev-flows `/push-ci` führt es aus.
+- Ein anderer Mod kann ein Urteil an `tool.check` ändern; dieser Mod legt das in `/agentctl policy` offen.
+- Autorisierte Executoren (z. B. `npm test`) laufen mit unklassifizierten Wirkungen.
 
-## Develop
+## Entwickeln
 
 ```bash
-cd mods/agentctl            # from the repository root
-claude plugin validate .   # hooks and $ calls: no $.model.*, $.http.*, $.tool.register, $.prompt.submit (fill/suggest/read allowed)
-claude plugin test .       # every *.test.ts under tests/
+cd mods/agentctl            # vom Repository-Wurzelverzeichnis aus
+claude plugin validate .   # hooks und $-Aufrufe: kein $.model.*, $.http.*, $.tool.register, $.prompt.submit (fill/suggest/read erlaubt)
+claude plugin test .       # jede *.test.ts unter tests/
 ```
 
 ## Release
 
-Der Mod is versioned on its own und released under `agentctl-v<version>` tags
-(`.github/workflows/release-agentctl.yml`), separate von sd0x-dev-flow's releases. Claude Code caches an
-installed plugin by version, so a ändern to anything aber this README oder `tests/` needs a version bump:
-raise `"version"` in `.claude-plugin/plugin.json`, dann ausführen `node .github/scripts/agentctl-version.js update`
-von the Repository root (oder `/bump-version agentctl`). CI's version lock fails until both are fertig, und
-CI auch runs `claude plugin validate` und `claude plugin test` here.
+Der Mod wird eigenständig versioniert und unter `agentctl-v<version>`-Tags veröffentlicht
+(`.github/workflows/release-agentctl.yml`), getrennt von sd0x-dev-flows Releases. Claude Code cacht ein
+installiertes Plugin nach Version, eine Änderung an allem außer diesem README oder `tests/` braucht also einen Versionssprung:
+erhöhe `"version"` in `.claude-plugin/plugin.json` und führe dann `node .github/scripts/agentctl-version.js update`
+vom Repository-Wurzelverzeichnis aus (oder `/bump-version agentctl`). CIs Version-Sperre schlägt fehl, bis beides erledigt ist, und
+CI führt hier außerdem `claude plugin validate` und `claude plugin test` aus.
 
-## Verified live (2026-10-04, scratch Repository: headless `claude -p --plugin-dir` on 2.1.288, interactive tmux on 2.1.289)
+## Live verifiziert (2026-10-04, Scratch-Repository: headless `claude -p --plugin-dir` auf 2.1.288, interaktives tmux auf 2.1.289)
 
-These rows record version 0.1.0. Since 0.2.0 an unclassified call is delegated to the host instead
-of refused, und the proposal commands exist; the 0.2.x rows follow the table.
+Diese Zeilen halten Version 0.1.0 fest. Seit 0.2.0 wird ein unklassifizierter Aufruf an den Host delegiert, statt
+verweigert zu werden, und es gibt die Vorschlags-Befehle; die 0.2.x-Zeilen folgen der Tabelle.
 
-| Check | Result |
+| Prüfung | Ergebnis |
 |---|---|
-| Load und `/agentctl` under `-p` | Loads for the Sitzung nur; replies in ~3.7 s mit nein Modell Zug |
-| `task set` von a `-p` Prompt | Refused: a `-p` Prompt is nicht stamped `composer`. Headless runs cannot set a Aufgabe; set it von an interactive Prompt |
-| Forbidden und unclassified Bash calls | Refused vorher läuft, rule named (`task-forbid: …`, `unclassified: python3 has no adapter`) |
-| An allowed lesen (`git status`) | Went to the host's own permission Pfad und ran |
-| A prüfen exiting non-zero (`sh check.sh` → exit 1) | Recorded as `error`: a non-zero Bash exit reaches der Mod as `isError` |
-| Evidence bracket | Before/danach readings recorded, coverage `git-hybrid` |
-| Two concurrent Sitzungen | Both Sitzung records written; the Aufgabe record kept |
-| Leftover processes danach exit | None |
-| Tree reading Kosten | ~90 ms mit 500 changed/untracked Dateien; ~75 ms on a clean 974-file Repository |
-| 5 h Fenster danach a Modell Zug (V7) | `1% (resets …)` lesen von the host, mit its source und age |
-| Background prüfen (V5, background half) | Closed von the host's Aufgabe Benachrichtigung (`<task-id>`, `<status>`) as `error` — nein polling needed. `TaskGet` is the todo-list Werkzeug; `GetTask` liest background Aufgaben |
-| Subagent Werkzeug calls (V4) | A Subagent's `danger-cmd` was refused by the same rule |
-| `ask` under `-p` (V3, `-p` nur) | With a probe copy answering `ask`, neither tested headless configuration (mit und ohne an erlauben rule for Bash) ran the Befehl on 2.1.288 — the probe's `ask` was nicht automatisch-approved |
-| `/agentctl stop` under `-p` stream Eingabe (V6) | The Eingabe was processed danach the Zug ended, so `immediate` does nicht apply there; the reply said nein läuft Zug was observed — nie "stopped" |
-| MCP Werkzeug calls (V4) | A probe MCP Werkzeug was refused as unclassified until the Aufgabe named it, dann ran |
-| Interactive terminal in tmux (V10) | The Leiste renders CJK goal Text correctly at 80 und 50 columns, wrapping to two und three Zeilen |
-| `/agentctl stop` during a läuft foreground Werkzeug, interactive (V6) | Ran at once (`immediate`); the Zug was cancelled; the host moved the läuft Befehl to the background, where it kept läuft — the reply listed it as läuft und nie said "stopped"; when it fertig, the host's Benachrichtigung closed its evidence |
-| `ask` on the interactive terminal in manuell mode (V3) | With a probe copy answering `ask`, the host showed its own approval dialog mit der Mod's reason (Yes / No, nein "don't ask erneut"); declining interrupted the call; re-run mit the shipped code (manuell: dialog; `dontAsk`: refused by der Mod), und mit a probe copy under `acceptEdits` und `auto` (dialog) und `dontAsk` (refused). The strings the host sendet were lesen von a plain classic `UserPromptSubmit` Hook (2.1.289): `default`, `acceptEdits`, `auto`, `plan` und `dontAsk` jede arrive verbatim; on a Modell ohne automatisch mode (Haiku) `--permission-mode auto` falls zurück to `default` |
-| Interactive starten (found live) | `session.start` und the erste Leiste render arrive together; two concurrent Kontext builds left the Leiste on an orphaned Kontext (`gates missing`). Fixed: one shared build |
-| Install, deaktivieren, deinstallieren (Signal 12) | Installed von a local marketplace, ran, deaktiviert (`/agentctl` gone), uninstalled: nein mod process left, the `permissions` settings byte-identical. The host itself left an empty `extraKnownMarketplaces` key, a plugin Cache Verzeichnis und an empty `installed_plugins.json`; der Mod leaves nur its own store Datei. All were restored und verified byte-identical afterwards |
+| Laden und `/agentctl` unter `-p` | Lädt nur für die Sitzung; antwortet in ~3,7 s ohne Modell-Zug |
+| `task set` aus einem `-p`-Prompt | Verweigert: ein `-p`-Prompt ist nicht als `composer` gestempelt. Headless-Läufe können keine Aufgabe setzen; setze sie aus einem interaktiven Prompt |
+| Verbotene und unklassifizierte Bash-Aufrufe | Vor dem Ausführen verweigert, Regel benannt (`task-forbid: …`, `unclassified: python3 has no adapter`) |
+| Ein erlaubter Lesezugriff (`git status`) | Ging an den eigenen Berechtigungspfad des Hosts und lief |
+| Eine Prüfung mit Exit-Code ungleich null (`sh check.sh` → exit 1) | Als `error` festgehalten: ein Bash-Exit ungleich null erreicht den Mod als `isError` |
+| Nachweis-Klammer | Vorher-/Nachher-Ablesungen festgehalten, Abdeckung `git-hybrid` |
+| Zwei gleichzeitige Sitzungen | Beide Sitzungsdatensätze geschrieben; der Aufgaben-Datensatz blieb |
+| Restprozesse nach dem Beenden | Keine |
+| Kosten der Baum-Ablesung | ~90 ms mit 500 geänderten/unverfolgten Dateien; ~75 ms in einem sauberen Repository mit 974 Dateien |
+| 5-h-Fenster nach einem Modell-Zug (V7) | `1% (resets …)` vom Host gelesen, mit seiner Quelle und seinem Alter |
+| Hintergrundprüfung (V5, Hintergrundhälfte) | Vom Task-Hinweis des Hosts geschlossen (`<task-id>`, `<status>`) als `error` — kein Polling nötig. `TaskGet` ist das Todo-Listen-Werkzeug; `GetTask` liest Hintergrundaufgaben |
+| Subagenten-Werkzeugaufrufe (V4) | Der `danger-cmd` eines Subagenten wurde von derselben Regel verweigert |
+| `ask` unter `-p` (V3, nur `-p`) | Mit einer Probe-Kopie, die `ask` beantwortet, führte keine der getesteten Headless-Konfigurationen (mit und ohne Allow-Regel für Bash) den Befehl auf 2.1.288 aus — das `ask` der Probe wurde nicht automatisch genehmigt |
+| `/agentctl stop` unter `-p`-Stream-Eingabe (V6) | Die Eingabe wurde verarbeitet, nachdem der Zug geendet hatte, `immediate` greift dort also nicht; die Antwort sagte, es wurde kein laufender Zug beobachtet — nie „gestoppt“ |
+| MCP-Werkzeugaufrufe (V4) | Ein Probe-MCP-Werkzeug wurde als unklassifiziert verweigert, bis die Aufgabe es benannte, dann lief es |
+| Interaktives Terminal in tmux (V10) | Das Band rendert CJK-Zieltext korrekt bei 80 und 50 Spalten und bricht auf zwei bzw. drei Zeilen um |
+| `/agentctl stop` während eines laufenden Vordergrund-Werkzeugs, interaktiv (V6) | Lief sofort (`immediate`); der Zug wurde abgebrochen; der Host verschob den laufenden Befehl in den Hintergrund, wo er weiterlief — die Antwort listete ihn als laufend und sagte nie „gestoppt“; als er fertig wurde, schloss der Hinweis des Hosts seinen Nachweis |
+| `ask` im interaktiven Terminal im manuellen Modus (V3) | Mit einer Probe-Kopie, die `ask` beantwortet, zeigte der Host seinen eigenen Genehmigungsdialog mit dem Grund des Mods (Yes / No, kein „don't ask again“); Ablehnen unterbrach den Aufruf; erneuter Lauf mit dem ausgelieferten Code (manuell: Dialog; `dontAsk`: vom Mod verweigert) und mit einer Probe-Kopie unter `acceptEdits` und `auto` (Dialog) und `dontAsk` (verweigert). Die Strings, die der Host sendet, wurden aus einem schlichten klassischen `UserPromptSubmit`-Hook gelesen (2.1.289): `default`, `acceptEdits`, `auto`, `plan` und `dontAsk` kommen jeweils unverändert an; bei einem Modell ohne Auto-Modus (Haiku) fällt `--permission-mode auto` auf `default` zurück |
+| Interaktiver Start (live gefunden) | `session.start` und das erste Rendern des Bands kommen zusammen an; zwei gleichzeitige Kontext-Aufbauten ließen das Band auf einem verwaisten Kontext zurück (`gates missing`). Behoben: ein gemeinsamer Aufbau |
+| Installieren, deaktivieren, deinstallieren (Signal 12) | Aus einem lokalen Marketplace installiert, lief, deaktiviert (`/agentctl` verschwunden), deinstalliert: kein Mod-Prozess übrig, die `permissions`-Einstellungen byte-identisch. Der Host selbst ließ einen leeren `extraKnownMarketplaces`-Schlüssel, ein Plugin-Cache-Verzeichnis und eine leere `installed_plugins.json` zurück; der Mod hinterlässt nur seine eigene Speicherdatei. Alles wurde danach wiederhergestellt und byte-identisch verifiziert |
 
-Removal: `--plugin-dir` installs nothing und ändert nein setting. Der Mod's own data stays in
-`~/.claude/plugins/store/agentctl_*.json` (Sitzungen, Aufgaben, checkpoints), und drafted proposals in
-`~/.claude/agentctl/proposals/`; delete them to entfernen it.
+Entfernen: `--plugin-dir` installiert nichts und ändert keine Einstellung. Die eigenen Daten des Mods bleiben in
+`~/.claude/plugins/store/agentctl_*.json` (Sitzungen, Aufgaben, Checkpoints) und entworfene Vorschläge in
+`~/.claude/agentctl/proposals/`; lösche sie, um ihn zu entfernen.
 
-## Verified live, 0.2.x (2026-10-05, scratch clone mit a scratch bare remote, 2.1.289, Haiku)
+## Live verifiziert, 0.2.x (2026-10-05, Scratch-Klon mit einem Scratch-Bare-Remote, 2.1.289, Haiku)
 
-| Check | Result |
+| Prüfung | Ergebnis |
 |---|---|
-| Direct `git push` mit nein Aufgabe bound (`-p`) | Refused `remote-git-write` vorher läuft; the remote stayed empty |
-| Unclassified `python3 -c …` und a script that pushes (`/bin/bash -p push.sh`, `-p`) | Both passed to the host und ran; the script's push reached git (rejected by the scratch remote itself, nicht by der Mod) — the disclosed script blindness |
-| Proposal written by `agentctl-setup.js propose`, interactive starten | The preview was logged at Sitzung starten mit the helper's digest, und the Leiste named the waiting proposal |
-| `/agentctl accept <digest>` typed at the Prompt | Bound the previewed scope as a neu Aufgabe; ohne a `base` the helper printed nein digest, der Mod filled the bound Aufgabe in und its own digest was accepted |
-| A declared prüfen, an unclassified call, an edit outside the roots, a direct push (bound Aufgabe) | Check recorded as `current` evidence; `python3` delegated und listed as such by `/agentctl events`; the edit refused `edit outside the allowed roots`; the push refused `remote-git-write` |
-| An untracked Datei added von outside | The prüfen lesen `stale (tree changed since)` within 32 s |
-| `/agentctl handoff`, reopen, `/agentctl`, `/agentctl last` | Hand-over states when the tree was lesen und lists the stale prüfen under Not verified; on reopen the transcript zeigt it, bare `/agentctl` prints one pointer Zeile, `/agentctl last` the whole of it |
-| Found live und fixed in 0.2.1 | An accepted proposal Datei was lesen erneut by the nächste Sitzung as a stale draft (jetzt remembered per worktree); the built-in refusal said "the Aufgabe's scope", und Claude dann proposed widening the Aufgabe (jetzt: "a built-in class nein Aufgabe can lift"); transcript Zeilen lesen `agentctl: agentctl:` |
-| Cost of the two `-p` probes | 2–3 turns jede, ≈ $0.06 jede on Haiku; der Mod's own replies, previews und Leiste call nein Modell |
-| Independent adversarial test (Codex, 2026-10-05), fixed in 0.2.2 | An absolute oder upper-case program Pfad (`/usr/bin/git push`, `GIT push`) slipped past the built-in classes; an edit root such as `../other` authorized schreibt outside the worktree; the proposal cap counted characters, nicht UTF-8 bytes; mit nein Aufgabe bound, delegated calls were nicht recorded in `/agentctl events`. Digest agreement, prototype keys, other-worktree refusal, evidence partitioning und partial coverage held |
+| Direktes `git push` ohne gebundene Aufgabe (`-p`) | Vor dem Ausführen `remote-git-write` verweigert; das Remote blieb leer |
+| Unklassifiziertes `python3 -c …` und ein Skript, das pusht (`/bin/bash -p push.sh`, `-p`) | Beide an den Host weitergegeben und ausgeführt; der Push des Skripts erreichte git (vom Scratch-Remote selbst abgelehnt, nicht vom Mod) — die offengelegte Skript-Blindheit |
+| Von `agentctl-setup.js propose` geschriebener Vorschlag, interaktiver Start | Die Vorschau wurde bei Sitzungsbeginn mit dem Digest des Helfers protokolliert, und das Band benannte den wartenden Vorschlag |
+| `/agentctl accept <digest>` am Prompt getippt | Band den in der Vorschau gezeigten Umfang als neue Aufgabe; ohne `base` gab der Helfer keinen Digest aus, der Mod füllte die gebundene Aufgabe ein und sein eigener Digest wurde akzeptiert |
+| Eine deklarierte Prüfung, ein unklassifizierter Aufruf, eine Änderung außerhalb der Wurzeln, ein direkter Push (gebundene Aufgabe) | Prüfung als `current`-Nachweis festgehalten; `python3` delegiert und von `/agentctl events` als solches gelistet; die Änderung verweigerte `edit outside the allowed roots`; der Push verweigerte `remote-git-write` |
+| Eine unverfolgte Datei, von außerhalb hinzugefügt | Die Prüfung las innerhalb von 32 s `stale (tree changed since)` |
+| `/agentctl handoff`, Wiederöffnen, `/agentctl`, `/agentctl last` | Die Übergabe nennt, wann der Baum gelesen wurde, und listet die veraltete Prüfung unter „Nicht verifiziert“; beim Wiederöffnen zeigt das Transkript sie, das bloße `/agentctl` gibt eine Zeile mit Verweis aus, `/agentctl last` das Ganze |
+| Live gefunden und in 0.2.1 behoben | Eine akzeptierte Vorschlagsdatei wurde von der nächsten Sitzung erneut als veralteter Entwurf gelesen (jetzt pro Worktree gemerkt); die eingebaute Verweigerung sagte „den Umfang der Aufgabe“, woraufhin Claude vorschlug, die Aufgabe zu erweitern (jetzt: „eine eingebaute Klasse, die keine Aufgabe aufheben kann“); Transkriptzeilen lauteten `agentctl: agentctl:` |
+| Kosten der beiden `-p`-Proben | je 2–3 Züge, ≈ 0,06 $ je auf Haiku; die eigenen Antworten, Vorschauen und das Band des Mods rufen kein Modell auf |
+| Unabhängiger adversariler Test (Codex, 2026-10-05), in 0.2.2 behoben | Ein absoluter oder großgeschriebener Programmpfad (`/usr/bin/git push`, `GIT push`) rutschte an den eingebauten Klassen vorbei; eine Änderungswurzel wie `../other` erlaubte Schreibzugriffe außerhalb des Worktrees; die Vorschlags-Obergrenze zählte Zeichen, nicht UTF-8-Bytes; ohne gebundene Aufgabe wurden delegierte Aufrufe nicht in `/agentctl events` festgehalten. Digest-Übereinstimmung, Prototyp-Schlüssel, Verweigerung fremder Worktrees, Nachweis-Partitionierung und Teilabdeckung hielten |
 
-## Verified live, 0.3.0 (2026-10-07, scratch clone mit a scratch remote, interactive tmux, Haiku)
+## Live verifiziert, 0.3.0 (2026-10-07, Scratch-Klon mit einem Scratch-Remote, interaktives tmux, Haiku)
 
-Signal 13, walked on 2.1.289 (steps 1–3) und erneut von the starten on 2.1.292:
+Signal 13, auf 2.1.289 durchlaufen (Schritte 1–3) und erneut von Anfang an auf 2.1.292:
 
-| Step | Result |
+| Schritt | Ergebnis |
 |---|---|
-| `/agentctl 幫 …/README 加一行測試說明` | The request filled the empty box in Deutsch mit dem Hilfspfad Pfad von `$.plugin.root`; nothing was sent oder bound |
-| Enter | Claude ran the helper's `--help`, lesen the Projekt, found the Datei missing und **asked** statt inventing scope; danach the Antwort it wrote the proposal through the helper |
-| Preview | Shown at the Zug's end mit its digest und "binds the scope nur; starts nein work"; the Leiste named the waiting proposal |
-| Tab + Enter | Accepted von the suggestion; the reply named the nächste step |
-| "starten the work" | The edit inside the accepted root went to the host's own permission Prompt; the declared prüfen was recorded as aktuell evidence |
-| `/agentctl`, `handoff`, reopen, `last` | Status led mit the nächste step; the hand-over listed the prüfen as verified mit its reading Zeit; reopening pointed at it, `last` printed it |
-| A second goal mit the Aufgabe bound | The helper delivered under the bound Aufgabe; the preview said "Replaces: Aufgabe …"; Tab + Enter replaced it |
+| `/agentctl 幫 …/README 加一行測試說明` | Die Anfrage füllte das leere Feld auf Traditional Chinese mit dem Helferpfad aus `$.plugin.root`; nichts wurde gesendet oder gebunden |
+| Enter | Claude führte das `--help` des Helfers aus, las das Projekt, fand die Datei nicht und **fragte**, statt Umfang zu erfinden; nach der Antwort schrieb es den Vorschlag über den Helfer |
+| Vorschau | Am Ende des Zugs gezeigt, mit seinem Digest und „bindet nur den Umfang; startet keine Arbeit“; das Band benannte den wartenden Vorschlag |
+| Tab + Enter | Aus dem Vorschlag akzeptiert; die Antwort nannte den nächsten Schritt |
+| „starte die Arbeit“ | Die Änderung innerhalb der akzeptierten Wurzel ging an den eigenen Berechtigungsdialog des Hosts; die deklarierte Prüfung wurde als aktueller Nachweis festgehalten |
+| `/agentctl`, `handoff`, Wiederöffnen, `last` | Der Status führte mit dem nächsten Schritt; die Übergabe listete die Prüfung als verifiziert mit ihrer Lesezeit; das Wiederöffnen verwies darauf, `last` gab sie aus |
+| Ein zweites Ziel mit gebundener Aufgabe | Der Helfer lieferte unter der gebundenen Aufgabe; die Vorschau sagte „Ersetzt: Aufgabe …“; Tab + Enter ersetzte sie |
 
-Found und fixed during the walk: on 2.1.292 the host's own nächste-prompt guess ("Bestätigen") took the box, so
-Tab + Enter would have sent that word to Claude — der Mod jetzt replaces the host's guess mit the accept
-Zeile while a proposal waits, und offers it erneut at jede Zug's end; the accept reply's letzte Zeile stayed
-English in a Chinese Sitzung; mit a Aufgabe bound, the fill reply said "nothing is bound". Hesitations
-recorded: Claude once tried to lesen der Mod's own Dateien outside the worktree (declined at the host
-Prompt); the copy language resets mit jede neu Sitzung.
+Beim Durchlauf gefunden und behoben: auf 2.1.292 übernahm der eigene Vorschlag des Hosts für den nächsten Prompt („Bestätigen“) das Feld, sodass
+Tab + Enter dieses Wort an Claude geschickt hätte — der Mod ersetzt nun den Vorschlag des Hosts durch die
+Accept-Zeile, solange ein Vorschlag wartet, und bietet sie am Ende jedes Zugs erneut an; die letzte Zeile der Accept-Antwort blieb
+Englisch in einer chinesischen Sitzung; mit gebundener Aufgabe sagte die Füll-Antwort „nothing is bound“. Festgehaltene
+Zögern: Claude versuchte einmal, die eigenen Dateien des Mods außerhalb des Worktrees zu lesen (am Host-
+Prompt abgelehnt); die Sprache der Kopie setzt sich mit jeder neuen Sitzung zurück.
 
-## Uncoached ausführen, 0.3.0 (2026-10-07, Codex as a erste-time user, interactive tmux, a disposable clone)
+## Unbegleiteter Lauf, 0.3.0 (2026-10-07, Codex als Erstnutzer, interaktives tmux, ein Wegwerf-Klon)
 
-The tester was given nur `/agentctl <what you are doing>` und lesen neither `docs/` nor dieser Mod's
-code. Describe → Enter → preview (≈ 72 s, README-only scope, three prüft) → Tab + Enter → "starten the
-work" → `/agentctl` → `/agentctl handoff` completed in six steps mit nein outside Hilfe. Fixed in 0.3.1
-von what it found:
+Der Tester erhielt nur `/agentctl <what you are doing>` und las weder `docs/` noch den
+Code dieses Mods. Beschreiben → Enter → Vorschau (≈ 72 s, Umfang nur README, drei Prüfungen) → Tab + Enter → „starte die
+Arbeit“ → `/agentctl` → `/agentctl handoff` war in sechs Schritten ohne fremde Hilfe fertig. In 0.3.1
+behoben, was dabei auffiel:
 
-| Found | 0.3.1 |
+| Gefunden | 0.3.1 |
 |---|---|
-| The hand-over lesen "Edits observed: 0" beside a changed README (Claude had edited through Bash) | The Zeile counts edit-tool calls und says Bash ändert are in the tree Zeile |
-| Claude ran the tests piped through `grep`; the hand-over called the prüfen stale while Claude called it passing | The accept reply names the prüft to ausführen verbatim; `/agentctl` asks for them erneut by Name |
-| With the work fertig, `/agentctl` still said "ask Claude to starten the work" | The nächste step follows the declared prüft: work und ausführen them, re-run what is nicht aktuell, oder hand over |
-| A Write outside the roots was refused, dann the same Datei was written mit a Bash heredoc | The refusal tells Claude nicht to reach the Ergebnis another way; this section und § What it does state that roots bind the edit Werkzeuge nur |
-| Claude asked a Frage und wrote a proposal in the same Zug | The drafting request says to wait for the Antwort vorher writing |
+| Die Übergabe las „Edits observed: 0“ neben einem geänderten README (Claude hatte über Bash editiert) | Die Zeile zählt Edit-Tool-Aufrufe und sagt, dass Bash-Änderungen in der Baum-Zeile stehen |
+| Claude führte die Tests durch `grep` gepipet aus; die Übergabe nannte die Prüfung veraltet, während Claude sie für bestanden erklärte | Die Accept-Antwort nennt die auszuführenden Prüfungen wörtlich; `/agentctl` fragt erneut namentlich nach ihnen |
+| Mit erledigter Arbeit sagte `/agentctl` noch immer „ bitte Claude, die Arbeit zu starten“ | Der nächste Schritt folgt den deklarierten Prüfungen: arbeite und führe sie aus, wiederhole, was nicht aktuell ist, oder übergib |
+| Ein Write außerhalb der Wurzeln wurde verweigert, dann dieselbe Datei mit einem Bash-Heredoc geschrieben | Die Verweigerung sagt Claude, das Ergebnis nicht auf einem anderen Weg zu erreichen; dieser Abschnitt und § Was es tut halten fest, dass Wurzeln nur die Edit-Werkzeuge binden |
+| Claude stellte eine Frage und schrieb im selben Zug einen Vorschlag | Die Anfrage zum Entwurf sagt, man solle auf die Antwort warten, bevor man schreibt |
 
-Left as they are: the ausführen took minutes because the clone's own `CLAUDE.md` requires two review rounds
-for a doc ändern, nicht because of der Mod.
+Unverändert geblieben: Der Lauf dauerte Minuten, weil das eigene `CLAUDE.md` des Klons für eine Doku-Änderung zwei Review-Runden verlangt,
+nicht wegen des Mods.
 
-## Not verified
+## Nicht verifiziert
 
-V3 on Desktop, VS Code und mobile, und under `plan` und `bypassPermissions` (accepting the
-bypass-mode Warnung is the operator's own decision, so it was nicht exercised): `needsUser` stays
-refused there. The Leiste was checked in tmux, nicht over SSH.
+V3 auf Desktop, VS Code und mobil sowie unter `plan` und `bypassPermissions` (die Warnung des
+Bypass-Modus zu akzeptieren ist die Entscheidung des Betreibers, sie wurde daher nicht ausprobiert): `needsUser` bleibt
+dort verweigert. Das Band wurde in tmux geprüft, nicht über SSH.
 
 ## Quelle und Lizenz
 
