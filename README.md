@@ -4,7 +4,7 @@
 
 **Handverlesen, geprüft, festgepinnt. Einmal hinzufügen, 40 Mods.**
 
-> **Alle 40 Mods sind vollständig ins Deutsche lokalisiert.** Jede Beschriftung, jeder Befehl, jedes Panel, jeder Prompt und jede Dokumentation wurde übersetzt; die Plugin-Quellen sind in diesem Repository enthalten, sodass die Oberfläche nach der Installation sofort auf Deutsch ist – ohne zusätzliche Einrichtung. Nur Code-Bezeichner, Hook-Ereignisnamen, Skills und Anweisungen für das Modell bleiben englisch, damit sich das Verhalten nicht ändert.
+> **Kernoberfläche und Dokumentation sind weitgehend lokalisiert; einige Mods enthalten noch englische Texte.** Die Plugin-Quellen sind in diesem Repository enthalten, sodass die wichtigsten Beschriftungen, Befehle und Panels nach der Installation auf Deutsch erscheinen. Code-Bezeichner, Hook-Ereignisnamen, Skills und Anweisungen für das Modell bleiben englisch, damit sich das Verhalten nicht ändert.
 
 Mods sind Claude-Code-Plugins aus Funktions-Hooks: Sie beobachten, ändern oder übernehmen, was Claude Code tut, und zeichnen ihre eigene Oberfläche. Dieser Marketplace sammelt die besten Mods der Community. Jeder ist mit `claude plugin validate` geprüft und auf den geprüften Commit festgelegt, sodass spätere Änderungen des Autors dich nie ungeprüft erreichen.
 

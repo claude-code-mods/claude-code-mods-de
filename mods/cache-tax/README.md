@@ -135,8 +135,8 @@ The Hook und der Mod share a Name und a job, so having both means two guards on 
 
 Validated on Claude Code 2.1.312:
 
-    ❯ ./register.ts Hooks: config.set{key=theme}, ui.render{component=AbovePrompt}, Sitzung.starten, Sitzung.end, classic.SessionStart, Befehl.ausführen{Befehl=keepwarm}, Befehl.ausführen{Befehl=Cache-tax}, Prompt.submit, Zug.step, Zug.complete, Sitzung.compact
-    ❯ ./register.ts calls: $.clock.danach (via arm, ping), $.clock.every (via updateStatus), $.clock.jetzt, $.Befehl.list, $.Befehl.register, $.config.list, $.env.get, $.Modell.fork (via ping), $.Sitzung.id (via reseat, seat), $.Sitzung.Modell, $.Sitzung.Nutzung, $.store.delete, $.store.get, $.store.set, $.ui.ask (via ask), $.ui.invalidate, $.ui.log, $.ui.resolve, $.ui.Status
+    ❯ ./register.ts hooks: config.set{key=theme}, ui.render{component=AbovePrompt}, session.start, session.end, classic.SessionStart, command.run{command=keepwarm}, command.run{command=cache-tax}, prompt.submit, turn.step, turn.complete, session.compact
+    ❯ ./register.ts calls: $.clock.after (via arm, ping), $.clock.every (via updateStatus), $.clock.now, $.command.list, $.command.register, $.config.list, $.env.get, $.model.fork (via ping), $.session.id (via reseat, seat), $.session.model, $.session.usage, $.store.delete, $.store.get, $.store.set, $.ui.ask (via ask), $.ui.invalidate, $.ui.log, $.ui.resolve, $.ui.status
     ❯ ./register.ts env liest: NO_COLOR
 
 Reach L2, drives Claude. Sees every Prompt you type, every Modell request's timing und every Antwort's Token counts.

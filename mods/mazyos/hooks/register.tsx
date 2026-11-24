@@ -7,8 +7,8 @@ import { secaoSistema } from './sistema'
 
 const PAINEL = 'mazyos'
 const COMANDO = 'mazyos'
-const SIM = 'Sim, pode rodar'
-const NAO = 'Não, cancela'
+const SIM = 'Ja, ausführen'
+const NAO = 'Nein, abbrechen'
 
 // Troque a tag quando os campos de MazyosWorkspace mudarem: o valor que uma
 // versão anterior guardou sobrevive ao reload e seria lido com a forma antiga.
@@ -33,28 +33,28 @@ const DIA = 24 * 60 * 60 * 1000
 
 function haQuanto(agora: number, mtimeMs: number): string {
   const dias = Math.floor(Math.max(0, agora - mtimeMs) / DIA)
-  if (dias === 0) return 'hoje'
-  if (dias === 1) return 'ontem'
-  if (dias < 14) return `há ${dias} dias`
-  if (dias < 60) return `há ${Math.floor(dias / 7)} semanas`
-  return `há ${Math.floor(dias / 30)} meses`
+  if (dias === 0) return 'heute'
+  if (dias === 1) return 'gestern'
+  if (dias < 14) return `vor ${dias} Tagen`
+  if (dias < 60) return `vor ${Math.floor(dias / 7)} Wochen`
+  return `vor ${Math.floor(dias / 30)} Monaten`
 }
 
 function estadoDoArquivo(arquivo: MazyosArquivo, agora: number): string {
-  if (!arquivo.existe) return 'não existe'
-  if (!arquivo.preenchido) return 'em branco'
-  return arquivo.mtimeMs > 0 ? `atualizado ${haQuanto(agora, arquivo.mtimeMs)}` : 'preenchido'
+  if (!arquivo.existe) return 'nicht vorhanden'
+  if (!arquivo.preenchido) return 'leer'
+  return arquivo.mtimeMs > 0 ? `aktualisiert ${haQuanto(agora, arquivo.mtimeMs)}` : 'gefüllt'
 }
 
 function linhaDeStatus(ws: MazyosWorkspace): string {
-  const partes = ['MazyOS', ws.nome ?? 'negócio sem nome']
-  if (ws.foco !== null) partes.push(`foco: ${ws.foco}`)
+  const partes = ['MazyOS', ws.nome ?? 'Unternehmen ohne Namen']
+  if (ws.foco !== null) partes.push(`Fokus: ${ws.foco}`)
   return partes.join(' · ')
 }
 
 function resumo(ws: MazyosWorkspace, painelColocado: boolean): string {
   if (!ws.instalado) {
-    return `MazyOS: a pasta ${ws.raiz} ainda não tem workspace. Rode /mazyos:instalar pra ligar o sistema aqui.`
+    return `MazyOS: Der Ordner ${ws.raiz} hat noch keinen Workspace. Führe /mazyos:instalar aus, um das System hier in Betrieb zu nehmen.`
   }
   const memoria = ws.arquivos
     .map(arquivo => `${arquivo.rotulo} ${arquivo.preenchido ? '●' : '○'}`)
@@ -63,8 +63,8 @@ function resumo(ws: MazyosWorkspace, painelColocado: boolean): string {
     linhaDeStatus(ws),
     `Memória: ${memoria}`,
     painelColocado
-      ? 'Painel aberto ao lado.'
-      : 'Painel aberto; ele aparece quando o terminal tiver largura pra ele.',
+      ? 'Panel neben dem Chat geöffnet.'
+      : 'Panel verfügbar; es erscheint, sobald das Terminal breit genug ist.',
   ].join('\n')
 }
 
@@ -124,8 +124,8 @@ async function aposEditar(
   $.ui.invalidate('prompt.context')
   $.ui.toast(
     novo.instalado
-      ? `MazyOS: ${relativo} atualizado. Memória recarregada.`
-      : `MazyOS: ${relativo} atualizado.`,
+      ? `MazyOS: ${relativo} aktualisiert. Gedächtnis neu geladen.`
+      : `MazyOS: ${relativo} aktualisiert.`,
   )
 }
 
@@ -137,7 +137,7 @@ export const register: Register = (on, options) => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: COMANDO,
-      description: 'Abre o painel do MazyOS: memória do negócio, foco atual e atalhos das skills.',
+      description: 'Öffnet das MazyOS-Panel: Gedächtnis des Unternehmens, aktueller Fokus und Skill-Schnellknöpfe.',
     })
     const ws = await recarregar($, comLinha, e.cwd)
 
@@ -149,7 +149,7 @@ export const register: Register = (on, options) => {
       const chave = `avisado:${ws.raiz}`
       if ((await $.store.get(chave)) === undefined) {
         await $.store.set(chave, true)
-        $.ui.toast('MazyOS instalado. Pra ligar o sistema nessa pasta, rode /mazyos:instalar.')
+        $.ui.toast('MazyOS installiert. Um das System in diesem Ordner zu aktivieren, führe /mazyos:instalar aus.')
       }
     }
 
@@ -208,12 +208,12 @@ export const register: Register = (on, options) => {
     if (ws === null || !ws.instalado) return next(e)
 
     const resposta = await $.ui.ask(
-      `O MazyOS vai rodar "${perigo.nome}", que apaga histórico ou mudanças sem volta. Pode seguir?`,
+      `MazyOS wird "${perigo.nome}" ausführen, was Verlauf oder Änderungen unwiderruflich löschen kann. Fortfahren?`,
       [SIM, NAO],
     )
     if (resposta !== SIM) {
       return {
-        deny: `MazyOS: "${perigo.nome}" cancelado pelo usuário. Explique a situação e proponha um caminho que não perca trabalho.`,
+        deny: `MazyOS: "${perigo.nome}" wurde vom Benutzer abgebrochen. Erkläre die Lage und schlage einen Weg vor, bei dem keine Arbeit verloren geht.`,
       }
     }
     return next(e)
@@ -221,7 +221,7 @@ export const register: Register = (on, options) => {
     next.called
       ? next(e)
       : {
-          deny: 'MazyOS: não deu pra confirmar com o usuário um comando git que apaga trabalho, então ele não rodou. Peça confirmação explícita antes de tentar de novo.',
+          deny: 'MazyOS: Ein Git-Befehl, der Arbeit löschen kann, konnte nicht bestätigt werden und wurde nicht ausgeführt. Bitte vor dem erneuten Versuch um ausdrückliche Bestätigung.',
         },
   )
 
@@ -236,20 +236,20 @@ export const register: Register = (on, options) => {
         <Box flexDirection="column" gap={1}>
           <Text weight="bold">MazyOS</Text>
           <Text dimColor wrap="wrap">
-            Essa pasta ainda não tem um workspace MazyOS. O /mazyos:instalar cria aqui a memória
-            do negócio, a identidade visual e as pastas de saída, e faz a entrevista de setup.
+            Dieser Ordner hat noch keinen MazyOS-Workspace. /mazyos:instalar erstellt hier das
+            Gedächtnis des Unternehmens, die visuelle Identität und die Ausgabeordner und führt das Setup-Interview aus.
           </Text>
           <Box gap={1} flexWrap="wrap">
             <Button
               key="instalar"
-              label="Instalar aqui"
+              label="Hier installieren"
               variant="primary"
               hotkey="i"
               onPress={preencher('/mazyos:instalar')}
             />
             <Button
               key="recarregar"
-              label="Recarregar"
+              label="Neu laden"
               hotkey="r"
               onPress={() => recarregar($, comLinha)}
             />
@@ -263,7 +263,7 @@ export const register: Register = (on, options) => {
     return (
       <Box flexDirection="column" gap={1}>
         <Box flexDirection="column">
-          <Text weight="bold">MazyOS · {ws.nome ?? 'negócio sem nome'}</Text>
+          <Text weight="bold">MazyOS · {ws.nome ?? 'Unternehmen ohne Namen'}</Text>
           {ws.negocio !== null && (
             <Text dimColor wrap="wrap">
               {ws.negocio}
@@ -274,11 +274,11 @@ export const register: Register = (on, options) => {
         <Box flexDirection="column">
           <Text wrap="wrap">
             <Text weight="semibold">Foco: </Text>
-            {ws.foco ?? 'em branco'}
+            {ws.foco ?? 'leer'}
           </Text>
           <Text wrap="wrap">
             <Text weight="semibold">Tom: </Text>
-            {ws.tom ?? 'em branco'}
+            {ws.tom ?? 'leer'}
           </Text>
         </Box>
 
@@ -296,23 +296,23 @@ export const register: Register = (on, options) => {
         </Box>
 
         <Box gap={1} flexWrap="wrap">
-          <Button key="abrir" label="Abrir sessão" hotkey="a" onPress={preencher('/mazyos:abrir')} />
+          <Button key="abrir" label="Sitzung öffnen" hotkey="a" onPress={preencher('/mazyos:abrir')} />
           <Button
             key="atualizar"
-            label="Atualizar memória"
+            label="Gedächtnis aktualisieren"
             hotkey="m"
             onPress={preencher('/mazyos:atualizar')}
           />
           <Button
             key="salvar"
-            label="Salvar no GitHub"
+            label="Auf GitHub speichern"
             hotkey="s"
             onPress={preencher('/mazyos:salvar')}
           />
-          <Button key="recarregar" label="Recarregar" hotkey="r" onPress={() => recarregar($, comLinha)} />
+          <Button key="recarregar" label="Neu laden" hotkey="r" onPress={() => recarregar($, comLinha)} />
         </Box>
 
-        <Text dimColor>Lido {haQuanto(agora, ws.lidoEm)} · /mazyos reabre este painel</Text>
+        <Text dimColor>Gelesen {haQuanto(agora, ws.lidoEm)} · /mazyos öffnet dieses Panel erneut</Text>
       </Box>
     )
   })

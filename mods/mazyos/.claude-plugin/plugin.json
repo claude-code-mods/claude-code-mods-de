@@ -3,7 +3,7 @@
   "name": "mazyos",
   "displayName": "MazyOS",
   "version": "1.0.0",
-  "description": "Das Betriebssystem für dein Unternehmen in Claude Code. Ein Plugin auf Portugiesisch: Das Gedächtnis deiner Firma fließt in jede Sitzung ein, die Markenidentität erscheint in allem, was Claude erzeugt, und 17 Skills kümmern sich um Marketing, SEO, Google Ads, Instagram-Karussells und Kundenakquise über Google Maps. Mit einem Seitenbereich neben dem Chat, einer Statusleiste und einer Bremse für destruktive Git-Befehle.",
+  "description": "Das Betriebssystem für dein Unternehmen in Claude Code. Ein deutschsprachiges Plugin: Das Gedächtnis deiner Firma fließt in jede Sitzung ein, die Markenidentität erscheint in allem, was Claude erzeugt, und 17 Skills kümmern sich um Marketing, SEO, Google Ads, Instagram-Karussells und Kundenakquise über Google Maps. Mit einem Seitenbereich neben dem Chat, einer Statusleiste und einer Bremse für destruktive Git-Befehle.",
   "author": {
     "name": "Mazzeo",
     "url": "https://mazyos.com.br"
@@ -33,20 +33,20 @@
   "userConfig": {
     "abrirPainel": {
       "type": "boolean",
-      "title": "Abrir o painel ao iniciar",
-      "description": "Abre o painel do MazyOS (memória, foco e atalhos) quando a sessão começa numa pasta do MazyOS e o terminal é largo o bastante. /mazyos abre a qualquer hora.",
+      "title": "Panel beim Start öffnen",
+      "description": "Öffnet das MazyOS-Panel (Gedächtnis, Fokus und Schnellknöpfe), wenn die Sitzung in einem MazyOS-Ordner beginnt und das Terminal breit genug ist. /mazyos öffnet es jederzeit.",
       "default": true
     },
     "linhaDeStatus": {
       "type": "boolean",
-      "title": "Linha de status",
-      "description": "Mostra 'MazyOS · negócio · foco' embaixo do prompt enquanto você trabalha numa pasta do MazyOS.",
+      "title": "Statuszeile",
+      "description": "Zeigt 'MazyOS · Unternehmen · Fokus' unter dem Prompt, während du in einem MazyOS-Ordner arbeitest.",
       "default": true
     },
     "protegerGit": {
       "type": "boolean",
-      "title": "Freio no git",
-      "description": "Pede confirmação antes de git push --force, git reset --hard e outros comandos git que apagam trabalho, dentro de uma pasta do MazyOS.",
+      "title": "Git-Bremse",
+      "description": "Fragt vor git push --force, git reset --hard und anderen Git-Befehlen, die Arbeit löschen können, in einem MazyOS-Ordner um Bestätigung.",
       "default": true
     }
   }
