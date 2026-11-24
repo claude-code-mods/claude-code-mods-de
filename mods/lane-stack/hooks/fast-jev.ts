@@ -177,7 +177,7 @@ export async function compactSession(
   config: HookConfig,
   fetchFn: HookFetch,
 ): Promise<SessionCompaction> {
-  if (!config.apiKey) throw new Error('no Jev key: set OPENLUX_API_KEY or TYPESAFE_API_KEY');
+  if (!config.apiKey) throw new Error('Kein Jev-Schlüssel: setze OPENLUX_API_KEY oder TYPESAFE_API_KEY');
   const asker = jevAsker(fetchFn, config.apiKey, config.model, config.provider);
   const result = await compact(messages, asker, config);
   return { result, messages: toSessionMessages(messages, result.messages) };
@@ -190,14 +190,14 @@ function percent(ratio: number): string {
 export function summarize(result: CompactResult): string {
   const { stats } = result;
   const parts = [
-    stats.kept > 0 ? `${stats.kept} kept` : '',
-    stats.resultsDropped > 0 ? `${stats.resultsDropped} results truncated` : '',
+    stats.kept > 0 ? `${stats.kept} behalten` : '',
+    stats.resultsDropped > 0 ? `${stats.resultsDropped} Ergebnisse gekürzt` : '',
     stats.callsDropped > 0 ? `${stats.callsDropped} call_dropped` : '',
-    stats.pinned > 0 ? `${stats.pinned} pinned` : '',
+    stats.pinned > 0 ? `${stats.pinned} angeheftet` : '',
   ].filter(Boolean);
   return `${percent(reductionRatio(result))} reduction; ${
-    parts.join(', ') || 'nein Werkzeug calls'
-  }; state ~${stats.stateTokens} tokens (${stats.stateStage}) in ${stats.requests} request(s)`;
+    parts.join(', ') || 'keine Werkzeugaufrufe'
+  }; Zustand ~${stats.stateTokens} Tokens (${stats.stateStage}) in ${stats.requests} Anfrage(n)`;
 }
 
 const UI_LOG_MAX_CHARS = 4096;
@@ -296,19 +296,19 @@ export const register: Register = (on: On, options: PluginOptions) => {
       if (reductionRatio(result) < config.minReductionRatio) {
         notify(
           $,
-          `fallback to built-in summary (below ${percent(config.minReductionRatio)} minimum: ${summarize(result)})`,
+          `Rückfall auf die integrierte Zusammenfassung (unter dem Minimum von ${percent(config.minReductionRatio)}: ${summarize(result)})`,
         );
         return next(event);
       }
       notify(
         $,
-        `kept ${messages.length}/${event.messages.length} Nachrichten, nein summary (${summarize(result)})`,
+        `${messages.length}/${event.messages.length} Nachrichten behalten, keine Zusammenfassung (${summarize(result)})`,
       );
       return { messages };
     } catch (error) {
       notify(
         $,
-        `fallback to built-in summary (${error instanceof Error ? error.message : String(error)})`,
+        `Rückfall auf die integrierte Zusammenfassung (${error instanceof Error ? error.message : String(error)})`,
       );
       return next(event);
     }
@@ -323,7 +323,7 @@ export const register: Register = (on: On, options: PluginOptions) => {
       await $.session.compact();
     } catch (error) {
       $.ui.log(
-        `automatisch-compact skipped (${error instanceof Error ? error.message : String(error)})`,
+        `Automatische Verdichtung übersprungen (${error instanceof Error ? error.message : String(error)})`,
       );
     } finally {
       compacting = false;

@@ -207,7 +207,7 @@ function buildHistoryEntry(msg, idx, callsByMsg, inputLimit, abridge, collapse, 
   // Collapse non-pinned messages without tool calls
   if (collapse && !pinnedIndices.has(idx) && !callsByMsg.has(idx)) {
     if (!text.trim()) return null;
-    return { i: idx, role, text: `[... ${text.length} chars omitted ...]` };
+    return { i: idx, role, text: `[… ${text.length} Zeichen ausgelassen …]` };
   }
 
   // Abridge long non-pinned text
@@ -215,7 +215,7 @@ function buildHistoryEntry(msg, idx, callsByMsg, inputLimit, abridge, collapse, 
   if (abridge && !pinnedIndices.has(idx) && text.length > ABRIDGE_TEXT_THRESHOLD) {
     displayText =
       text.substring(0, ABRIDGE_HEAD) +
-      `\n[... ${text.length - ABRIDGE_HEAD - ABRIDGE_TAIL} chars omitted ...]\n` +
+      `\n[… ${text.length - ABRIDGE_HEAD - ABRIDGE_TAIL} Zeichen ausgelassen …]\n` +
       text.substring(text.length - ABRIDGE_TAIL);
   }
 
@@ -227,7 +227,7 @@ function buildHistoryEntry(msg, idx, callsByMsg, inputLimit, abridge, collapse, 
       id: c.seqId,
       tool: c.tool,
       input: c.input.substring(0, inputLimit),
-      result: `${c.isError ? 'error' : 'ok'}, ${c.resultChars} chars (omitted)`,
+      result: `${c.isError ? 'Fehler' : 'ok'}, ${c.resultChars} Zeichen (ausgelassen)`,
     }));
   }
 
@@ -382,7 +382,7 @@ async function callJev(fetchFn, apiKey, state, questions, timeoutMs = JEV_TIMEOU
   const payload = { model: JEV_MODEL, state, questions };
   let timer;
   const timeout = new Promise((_, reject) => {
-    timer = setTimeout(() => reject(new Error('Jev request timed out')), timeoutMs);
+    timer = setTimeout(() => reject(new Error('Zeitüberschreitung bei der Jev-Anfrage')), timeoutMs);
   });
   let response;
   try {
@@ -408,7 +408,7 @@ async function callJev(fetchFn, apiKey, state, questions, timeoutMs = JEV_TIMEOU
   }
 
   const data = JSON.parse(response.text);
-  if (!data.answers) throw new Error('Jev response missing answers');
+  if (!data.answers) throw new Error('Die Antwort von Jev enthält keine Antworten');
   return data;
 }
 
@@ -483,7 +483,7 @@ function applyDecisions(messages, decisions, calls) {
             filtered.push({
               ...tr,
               text: text.substring(0, TRUNCATE_HEAD_CHARS) +
-                `\n[jev-compact truncated ${truncated} chars; re-run the tool if needed]`,
+                `\n[jev-compact hat ${truncated} Zeichen gekürzt; führe das Werkzeug bei Bedarf erneut aus]`,
             });
             changed = true;
           } else {
@@ -552,7 +552,7 @@ export async function compact(fetchFn, apiKey, messages, log = () => {}, { timeo
   // Batch questions to fit Jev limits
   const batches = batchCalls(candidates, stateTokens);
   if (batches === null) {
-    log(`[jev-auto-compact] ${candidates.length} tool calls with a ${stateTokens}-token state do not fit in ${MAX_REQUESTS_PER_COMPACTION} Jev requests`);
+    log(`[jev-auto-compact] ${candidates.length} Werkzeugaufrufe mit einem Zustand von ${stateTokens} Tokens passen nicht in ${MAX_REQUESTS_PER_COMPACTION} Jev-Anfragen`);
     return {
       messages,
       decisions,
@@ -599,14 +599,14 @@ export async function compact(fetchFn, apiKey, messages, log = () => {}, { timeo
         ...callEntry,
         ok: false,
         latency_ms: Date.now() - callStart,
-        error: typeof err?.status === 'number' ? `HTTP ${err.status}` : err?.name || 'error',
+        error: typeof err?.status === 'number' ? `HTTP ${err.status}` : err?.name || 'Fehler',
       });
       // On batch failure, keep all calls in this batch (fail-safe). Say so
       // once per compaction, status only: never the request or response body.
       errorBatches++;
       if (errorBatches === 1) {
-        const status = typeof err?.status === 'number' ? `HTTP ${err.status}` : (err?.name || 'error');
-        log(`[jev-auto-compact] Jev batch failed (${status}); keeping its ${batch.length} calls`);
+        const status = typeof err?.status === 'number' ? `HTTP ${err.status}` : (err?.name || 'Fehler');
+        log(`[jev-auto-compact] Jev-Stapel fehlgeschlagen (${status}); ${batch.length} Aufrufe werden behalten`);
       }
       for (const c of batch) {
         decisions[c.seqId] = { action: 'keep', reason: 'jev_error' };
@@ -687,7 +687,7 @@ async function appendEvidence($, record) {
     await $.store.set(EVIDENCE_KEY, events);
   } catch (error) {
     // Evidence is best-effort; never let it break compaction. Say why once.
-    $.ui.log(`[jev-auto-compact] evidence not recorded (${error instanceof Error ? error.message : String(error)})`);
+    $.ui.log(`[jev-auto-compact] Nachweis nicht aufgezeichnet (${error instanceof Error ? error.message : String(error)})`);
   }
 }
 
@@ -755,8 +755,8 @@ export const register = (on, options) => {
         ((await $.settings.read())?.env || {})['TYPESAFE_API_KEY'];
 
       if (!apiKey) {
-        $.ui.log('[jev-auto-compact] no TYPESAFE_API_KEY, falling back to built-in');
-        await appendEvidence($, { ...base, engine: 'builtin', note: 'no api key' });
+        $.ui.log('[jev-auto-compact] kein TYPESAFE_API_KEY vorhanden; Rückfall auf die integrierte Verdichtung');
+        await appendEvidence($, { ...base, engine: 'builtin', note: 'kein API-Schlüssel' });
         return next(event);
       }
 
@@ -794,9 +794,9 @@ export const register = (on, options) => {
           // Leave the conversation as it is: never hand a self-triggered
           // compaction to the built-in summarizer (minutes of LLM time).
           const reason = stats.overBudget
-            ? 'too large for one Jev pass'
-            : `nothing to prune (${pct(stats.ratio)} < ${pct(MIN_REDUCTION_RATIO)} min)`;
-          $.ui.log(`[jev-auto-compact] skipped: ${reason}`);
+            ? 'zu groß für einen Jev-Durchlauf'
+            : `nichts zu kürzen (${pct(stats.ratio)} < Minimum ${pct(MIN_REDUCTION_RATIO)})`;
+          $.ui.log(`[jev-auto-compact] übersprungen: ${reason}`);
           await appendEvidence($, { ...base, ...statsRecord, engine: 'skipped', note: reason });
           skippedAt = { messages: event.messages.length, percent: usage.percent };
           return { skip: `jev-auto-compact: ${reason}` };
@@ -804,22 +804,22 @@ export const register = (on, options) => {
         // The engine or the user needs this compaction; Jev alone is not
         // enough, so the built-in summarizer runs.
         const reason = stats.overBudget
-          ? 'too large for one Jev pass'
-          : `${pct(stats.ratio)} < ${pct(MIN_REDUCTION_RATIO)} min`;
-        $.ui.log(`[jev-auto-compact] fallback to built-in (${reason})`);
+          ? 'zu groß für einen Jev-Durchlauf'
+          : `${pct(stats.ratio)} < Minimum ${pct(MIN_REDUCTION_RATIO)}`;
+        $.ui.log(`[jev-auto-compact] Rückfall auf die integrierte Zusammenfassung (${reason})`);
         await appendEvidence($, { ...base, ...statsRecord, engine: 'builtin', note: reason });
         return next(event);
       }
 
       $.ui.log(
-        `[jev-auto-compact] ${result.messages.length}/${event.messages.length} msgs, ` +
-        `${pct(stats.ratio)} reduction, ` +
-        `${stats.droppedCall} dropped, ${stats.droppedResult} truncated, ` +
-        `${stats.pinned} pinned, ${stats.prefiltered} prefiltered ` +
-        `(${stats.latencyMs}ms, ${stats.jevJudged} Jev-judged, ${stats.jevCalls} API calls` +
-        (stats.errorBatches ? `, ${stats.errorBatches} failed` : '') +
-        `, redactions: ${stats.redactions ?? 0}` +
-        (usage.tokens ? `, ctx ${usage.tokens} tokens before)` : ')')
+        `[jev-auto-compact] ${result.messages.length}/${event.messages.length} Nachrichten, ` +
+        `${pct(stats.ratio)} Reduktion, ` +
+        `${stats.droppedCall} verworfen, ${stats.droppedResult} gekürzt, ` +
+        `${stats.pinned} angeheftet, ${stats.prefiltered} vorgefiltert ` +
+        `(${stats.latencyMs} ms, ${stats.jevJudged} von Jev bewertet, ${stats.jevCalls} API-Aufrufe` +
+        (stats.errorBatches ? `, ${stats.errorBatches} fehlgeschlagen` : '') +
+        `, Schwärzungen: ${stats.redactions ?? 0}` +
+        (usage.tokens ? `, Kontext vorher: ${usage.tokens} Tokens)` : ')')
       );
       await appendEvidence($, { ...base, ...statsRecord, engine: 'jev' });
       skippedAt = null;
@@ -829,7 +829,7 @@ export const register = (on, options) => {
       return compacted;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      $.ui.log(`[jev-auto-compact] fallback to built-in (${message})`);
+      $.ui.log(`[jev-auto-compact] Rückfall auf die integrierte Zusammenfassung (${message})`);
       await appendEvidence($, { ...base, engine: 'error', note: message.substring(0, 200) });
       return next(event);
     }
@@ -867,11 +867,11 @@ export const register = (on, options) => {
         const roseBy = typeof skippedAt.percent === 'number' ? usage.percent - skippedAt.percent : Infinity;
         if (grewBy < SKIP_RETRY_MIN_NEW_MESSAGES && roseBy < SKIP_RETRY_MIN_PERCENT) return next(event);
       }
-      $.ui.log(`[jev-auto-compact] context at ${usage.percent.toFixed(0)}% >= ${COMPACT_AT_PERCENT}%, compacting`);
+      $.ui.log(`[jev-auto-compact] Kontext bei ${usage.percent.toFixed(0)}% >= ${COMPACT_AT_PERCENT}%, Verdichtung gestartet`);
       await $.session.compact();
     } catch (error) {
       $.ui.log(
-        `[jev-auto-compact] auto-compact skipped (${error instanceof Error ? error.message : String(error)})`
+        `[jev-auto-compact] Automatische Verdichtung übersprungen (${error instanceof Error ? error.message : String(error)})`
       );
     } finally {
       compacting = false;

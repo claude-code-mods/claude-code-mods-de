@@ -38,7 +38,7 @@ async function fleetRunOnce($: EngineInterface, st: FleetState) {
     return await runFleetOnce($, config)
   } catch {
     stopTimer(st)
-    return { status: 'uncertain', gaps: ['Fleet configuration/source diagnosis required'] }
+    return { status: 'uncertain', gaps: ['Diagnose der Fleet-Konfiguration/Quelle erforderlich'] }
   }
 }
 
@@ -47,7 +47,7 @@ async function fleetInspect($: EngineInterface, st: FleetState) {
   st.running = true
   try {
     const report = await fleetRunOnce($, st)
-    if (report.status !== 'disabled') await $.ui.status(`Fleet guard: ${report.status}`)
+    if (report.status !== 'disabled') await $.ui.status(`Fleet-Wächter: ${report.status}`)
   } finally { st.running = false }
 }
 

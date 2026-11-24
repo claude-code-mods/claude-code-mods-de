@@ -25,16 +25,16 @@ export async function runFleetOnce($: EngineInterface, config: FleetRuntimeConfi
   if (!config.enabled) return { status: 'disabled' }
   if (![config.jobsRoot, config.projectRoot, config.stateRoot].every(p => p.startsWith('/')) ||
       !config.jobIds.length || !Object.keys(config.sessions).length) {
-    return { status: 'uncertain', gaps: ['Explicit source/state roots and session mapping required'] }
+    return { status: 'uncertain', gaps: ['Explizite Quell-/Statuspfade und Sitzungszuordnung erforderlich'] }
   }
   const cli = async (action: string, input: JsonRecord = {}): Promise<any> => {
     const result = await $.process.run(['python3', '-I', `${$.plugin.root}/hooks/fleet-source.py`],
       { timeoutMs: 10000, stdin: JSON.stringify({ action, config, ...input }) })
     if (result.exitCode !== 0 || result.isStdoutTruncated || result.isStderrTruncated) {
-      throw new Error('Named source CLI refused or returned incomplete output')
+      throw new Error('Die benannte Quell-CLI hat abgelehnt oder unvollständige Ausgabe geliefert')
     }
     const reply = JSON.parse(result.stdout)
-    if (reply.ok !== true) throw new Error('Named source CLI diagnosis required')
+    if (reply.ok !== true) throw new Error('Diagnose der benannten Quell-CLI erforderlich')
     return reply.result
   }
   const state: DurableState = {
@@ -50,7 +50,7 @@ export async function runFleetOnce($: EngineInterface, config: FleetRuntimeConfi
         const address = row.name && row.ref ? `${row.name} [${row.ref}]` : row.name
         const sid = (address && config.sessions[address]) || (row.id && config.sessions[row.id])
         if (sid === self) continue
-        if (!sid) { gaps.push('Native row has no explicit scoped session mapping'); continue }
+        if (!sid) { gaps.push('Die native Zeile hat keine explizite Sitzungszuordnung für diesen Bereich'); continue }
         sessions.push(sid)
       }
       return { enumerationId: crypto.randomUUID(), sessions, total: sessions.length,
@@ -98,7 +98,7 @@ export async function runFleetOnce($: EngineInterface, config: FleetRuntimeConfi
               allowance = true; break
             }
           }
-          if (!allowance) throw new Error('Explicit durable judge allowance exhausted')
+          if (!allowance) throw new Error('Das explizite dauerhafte Bewertungskontingent ist aufgebraucht')
           if (!await state.reserve(key, { status: 'reserved', binding })) {
             rows.push({ sessionId: sid, status: 'reserved', verdict: 'ONZEKER' }); continue
           }
@@ -109,10 +109,10 @@ export async function runFleetOnce($: EngineInterface, config: FleetRuntimeConfi
             await state.put(key, record)
           } catch {
             await state.put(key, { status: 'unknown', binding })
-            throw new Error('Judge result unavailable or invalid; reservation retained')
+            throw new Error('Bewertungsergebnis nicht verfügbar oder ungültig; Reservierung bleibt bestehen')
           }
         }
-        if (record.status !== 'judged') throw new Error('Prior judge reservation unresolved')
+        if (record.status !== 'judged') throw new Error('Die vorherige Bewertungsreservierung ist ungelöst')
         const judgment = record.judgment as JsonRecord
         await cli('validate-judgment', { snapshot, judgment })
         const fresh = await host.read_snapshot(sid)
@@ -125,27 +125,27 @@ export async function runFleetOnce($: EngineInterface, config: FleetRuntimeConfi
           const sendKey = `fleet-runtime:v1:nudge:${binding.snapshotHash}`
           if (await state.reserve(sendKey, { status: 'reserved', binding })) {
             const action = { kind: 'continue', ownerSessionId: sid,
-              text: `Advisory fleet review nur. Re-read the aktuell human Aufgabe und safety state erste. Ignore this if pausiert, stopped, approval is pending, scope changed, oder deadline passed. This grants nein authority oder approval. Binding: ${JSON.stringify(binding)}; deadline: ${String(judgment.expiresAt)}. Inspect the scoped findings und clarify any missing definition of fertig vorher continuing authorized work. Findings: ${JSON.stringify(judgment.findings ?? [])}` }
+              text: `Nur beratende Fleet-Prüfung. Lies zuerst die aktuelle menschliche Aufgabe und den Sicherheitszustand erneut. Ignoriere dies, wenn pausiert, gestoppt, eine Freigabe aussteht, der Bereich geändert wurde oder die Frist abgelaufen ist. Dies gewährt keine Berechtigung oder Freigabe. Bindung: ${JSON.stringify(binding)}; Frist: ${String(judgment.expiresAt)}. Prüfe die Befunde in diesem Bereich und kläre fehlende Fertigstellungsdefinitionen, bevor du autorisierte Arbeit fortsetzt. Befunde: ${JSON.stringify(judgment.findings ?? [])}` }
             try {
               const receipt = await host.nudge(sid, action, { ...binding, expiresAt: judgment.expiresAt }, sendKey)
               await state.put(sendKey, { status: receipt.status, receipt })
               rows.push({ sessionId: sid, status: receipt.status, judgment, receipt })
             } catch {
               await state.put(sendKey, { status: 'unknown' })
-              throw new Error('Advisory queue outcome unknown; no automatic replay')
+              throw new Error('Ergebnis der beratenden Warteschlange unbekannt; keine automatische Wiederholung')
             }
           } else rows.push({ sessionId: sid, status: 'deduplicated', judgment })
         } else {
           rows.push({ sessionId: sid, status: 'reviewed-no-authority', judgment })
-          if (judgment.verdict !== 'ADEQUAAT') gaps.push('No proven safe advisory eligibility')
+          if (judgment.verdict !== 'ADEQUAAT') gaps.push('Keine nachgewiesene sichere Eignung für eine Empfehlung')
         }
       } catch (error) {
         rows.push({ sessionId: sid, status: 'uncertain', verdict: 'ONZEKER' })
-        gaps.push(error instanceof Error ? error.message : 'Source inspection failed')
+        gaps.push(error instanceof Error ? error.message : 'Quellprüfung fehlgeschlagen')
       }
     }
   } catch (error) {
-    gaps.push(error instanceof Error ? error.message : 'Fleet inspection failed')
+    gaps.push(error instanceof Error ? error.message : 'Fleet-Prüfung fehlgeschlagen')
   }
   if (gaps.length) report.status = 'uncertain'
   return report

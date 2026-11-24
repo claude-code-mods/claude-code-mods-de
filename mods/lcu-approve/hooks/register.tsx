@@ -13,8 +13,8 @@ import type { Approval, AppsState } from './views'
 const SERVER = 'lcu'
 const REQUEST_TOOL = 'approval_request'
 const CHOICE_TOOL = 'approval_choice'
-const ASK_HEADER = 'Computer verwenden'
-const APPROVAL_TITLE = 'Computer verwenden approval'
+const ASK_HEADER = 'Computer Use'
+const APPROVAL_TITLE = 'Freigabe für Computer Use'
 const APPS_COMMAND = 'computer-use-apps'
 const APPS_PANE = 'lcu-approved-apps'
 
@@ -79,7 +79,7 @@ export const register: Register = on => {
     // (auto mode's classifier refuses it). Waiting on `$` does not spend the hook's budget.
     if (surfaces.includes('desktop') || (inApp && !surfaces.includes('terminal'))) {
       await askAndRecord($, approval)
-      return { block: 'Answered by the lcu-approve mod' }
+      return { block: 'Vom lcu-approve-Mod beantwortet' }
     }
 
     // The icon is made here, in an event hook: a render closure cannot run a process.
@@ -93,7 +93,7 @@ export const register: Register = on => {
       // A narrow terminal seats no pane: the question dialog asks, within this hook as on the desktop.
       await askAndRecord($, approval)
     }
-    return { block: 'Answered by the lcu-approve mod' }
+    return { block: 'Vom lcu-approve-Mod beantwortet' }
   })
 
   on('ui.render', { component: 'Pane' }, async ($, e, next) => {
@@ -133,7 +133,7 @@ export const register: Register = on => {
     const name = e.value.trim()
     if (e.kind === 'submit' && name) {
       await update($, apps, state => ({ ...state, nonce: state.nonce + 1 }))
-      await runLcu($, ['allow', name], `Allowing ${name}. Confirm mit Touch ID oder your password...`)
+      await runLcu($, ['allow', name], `${name} wird erlaubt. Bestätige mit Touch ID oder deinem Passwort…`)
     }
     return { element: e.element, value: e.value }
   })
@@ -144,7 +144,7 @@ export const register: Register = on => {
     if (entry && e.origin.kind === 'person') {
       shown.delete(e.id)
       await record($, entry.approval.id, 'cancel')
-      $.ui.toast(`Approval for ${entry.approval.label} dismissed`)
+      $.ui.toast(`Freigabe für ${entry.approval.label} zurückgewiesen`)
     }
     return next(e)
   })
@@ -154,7 +154,7 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: APPS_COMMAND,
-      description: 'Show the apps Computer verwenden may control, und erlauben oder revoke them',
+      description: 'Zeige die Apps, die Computer Use steuern darf, und erlaube oder widerrufe sie',
     })
     const result = await next(e)
     // An update notice from the cache `lcu update --notice` keeps: the person gets one toast. The model never
@@ -198,7 +198,7 @@ export const register: Register = on => {
   on('command.run', { command: APPS_COMMAND }, async $ => {
     await refresh($)
     await openApps($)
-    return { text: 'Approved apps Bereich opened.' }
+    return { text: 'Bereich „Freigegebene Apps“ geöffnet.' }
   })
 
   // The approval tools are for this mod alone: the model gets a refusal,
@@ -207,13 +207,13 @@ export const register: Register = on => {
     const tool = `mcp__${SERVER}__${name}`
     on('tool.call', { tool }, async ($, e, next) => {
       if (next.origin.plugin !== $.plugin.name) {
-        return { deny: `${name} is a host-only LCU tool.` }
+        return { deny: `${name} ist ein reines Host-LCU-Werkzeug.` }
       }
       return next(e)
     })
     on('tool.check', { tool }, async ($, e, next) => {
       if (next.origin.plugin !== $.plugin.name) return next(e)
-      return { decision: 'allow', reason: 'LCU approval mod' }
+      return { decision: 'allow', reason: 'LCU-Freigabemod' }
     })
   }
 }
@@ -315,12 +315,12 @@ async function sessionGrants($: any): Promise<SessionRow[]> {
 
 export async function loadApps($: any, lcu: string): Promise<AppsData> {
   const run = await $.process.run([lcu, 'apps', '--json'], { timeoutMs: 20000 })
-  if (!ok(run)) throw new Error(firstLine(run.stderr) || `lcu apps exited ${run.exitCode}`)
+  if (!ok(run)) throw new Error(firstLine(run.stderr) || `lcu apps wurde mit Code ${run.exitCode} beendet`)
   let always: AppRow[]
   try {
     always = JSON.parse(run.stdout).apps
   } catch {
-    throw new Error('lcu apps --json printed something unreadable')
+    throw new Error('lcu apps --json hat unlesbare Ausgabe erzeugt')
   }
   return { always, session: await sessionGrants($).catch(() => []) }
 }
@@ -381,7 +381,7 @@ async function openApps($: any): Promise<void> {
   const state = await read($, apps)
   await $.ui.open({
     id: APPS_PANE,
-    title: 'Approved apps',
+    title: 'Freigegebene Apps',
     focus: true,
     closeOnEscape: true,
     rows: appsRows(state),
@@ -395,7 +395,7 @@ async function refresh($: any): Promise<void> {
     const where = tried.length ? tried.join(' or ') : '~/.local/share/lcu/current/bin/lcu'
     await update($, apps, state => ({
       ...state, isLoaded: true, always: [], session: [],
-      unavailable: `The lcu Befehl was nicht found at ${where}. Run lcu setup --agent claude-code erneut.`,
+      unavailable: `Der Befehl lcu wurde nicht gefunden unter ${where}. Führe lcu setup --agent claude-code erneut aus.`,
     }))
     return
   }
@@ -403,7 +403,7 @@ async function refresh($: any): Promise<void> {
     const data = await loadApps($, path)
     await update($, apps, state => ({ ...state, ...data, isLoaded: true, unavailable: undefined }))
   } catch (error) {
-    const text = `Could nicht list the apps: ${(error as Error).message}`
+    const text = `Die Apps konnten nicht aufgelistet werden: ${(error as Error).message}`
     await update($, apps, state => ({
       ...state, isLoaded: true, unavailable: state.always.length || state.session.length ? undefined : text,
       notice: { tone: 'error', text },
@@ -419,7 +419,7 @@ async function pressApps($: any, action: string): Promise<void> {
   }
   if (action.startsWith('revoke:')) {
     const bundleId = action.slice('revoke:'.length)
-    await runLcu($, ['revoke', bundleId], `Revoking ${bundleId}. Confirm mit Touch ID oder your password...`)
+    await runLcu($, ['revoke', bundleId], `${bundleId} wird widerrufen. Bestätige mit Touch ID oder deinem Passwort…`)
   }
 }
 
@@ -436,10 +436,10 @@ async function runLcu($: any, args: string[], working: string): Promise<void> {
   try {
     const run = await $.process.run([path, 'apps', ...args], { timeoutMs: 180000 })
     notice = run.exitCode === 0
-      ? { tone: 'ok', text: firstLine(run.stdout) || 'Done.' }
-      : { tone: 'error', text: firstLine(run.stderr).replace(/^lcu apps: /, '') || `lcu apps exited ${run.exitCode}` }
+      ? { tone: 'ok', text: firstLine(run.stdout) || 'Fertig.' }
+      : { tone: 'error', text: firstLine(run.stderr).replace(/^lcu apps: /, '') || `lcu apps wurde mit Code ${run.exitCode} beendet` }
   } catch (error) {
-    notice = { tone: 'error', text: `Could nicht ausführen lcu: ${(error as Error).message}` }
+    notice = { tone: 'error', text: `lcu konnte nicht ausgeführt werden: ${(error as Error).message}` }
   }
   $.ui.toast(notice.text)
   await update($, apps, (state: AppsState) => ({ ...state, busy: undefined, notice }))
@@ -452,9 +452,9 @@ async function record($: any, id: string, choice: Choice): Promise<boolean> {
   try {
     const reply = (await $.mcp.call(SERVER, CHOICE_TOOL, { id, choice })) as McpResult
     if (!reply.isError) return true
-    report($, `LCU refused the choice: ${textOf(reply)}`)
+    report($, `LCU hat die Auswahl abgelehnt: ${textOf(reply)}`)
   } catch (error) {
-    report($, `could nicht senden the choice to LCU: ${String(error)}`)
+    report($, `Die Auswahl konnte nicht an LCU gesendet werden: ${String(error)}`)
   }
   return false
 }
@@ -462,14 +462,14 @@ async function record($: any, id: string, choice: Choice): Promise<boolean> {
 // A failure the person should see, and the debug log keeps.
 function report($: any, text: string): void {
   $.ui.log(`lcu-approve: ${text}`, { to: 'debug' })
-  $.ui.toast(`Computer verwenden approval: ${text}`)
+  $.ui.toast(`Freigabe für Computer Use: ${text}`)
 }
 
 const CONFIRMATION: Record<Choice, (name: string) => string> = {
-  session: name => `${name} allowed for this conversation`,
-  always: name => `${name} always allowed`,
-  deny: name => `${name} denied`,
-  cancel: name => `Approval for ${name} dismissed`,
+  session: name => `${name} für dieses Gespräch erlaubt`,
+  always: name => `${name} immer erlaubt`,
+  deny: name => `${name} abgelehnt`,
+  cancel: name => `Freigabe für ${name} zurückgewiesen`,
 }
 
 // Record the person's choice, confirm it, then take the pane down. A refused record means the request ended.
@@ -519,14 +519,14 @@ async function showPane($: any, approval: Approval, icon: string | undefined, gr
 }
 
 // What a dismissed card (its close mark, or Skip) resolves the question with.
-const DISMISSED = '[User dismissed'
+const DISMISSED = '[Benutzer abgelehnt'
 
 // The question: the app, the risk when high. The desktop app draws only this text and the option labels.
 function askQuestion(approval: Approval): string {
-  const sentence = `Computer verwenden will be able to see und control ${approval.label} (${approval.app}).`
-  if (approval.riskLevel !== 'high') return `${sentence} Allow it?`
+  const sentence = `Computer Use wird ${approval.label} (${approval.app}) sehen und steuern können.`
+  if (approval.riskLevel !== 'high') return `${sentence} Erlauben?`
   const warning = approval.warning ? ` ${plainWarning(approval.warning)}` : ''
-  return `\u26a0\ufe0f High risk \u2014 ${sentence}${warning} Allow it?`
+  return `\u26a0\ufe0f Hohes Risiko \u2014 ${sentence}${warning} Erlauben?`
 }
 
 // The engine's question dialog: the desktop app's card, and a terminal where no pane is seated.

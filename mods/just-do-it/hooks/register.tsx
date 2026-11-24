@@ -6,7 +6,7 @@ import { configureFleet, fleetStart, fleetEnd, fleetComplete } from './fleet-ent
 // Keep the old shape so reload cannot silently reset a user's pause.
 const initial: WorkState = {
   stopObserved: false, busy: false, seenWarnings: [], warnings: [], maintenanceQueued: false,
-  generation: 0, lastFailures: 0, cycle: 0, enabled: true, phase: 'Brug niet gelezen',
+  generation: 0, lastFailures: 0, cycle: 0, enabled: true, phase: 'Brücke nicht gelesen',
   detail: '', next: '', evidence: '', continuations: 0, tools: 0, failures: 0,
   lastTools: 0, stalled: 0, lastStep: '', interrupted: false,
 }
@@ -22,9 +22,9 @@ const bridge = async ($: import('claude-code').EngineInterface, action = 'status
     }
     const result = await $.process.run(['python3', '-I', `${$.plugin.root}/hooks/bridge.py`, action, '--session', sid],
       input === undefined ? { timeoutMs: 10000 } : { timeoutMs: 10000, stdin: JSON.stringify(input) })
-    if (result.exitCode !== 0) throw new Error('Bridge kon niet worden gelezen; diagnose nodig.')
+    if (result.exitCode !== 0) throw new Error('Die Brücke konnte nicht gelesen werden; Diagnose erforderlich.')
     const state = JSON.parse(result.stdout) as BridgeState
-    if (state.schemaVersion !== 1 || state.session_id !== sid) throw new Error('Onverwachte bridge-state.')
+    if (state.schemaVersion !== 1 || state.session_id !== sid) throw new Error('Unerwarteter Brückenzustand.')
     await update($, work, s => ({ ...s, bridge: state, enabled: !state.paused, interrupted: state.interrupted,
       phase: state.phase, next: state.next, stopObserved: state.stopInvocations > 0,
       refreshedAt: Date.now(), stale: false, detail: '' }))
@@ -36,7 +36,7 @@ const bridge = async ($: import('claude-code').EngineInterface, action = 'status
       await $.ui.status(`Just Do It · ${state.phase}`)
       return state
     } catch {
-      await update($, work, s => ({ ...s, stale: true, phase: 'Brugdiagnose nodig', detail: 'Geen actuele state beschikbaar; voltooiing niet bewezen.' }))
+      await update($, work, s => ({ ...s, stale: true, phase: 'Brückendiagnose erforderlich', detail: 'Kein aktueller Zustand verfügbar; Abschluss nicht nachgewiesen.' }))
       return undefined
     }
   }
@@ -86,9 +86,9 @@ const rawBridge = async <T,>($: import('claude-code').EngineInterface, action: s
   const sid = await $.session.id()
   const result = await $.process.run(['python3', '-I', `${$.plugin.root}/hooks/bridge.py`, action, '--session', sid],
     { timeoutMs: 10000, stdin: JSON.stringify(input) })
-  if (result.exitCode !== 0) throw new Error('Bridge kon niet worden gelezen; diagnose nodig.')
+  if (result.exitCode !== 0) throw new Error('Die Brücke konnte nicht gelesen werden; Diagnose erforderlich.')
   const parsed = JSON.parse(result.stdout) as { schemaVersion?: number, session_id?: string }
-  if (parsed.schemaVersion !== 1 || parsed.session_id !== sid) throw new Error('Onverwachte bridge-state.')
+  if (parsed.schemaVersion !== 1 || parsed.session_id !== sid) throw new Error('Unerwarteter Brückenzustand.')
   return parsed as T
 }
 
@@ -181,8 +181,8 @@ export const register: Register = (on, options) => {
     const state = await refresh($, action === 'pause' || action === 'resume' ? action : 'status')
     await $.ui.open({ id: 'just-do-it', title: 'Just Do It' })
     return { text: state
-      ? `Just Do It: ${state.phase}. Command-Stop ${state.stopInvocations} keer aangeroepen. Integratie: ${state.integration}. Semantische acceptatie blijft apart. Hervatten starten zelf geen opdracht.`
-      : 'Just Do It: brugdiagnose nodig. Geen voltooiingsbewijs.' }
+      ? `Just Do It: ${state.phase}. Command-Stop ${state.stopInvocations} Mal aufgerufen. Integration: ${state.integration}. Semantische Annahme bleibt getrennt. Das Fortsetzen startet selbst keinen Auftrag.`
+      : 'Just Do It: Brückendiagnose erforderlich. Kein Abschlussnachweis.' }
   })
   on('turn.complete', async ($, e, next) => {
     const result = await next(e)
@@ -197,20 +197,20 @@ export const register: Register = (on, options) => {
     return <Box flexDirection="column">
       <Text bold>Just Do It</Text>
       <Text>{local.phase}</Text>
-      <Text>UI geladen · command-route gedocumenteerd</Text>
-      <Text>{s ? `Stop aangeroepen: ${s.stopInvocations} · integratie: ${s.integration}` : 'Brug nog niet gelezen; stopcontrole onbewezen.'}</Text>
-      <Text>{local.stale ? 'Verouderde gegevens; verversen mislukt.' : local.refreshedAt ? `Laatst gelezen: ${new Date(local.refreshedAt).toISOString()}` : 'Nog geen actuele verversing.'}</Text>
+      <Text>UI geladen · Befehlsroute dokumentiert</Text>
+      <Text>{s ? `Stop aufgerufen: ${s.stopInvocations} · Integration: ${s.integration}` : 'Brücke noch nicht gelesen; Stoppkontrolle nicht nachgewiesen.'}</Text>
+      <Text>{local.stale ? 'Veraltete Daten; Aktualisierung fehlgeschlagen.' : local.refreshedAt ? `Zuletzt gelesen: ${new Date(local.refreshedAt).toISOString()}` : 'Noch keine aktuelle Aktualisierung.'}</Text>
       <Text>{local.detail}</Text>
       {s && Object.entries(s.outcomes).map(([id, value]) => {
         const item = value as { dod?: string, evidence?: unknown[], needsReconciliation?: boolean }
-        return <Text key={id}>{`${id}: ${item.dod ?? 'DoD ontbreekt'} · bewijs ${item.evidence?.length ?? 0}${item.needsReconciliation ? ' · afstemmen vereist' : ''}`}</Text>
+        return <Text key={id}>{`${id}: ${item.dod ?? 'DoD fehlt'} · Beweise ${item.evidence?.length ?? 0}${item.needsReconciliation ? ' · Abstimmung erforderlich' : ''}`}</Text>
       })}
       <Text>{local.next}</Text>
-      {s && <Text>{Object.keys(s.outcomes).length} uitkomsten · {Object.keys(s.tasks).length} taken · {Object.keys(s.incidents).length} incidenten</Text>}
-      {s && <Text dimColor>Generatie {s.generation} · {s.continuations} vervolgbeurten · 0 modelaanroepen per Stop · audits op verzoek: {s.audit?.requests ?? 0}</Text>}
-      <Button key="toggle" label={local.enabled ? 'Pauzeren' : 'Hervatten'} onPress={async () => { await refresh($, local.enabled ? 'pause' : 'resume') }} />
-      <Button key="refresh" label="Verversen" onPress={async () => { await refresh($) }} />
-      <Text dimColor>Bewijsindex is geen semantisch oordeel. Goedkeuring en stop blijven leidend.</Text>
+      {s && <Text>{Object.keys(s.outcomes).length} Ergebnisse · {Object.keys(s.tasks).length} Aufgaben · {Object.keys(s.incidents).length} Vorfälle</Text>}
+      {s && <Text dimColor>Generation {s.generation} · {s.continuations} Folgezüge · 0 Modellaufrufe pro Stop · Audits auf Anfrage: {s.audit?.requests ?? 0}</Text>}
+      <Button key="toggle" label={local.enabled ? 'Pausieren' : 'Fortsetzen'} onPress={async () => { await refresh($, local.enabled ? 'pause' : 'resume') }} />
+      <Button key="refresh" label="Aktualisieren" onPress={async () => { await refresh($) }} />
+      <Text dimColor>Der Beweisindex ist kein semantisches Urteil. Freigabe und Stopp bleiben maßgeblich.</Text>
     </Box>
   })
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {

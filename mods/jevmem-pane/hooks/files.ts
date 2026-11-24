@@ -55,14 +55,14 @@ export function findGuardEntry(entries: readonly GuardEntry[], toolUseId: string
 
 /** The route of a checked call, in plain words. */
 export const routeWords: Record<string, string> = {
-  'no-rules': 'nein rule',
-  'no-candidate': 'nein rule matched',
-  cache: 'cached',
+  'no-rules': 'keine Regel',
+  'no-candidate': 'keine Regel zutreffend',
+  cache: 'zwischengespeichert',
   jev: 'Jev',
-  'jev-failed': 'Jev did nicht Antwort',
-  'no-key': 'nein key',
-  'no-time': 'nein Zeit',
-  error: 'error',
+  'jev-failed': 'Jev hat nicht geantwortet',
+  'no-key': 'kein Schlüssel',
+  'no-time': 'keine Zeit',
+  error: 'Fehler',
 }
 
 export type QueueEntry = { hash?: string; enqueuedAt?: string; attempts?: number; nextAttemptAt?: string; lastError?: string }
@@ -84,7 +84,7 @@ export function failureAfter(text: string | null, sinceMs: number): string | nul
     const e = items[i]!
     if (!e.ts || Date.parse(e.ts) < sinceMs) continue
     if (e.label === 'hook' && e.ok === false && e.error) return e.error
-    if (e.label === 'queue' && e.event === 'dropped' && e.detail) return `the turn was dropped: ${e.detail}`
+    if (e.label === 'queue' && e.event === 'dropped' && e.detail) return `Der Zug wurde verworfen: ${e.detail}`
   }
   return null
 }
@@ -136,20 +136,20 @@ export function plainDecision(d: Decision): string {
   const r = `${d.reason ?? ''} ${d.detail ?? ''}`
   if (d.action === 'deferred') {
     const n = /(\d+) background subagent/.exec(r)?.[1]
-    return n ? `Waiting: ${n} background Subagent${n === '1' ? ' has' : 's have'} nicht reported zurück` : 'Waiting: the Zug is still läuft'
+    return n ? `Warten: ${n} Hintergrund-Subagent${n === '1' ? ' hat' : 'en haben'} noch nicht zurückgemeldet` : 'Warten: der Zug läuft noch'
   }
-  if (d.action === 'error') return `Failed: ${short(d.detail || d.reason || 'the decision ended in an error')}`
+  if (d.action === 'error') return `Fehlgeschlagen: ${short(d.detail || d.reason || 'die Entscheidung endete in einem Fehler')}`
   if (d.action !== 'skipped') return `${d.action}: ${short(d.reason ?? d.detail ?? '')}`
-  if (/^empty turn/.test(d.reason ?? d.detail ?? '')) return 'Not gespeichert: an empty turn'
+  if (/^empty turn/.test(d.reason ?? d.detail ?? '')) return 'Nicht gespeichert: ein leerer Zug'
   const dup = d.duplicate_of ?? /duplicate of ([a-z0-9]{6})/.exec(r)?.[1]
-  if (dup) return `Not gespeichert: already in memory as ${dup}`
-  if (/injection=|instructions aimed at an AI/.test(r)) return 'Not gespeichert: it read as instructions aimed at an AI'
-  if (/chit_chat/.test(r)) return 'Not gespeichert: small talk'
-  if (/source=assistant_reply|assistant_meta|may come from the assistant/.test(r)) return "Not gespeichert: only a bug, an architecture note or a dead end is taken from Claude's reply"
-  if (/status \w+: nothing decided|turn was stopped/.test(r)) return 'Not gespeichert: the turn was stopped'
-  if (/kind=none/.test(r)) return 'Not gespeichert: nothing worth keeping'
-  if (/content=[\d.]+<[\d.]+/.test(r)) return 'Not gespeichert: too little of a fact in it'
-  if (/importance=\w+<\w+/.test(r)) return 'Not gespeichert: not important enough'
-  return 'Not gespeichert'
+  if (dup) return `Nicht gespeichert: bereits als ${dup} im Gedächtnis`
+  if (/injection=|instructions aimed at an AI/.test(r)) return 'Nicht gespeichert: gelesen als Anweisungen an eine KI'
+  if (/chit_chat/.test(r)) return 'Nicht gespeichert: Smalltalk'
+  if (/source=assistant_reply|assistant_meta|may come from the assistant/.test(r)) return 'Nicht gespeichert: aus Claudes Antwort wird nur ein Fehler, ein Architekturhinweis oder eine Sackgasse übernommen'
+  if (/status \w+: nothing decided|turn was stopped/.test(r)) return 'Nicht gespeichert: der Zug wurde angehalten'
+  if (/kind=none/.test(r)) return 'Nicht gespeichert: nichts Erhaltenswertes'
+  if (/content=[\d.]+<[\d.]+/.test(r)) return 'Nicht gespeichert: zu wenig konkrete Information darin'
+  if (/importance=\w+<\w+/.test(r)) return 'Nicht gespeichert: nicht wichtig genug'
+  return 'Nicht gespeichert'
 }
 const short = (s: string) => (s.length > 120 ? `${s.slice(0, 119)}…` : s)

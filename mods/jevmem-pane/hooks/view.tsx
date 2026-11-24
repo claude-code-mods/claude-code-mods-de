@@ -31,7 +31,7 @@ export type Actions = {
 
 const MAX_TEXT = 300
 const cut = (s: string) => (s.length > MAX_TEXT ? `${s.slice(0, MAX_TEXT - 1)}…` : s)
-const verb = (d: GuardEntry['decision']) => (d === 'deny' ? 'denied' : d === 'ask' ? 'asked' : d === 'warn' ? 'warned' : 'allowed')
+const verb = (d: GuardEntry['decision']) => (d === 'deny' ? 'abgelehnt' : d === 'ask' ? 'nachgefragt' : d === 'warn' ? 'gewarnt' : 'erlaubt')
 
 export function draw($: EngineInterface, e: RenderInput<'Pane'>, v: View, act: Actions): RenderElement {
   const { Box, Text, Button } = $.ui.resolve(e)
@@ -47,7 +47,7 @@ export function draw($: EngineInterface, e: RenderInput<'Pane'>, v: View, act: A
     const p = v.pending
     if (!p || p.where !== where) return null
     if (p.kind === 'confirm') {
-      const text = p.action === 'forget' ? `Retire ${p.id}? It stays in JEVMEM.md as [retired].` : p.action === 'wrong' ? `Label ${p.id} as wrong und retire it?` : 'Save this Zug as a memory Zeile? jevmem missed decides the kind und adds it.'
+      const text = p.action === 'forget' ? `${p.id} stilllegen? Es bleibt in JEVMEM.md als [retired] stehen.` : p.action === 'wrong' ? `${p.id} als falsch markieren und stilllegen?` : 'Diesen Zug als Gedächtniszeile speichern? jevmem missed bestimmt die Art und fügt sie hinzu.'
       return (
         <Box flexDirection="column">
           <Text wrap="wrap">{text}</Text>
@@ -67,7 +67,7 @@ export function draw($: EngineInterface, e: RenderInput<'Pane'>, v: View, act: A
           {shown.map((l) => (
             <Text wrap="wrap">{l === '' ? ' ' : l}</Text>
           ))}
-          {lines.length > shown.length && <Text dimColor>{`${lines.length - shown.length} more lines: run the command in a terminal`}</Text>}
+          {lines.length > shown.length && <Text dimColor>{`${lines.length - shown.length} weitere Zeilen: führe den Befehl in einem Terminal aus`}</Text>}
           <Button key="output:close" plain onPress={() => act.close()}>close</Button>
         </Box>
       )
@@ -82,31 +82,31 @@ export function draw($: EngineInterface, e: RenderInput<'Pane'>, v: View, act: A
 
   // Block 1: recalled for this prompt.
   const recall: RenderElement[] = []
-  if (!v.promptSeen) recall.push(<Text dimColor>no prompt yet</Text>)
-  else if (v.recallState !== 'this' || !v.recall) recall.push(<Text dimColor>nothing for this prompt</Text>)
+  if (!v.promptSeen) recall.push(<Text dimColor>noch keine Eingabe</Text>)
+  else if (v.recallState !== 'this' || !v.recall) recall.push(<Text dimColor>nichts für diese Eingabe</Text>)
   else {
     const r = v.recall
-    if (r.lines === 0) recall.push(<Text dimColor wrap="wrap">no memory lines yet: say a decision, a rule or what failed, and jevmem saves it</Text>)
-    else if (r.served.length === 0) recall.push(<Text dimColor>no line fits this prompt</Text>)
+    if (r.lines === 0) recall.push(<Text dimColor wrap="wrap">noch keine Gedächtniszeilen: nenne eine Entscheidung, eine Regel oder einen Fehlschlag, und jevmem speichert sie</Text>)
+    else if (r.served.length === 0) recall.push(<Text dimColor>keine Zeile passt zu dieser Eingabe</Text>)
     for (const m of r.served) {
       const id = String(m.id ?? '')
       recall.push(<Text wrap="wrap">{`${id} [${String(m.kind ?? '?')}] ${cut(String(m.text ?? ''))}`}</Text>)
       if (isId(id)) recall.push(buttons(id, m.kind ?? null, id, 'recall'))
-      else recall.push(<Text dimColor>not a memory id</Text>)
+      else recall.push(<Text dimColor>keine Gedächtnis-ID</Text>)
     }
-    for (const w of r.withheld) recall.push(<Text dimColor wrap="wrap">{`${String(w.id)} withheld: ${cut(String(w.reason ?? ''))}`}</Text>)
-    const how = r.path === 'word-match' ? `word match: Jev did nicht Antwort${r.Fehler ? ` (${cut(r.error)})` : ''}` : `Jev ${r.ms} ms`
-    if (r.lines !== 0) recall.push(<Text dimColor wrap="wrap">{`${r.served.length} served · ${r.withheld.length} withheld · ${r.gated} gated · ${how}`}</Text>)
+    for (const w of r.withheld) recall.push(<Text dimColor wrap="wrap">{`${String(w.id)} zurückgehalten: ${cut(String(w.reason ?? ''))}`}</Text>)
+    const how = r.path === 'word-match' ? `Wortübereinstimmung: Jev hat nicht geantwortet${r.error ? ` (${cut(r.error)})` : ''}` : `Jev ${r.ms} ms`
+    if (r.lines !== 0) recall.push(<Text dimColor wrap="wrap">{`${r.served.length} geliefert · ${r.withheld.length} zurückgehalten · ${r.gated} gesperrt · ${how}`}</Text>)
   }
 
   // Block 2: the guard.
   const guard: RenderElement[] = []
   if (v.guard) {
     const g = v.guard.entry
-    guard.push(<Text wrap="wrap">{`${g.tool} ${verb(g.decision)} (${g.mode ?? g.route}) · ${v.guard.thisCall ? 'this call' : hhmm(g.ts)}`}</Text>)
-    for (const r of g.rules ?? []) guard.push(<Text wrap="wrap">{`${r.id} ${r.p !== undefined ? r.p.toFixed(2) : '?'} ${cut(r.text)}${r.unverified ? ' (unverified)' : ''}${r.unchecked ? ' (unchecked)' : ''}`}</Text>)
+    guard.push(<Text wrap="wrap">{`${g.tool} ${verb(g.decision)} (${g.mode ?? g.route}) · ${v.guard.thisCall ? 'dieser Aufruf' : hhmm(g.ts)}`}</Text>)
+    for (const r of g.rules ?? []) guard.push(<Text wrap="wrap">{`${r.id} ${r.p !== undefined ? r.p.toFixed(2) : '?'} ${cut(r.text)}${r.unverified ? ' (ungeprüft)' : ''}${r.unchecked ? ' (ungeprüft)' : ''}`}</Text>)
     if (g.action) guard.push(<Text dimColor wrap="wrap">{cut(g.action)}</Text>)
-    if (g.tamper) guard.push(<Text dimColor wrap="wrap">{`tamper prüfen: ${cut(g.tamper)}`}</Text>)
+    if (g.tamper) guard.push(<Text dimColor wrap="wrap">{`Manifestprüfung: ${cut(g.tamper)}`}</Text>)
     const ruleId = g.rules?.find((r) => isId(r.id))?.id
     guard.push(
       <Box flexDirection="row" gap={1}>
@@ -115,22 +115,22 @@ export function draw($: EngineInterface, e: RenderInput<'Pane'>, v: View, act: A
       </Box>,
     )
   }
-  if (v.lastCall && 'missing' in v.lastCall) guard.push(<Text dimColor>{`${v.lastCall.tool}: no log entry for this call`}</Text>)
-  else if (v.lastCall && (!v.guard || v.guard.entry !== v.lastCall)) guard.push(<Text dimColor wrap="wrap">{`letzte call: ${v.lastCall.tool} ${verb(v.lastCall.decision)} (${routeWords[v.lastCall.route] ?? v.lastCall.route})`}</Text>)
-  if (!guard.length) guard.push(<Text dimColor>no checked call yet</Text>)
+  if (v.lastCall && 'missing' in v.lastCall) guard.push(<Text dimColor>{`${v.lastCall.tool}: kein Protokolleintrag für diesen Aufruf`}</Text>)
+  else if (v.lastCall && (!v.guard || v.guard.entry !== v.lastCall)) guard.push(<Text dimColor wrap="wrap">{`Letzter Aufruf: ${v.lastCall.tool} ${verb(v.lastCall.decision)} (${routeWords[v.lastCall.route] ?? v.lastCall.route})`}</Text>)
+  if (!guard.length) guard.push(<Text dimColor>noch kein geprüfter Aufruf</Text>)
 
   // Block 3: saved last turn.
   const saved: RenderElement[] = []
   const d = v.decision
-  if (v.saving === 'none') saved.push(<Text dimColor>no turn yet</Text>)
-  else if (v.saving === 'saving') saved.push(<Text dimColor>saving…</Text>)
-  else if (v.saving !== 'ready' || !d) saved.push(<Text dimColor wrap="wrap">{v.savingNote ?? 'nicht decided yet'}</Text>)
+  if (v.saving === 'none') saved.push(<Text dimColor>noch kein Zug</Text>)
+  else if (v.saving === 'saving') saved.push(<Text dimColor>wird gespeichert…</Text>)
+  else if (v.saving !== 'ready' || !d) saved.push(<Text dimColor wrap="wrap">{v.savingNote ?? 'noch nicht entschieden'}</Text>)
   else if (d.action === 'saved' && d.id) {
     saved.push(<Text wrap="wrap">{`${d.id} [${d.kind ?? '?'}] ${cut(d.line ?? '')}`}</Text>)
-    if (d.superseded) saved.push(<Text dimColor>{`supersedes ${d.superseded}`}</Text>)
-    if (d.duplicate_of) saved.push(<Text dimColor>{`duplicate of ${d.duplicate_of}`}</Text>)
+    if (d.superseded) saved.push(<Text dimColor>{`ersetzt ${d.superseded}`}</Text>)
+    if (d.duplicate_of) saved.push(<Text dimColor>{`Duplikat von ${d.duplicate_of}`}</Text>)
     if (isId(d.id)) saved.push(buttons(d.id, d.kind, 'last', 'decision'))
-    else saved.push(<Text dimColor>not a memory id</Text>)
+    else saved.push(<Text dimColor>keine Gedächtnis-ID</Text>)
   } else {
     saved.push(<Text dimColor wrap="wrap">{plainDecision(d)}</Text>)
     // 0.7.6: a skipped turn can be labelled as missed from here (the prompt as typed goes to `jevmem missed`).
@@ -142,15 +142,15 @@ export function draw($: EngineInterface, e: RenderInput<'Pane'>, v: View, act: A
 
   return (
     <Box flexDirection="column" width={width}>
-      <Text weight="bold">Recalled for this prompt</Text>
+      <Text weight="bold">Für diese Eingabe abgerufen</Text>
       {recall}
       {pending('recall')}
       <Text> </Text>
-      <Text weight="bold">The guard</Text>
+      <Text weight="bold">Der Wächter</Text>
       {guard}
       {pending('guard')}
       <Text> </Text>
-      <Text weight="bold">Saved last turn</Text>
+      <Text weight="bold">Letzter Zug gespeichert</Text>
       {saved}
       {pending('decision')}
     </Box>

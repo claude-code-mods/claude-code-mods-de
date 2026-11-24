@@ -137,23 +137,23 @@ async function note($: EngineInterface, where: Where, text: string): Promise<voi
   redraw($)
 }
 async function doWhy($: EngineInterface, idOrHash: string, where: Where): Promise<void> {
-  if (!isId(idOrHash) && !isHash(idOrHash)) return note($, where, 'nicht a memory id')
+  if (!isId(idOrHash) && !isHash(idOrHash)) return note($, where, 'keine Gedächtnis-ID')
   const cli = await read($, S_CLI)
   if (!cli) return note($, where, NOT_FOUND)
   const r = await runCli($, cli, ['why', idOrHash])
-  await update($, S_PENDING, (): Pending => ({ kind: 'output', where, title: `jevmem why ${idOrHash}${r.ok ? '' : ' (failed)'}`, text: r.text }))
+  await update($, S_PENDING, (): Pending => ({ kind: 'output', where, title: `jevmem why ${idOrHash}${r.ok ? '' : ' (fehlgeschlagen)'}`, text: r.text }))
   redraw($)
 }
 async function doRetire($: EngineInterface, action: 'forget' | 'wrong', id: string, kind: string | null, where: Where): Promise<void> {
-  if (!isId(id)) return note($, where, 'nicht a memory id')
-  if (kind === 'constraint') return note($, where, action === 'forget' ? `a rule is retired in a terminal: jevmem forget ${id}` : `a rule is retired in a terminal: jevmem wrong ${id} --should-be keine`)
+  if (!isId(id)) return note($, where, 'keine Gedächtnis-ID')
+  if (kind === 'constraint') return note($, where, action === 'forget' ? `Eine Regel wird in einem Terminal stillgelegt: jevmem forget ${id}` : `Eine Regel wird in einem Terminal stillgelegt: jevmem wrong ${id} --should-be none`)
   await update($, S_PENDING, (): Pending => ({ kind: 'confirm', where, action, id }))
   redraw($)
 }
 /** 0.7.6: a skipped turn's `missed` button: a confirm, then `jevmem missed "<the prompt as typed>"`, which labels the turn and adds the line. */
 async function doMissed($: EngineInterface, where: Where): Promise<void> {
   const p = await read($, S_PROMPT)
-  if (!p || !p.text.trim()) return note($, where, 'nein Prompt Text for this Zug')
+  if (!p || !p.text.trim()) return note($, where, 'kein Prompt-Text für diesen Zug')
   await update($, S_PENDING, (): Pending => ({ kind: 'confirm', where, action: 'missed', id: '', text: p.text }))
   redraw($)
 }
@@ -169,14 +169,14 @@ async function doConfirm($: EngineInterface, yes: boolean): Promise<void> {
   if (!cli) return note($, p.where, NOT_FOUND)
   const args = p.action === 'forget' ? ['forget', p.id] : p.action === 'wrong' ? ['wrong', p.id, '--should-be', 'none'] : ['missed', p.text ?? '']
   const r = await runCli($, cli, args)
-  await update($, S_PENDING, (): Pending => ({ kind: 'output', where: p.where, title: `jevmem ${p.action === 'missed' ? 'missed "…"' : args.join(' ')}${r.ok ? '' : ' (failed)'}`, text: r.text }))
+  await update($, S_PENDING, (): Pending => ({ kind: 'output', where: p.where, title: `jevmem ${p.action === 'missed' ? 'missed "…"' : args.join(' ')}${r.ok ? '' : ' (fehlgeschlagen)'}`, text: r.text }))
   redraw($)
 }
 async function doGuardLog($: EngineInterface): Promise<void> {
   const cli = await read($, S_CLI)
   if (!cli) return note($, 'guard', NOT_FOUND)
   const r = await runCli($, cli, ['guard', 'log', '-n', '5'])
-  await update($, S_PENDING, (): Pending => ({ kind: 'output', where: 'guard', title: `jevmem guard log -n 5${r.ok ? '' : ' (failed)'}`, text: r.text }))
+  await update($, S_PENDING, (): Pending => ({ kind: 'output', where: 'guard', title: `jevmem guard log -n 5${r.ok ? '' : ' (fehlgeschlagen)'}`, text: r.text }))
   redraw($)
 }
 async function doClose($: EngineInterface): Promise<void> {
@@ -198,7 +198,7 @@ async function openOnce($: EngineInterface): Promise<void> {
 
 export const register: Register = (on) => {
   on('session.start', async ($, e, next) => {
-    await $.command.register({ name: 'jevmem', description: 'Open oder schließen the jevmem pane: what was recalled for this Prompt, what the guard decided, what the letzte Zug gespeichert' })
+    await $.command.register({ name: 'jevmem', description: 'Jevmem-Bereich öffnen oder schließen: was zu dieser Eingabe abgerufen wurde, was der Wächter entschieden hat und was im letzten Zug gespeichert wurde' })
     const isOn = await projectOn($)
     await update($, S_ON, () => isOn)
     await update($, S_OPENED, () => false)
@@ -217,14 +217,14 @@ export const register: Register = (on) => {
   })
 
   on('command.run', { command: 'jevmem' }, async ($) => {
-    if (!(await read($, S_ON))) return { text: 'jevmem is nicht turned on in this Projekt: ausführen jevmem setup here, dann starten a neu Sitzung.' }
+    if (!(await read($, S_ON))) return { text: 'Jevmem ist in diesem Projekt nicht aktiviert: führe hier jevmem setup aus und starte dann eine neue Sitzung.' }
     const placed = (await $.ui.panes()).some((p) => p.id === PANE && p.isPlaced)
     if (placed) {
       await $.ui.close({ id: PANE })
-      return { text: 'jevmem pane closed.' }
+      return { text: 'Jevmem-Bereich geschlossen.' }
     }
     const opened = await $.ui.open({ id: PANE, title: 'jevmem', focus: true, columns: 48, rows: 14 })
-    return { text: opened.isPlaced ? 'jevmem pane opened.' : `jevmem pane opened, waiting to be placed: ${opened.reason}` }
+    return { text: opened.isPlaced ? 'Jevmem-Bereich geöffnet.' : `Jevmem-Bereich geöffnet, wartet auf Platzierung: ${opened.reason}` }
   })
 
   on('prompt.submit', async ($, e, next) => {
