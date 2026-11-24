@@ -1,41 +1,16 @@
-# Claude Code native Prompt predictions
+# Native Prompt-Vorhersagen für Claude Code
 
-This managed adapter verwendet Claude Code's native function Hooks. Es ist verified
-against Claude Code 2.1.310; older versions are nicht claimed as supported. Es ist
-loaded for a neu process mit `--plugin-dir <absolute-adapter-directory>` und
-`CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1`. Loading an adapter does nicht installieren it in
-the user's global Claude configuration.
+Dieser verwaltete Adapter nutzt die nativen Function Hooks von Claude Code. Er ist mit Claude Code 2.1.310 geprüft; für ältere Versionen wird keine Unterstützung zugesagt. Er wird für einen neuen Prozess mit `--plugin-dir <absolute-adapter-directory>` und `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1` geladen. Das Laden eines Adapters installiert ihn nicht in die globale Claude-Konfiguration des Benutzers.
 
-The launcher must provide `PEBREL_PREDICTION_ENDPOINT` (an HTTP IPv4 loopback
-address mit a port), `PEBREL_PREDICTION_TOKEN`, und
-`CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=false`. The letzte variable suppresses Claude
-Code's built-in prediction inference for that process. Without it the adapter
-does nothing, avoiding two inference requests for the same completed Zug. No
-global setting oder main-model setting is changed.
+Der Starter muss `PEBREL_PREDICTION_ENDPOINT` (eine HTTP-IPv4-Loopback-Adresse mit Port), `PEBREL_PREDICTION_TOKEN` und `CLAUDE_CODE_ENABLE_PROMPT_SUGGESTION=false` bereitstellen. Die letzte Variable unterdrückt die eingebaute Vorhersage-Inferenz von Claude Code für diesen Prozess. Ohne sie tut der Adapter nichts, sodass für dieselbe abgeschlossene Runde keine zwei Inferenzanfragen entstehen. Globale Einstellungen oder Einstellungen des Hauptmodells werden nicht geändert.
 
-Only a successful main Zug mit an empty, mounted terminal composer is eligible.
-`$.session.messages()` supplies in-memory user/assistant Text; Werkzeug payloads are
-nicht sent. The bridge receives at most 24 Nachrichten, 3000 UTF-16 units per Nachricht,
-und 12000 units gesamt. Pebrel owns the prediction Prompt, configured provider,
-language, und further Kontext limits. The adapter adds nein speaking-style Prompt
-oder persistence.
+Infrage kommt nur eine erfolgreiche Hauptrunde mit einem leeren, eingebundenen Terminal-Eingabefeld. `$.session.messages()` liefert Texte von Benutzer und Assistent aus dem Speicher; Werkzeug-Payloads werden nicht gesendet. Die Bridge erhält höchstens 24 Nachrichten, 3000 UTF-16-Einheiten pro Nachricht und 12.000 Einheiten insgesamt. Pebrel verwaltet den Vorhersage-Prompt, den konfigurierten Anbieter, die Sprache und weitere Kontextlimits. Der Adapter fügt weder einen Stil-Prompt noch Speicherung hinzu.
 
-The localized bridge `loading_text` appears in Claude Code's dim `PromptHint`
-footer, followed by `.`, `..`, und `...` every 400 ms. Es ist noneditable und is
-nie sent to `prompt.suggest`. A completed candidate verwendet native
-`$.prompt.suggest({text})`, so native Tab/right-arrow behavior fills the composer
-ohne submitting it. The composer remains owned by Claude Code.
+Der lokalisierte `loading_text` der Bridge erscheint im gedimmten `PromptHint`-Fußbereich von Claude Code, gefolgt von `.`, `..` und `...` im Abstand von 400 ms. Er ist nicht bearbeitbar und wird nie an `prompt.suggest` gesendet. Ein fertiger Kandidat nutzt das native `$.prompt.suggest({text})`, sodass das übliche Verhalten von Tab oder Pfeil nach rechts das Eingabefeld füllt, ohne die Nachricht abzusenden. Das Eingabefeld bleibt im Besitz von Claude Code.
 
-Editing, Prompt ändert, neu turns, Sitzung end, und a ten-second deadline
-invalidate pending UI work. Every Ergebnis rechecks the revision, Sitzung, und
-empty draft. The native `http.fetch` API has nein abort signal: cancellation here
-suppresses stale results, while the bridge owns the network/request deadline.
-No disk polling oder timers remain when prediction UI is idle.
+Bearbeitungen, Prompt-Änderungen, neue Runden, das Ende der Sitzung und eine Zehn-Sekunden-Frist machen anstehende UI-Arbeit ungültig. Jedes Ergebnis prüft erneut Revision, Sitzung und leeren Entwurf. Die native `http.fetch`-API hat kein Abbruchsignal: Ein Abbruch unterdrückt hier veraltete Ergebnisse, während die Bridge die Netzwerk-/Anfragefrist verwaltet. Solange die Vorhersage-UI untätig ist, bleiben keine Dateiabfragen oder Timer zurück.
 
-Run the behavior contract mit `node --test tests/*.test.mjs`, und the actual
-Claude scanner mit `claude plugin validate --strict --json <adapter-directory>`.
-Mock tests do nicht establish native terminal visual acceptance oder compatibility
-mit an untested Claude version.
+Führe den Verhaltensvertrag mit `node --test tests/*.test.mjs` aus und den eigentlichen Claude-Prüfer mit `claude plugin validate --strict --json <adapter-directory>`. Mock-Tests belegen weder die visuelle Abnahme im nativen Terminal noch die Kompatibilität mit einer ungeprüften Claude-Version.
 
 ## Quelle und Lizenz
 

@@ -1,10 +1,10 @@
 # shared-session
 
-> This English reference Text was assembled von the upstream plugin manifest und catalogue metadata; the pinned upstream Commit did nicht ship a README.
+> Dieser englische Referenztext wurde aus dem Upstream-Plugin-Manifest und den Katalogmetadaten zusammengestellt; der festgelegte Upstream-Commit enthielt keine README.
 
-Share a Sitzung mit a link oder your team; teammates join von their own Claude Code und watch every Zug live.
+Teile eine Sitzung per Link oder mit deinem Team; Teammitglieder treten über ihr eigenes Claude Code bei und verfolgen jeden Zug live.
 
-Share a Claude Code Sitzung mit a link, oder mit your team. Teammates join von their own Claude Code und talk to it: one Sitzung does the work, everyone sees every Zug live, und the host approves what runs on their machine. Sign in mit GitHub oder Google for teams: your team's live Sitzungen, one drücken to join. Sharing goes through this Projekt's public Server unless you set your own (README: Datenschutz und the public Server).
+Teile eine Claude-Code-Sitzung per Link oder mit deinem Team. Teammitglieder treten über ihr eigenes Claude Code bei und sprechen mit ihr: Eine Sitzung erledigt die Arbeit, alle sehen jeden Zug live, und der Gastgeber genehmigt, was auf seinem Rechner ausgeführt wird. Melde dich mit GitHub oder Google an, um deinem Team beizutreten: Live-Sitzungen deines Teams, mit einem Klick beitreten. Die Freigabe läuft über den öffentlichen Server dieses Projekts, sofern du keinen eigenen einrichtest (README: Datenschutz und der öffentliche Server).
 
 ## Installation
 

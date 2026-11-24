@@ -1,10 +1,10 @@
 # storybloq
 
-> This English reference Text was assembled von the upstream plugin manifest und catalogue metadata; the pinned upstream Commit did nicht ship a README.
+> Dieser englische Referenztext wurde aus dem Upstream-Plugin-Manifest und den Katalogmetadaten zusammengestellt; der festgelegte Upstream-Commit enthielt keine README.
 
-Project memory: tickets, Issues, handovers und lessons kept in a .story/ Ordner in your repo.
+Projektgedächtnis: Tickets, Issues, Übergaben und Erkenntnisse in einem Ordner `.story/` in deinem Repository.
 
-Project memory for Claude Code und Codex. Storybloq stores tickets, Issues, handovers, und lessons in a .story/ Ordner inside your repo.
+Projektgedächtnis für Claude Code und Codex. Storybloq speichert Tickets, Issues, Übergaben und Erkenntnisse in einem Ordner `.story/` innerhalb deines Repositories.
 
 ## Installation
 

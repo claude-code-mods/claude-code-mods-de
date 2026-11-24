@@ -1,22 +1,22 @@
 # prismantis
 
-A Claude Code mod that redraws Claude's replies in color: tables, headings, lists, quotes, highlighted code, numbers, paths und links, mermaid diagrams und charts, und Werkzeug rows, in 17 themes, mit copy buttons. Run `/prismantis setup` to pick a look, oder `/prismantis demo` to see everything it draws.
+Ein Mod für Claude Code, das Claudes Antworten farbig neu zeichnet: Tabellen, Überschriften, Listen, Zitate, hervorgehobener Code, Zahlen, Pfade und Links, Mermaid-Diagramme und Charts sowie Werkzeugzeilen – in 17 Themes, mit Kopier-Schaltflächen. Führe `/prismantis setup` aus, um ein Aussehen zu wählen, oder `/prismantis demo`, um alles zu sehen, was es zeichnet.
 
-Screenshots, every Option und the changelog are in the [full README](https://github.com/NahumLitvin/prismantis#readme).
+Screenshots, alle Optionen und der Änderungsverlauf stehen in der [vollständigen README](https://github.com/NahumLitvin/prismantis#readme).
 
-## What it runs, liest und ändert
+## Was es ausführt, liest und ändert
 
-Prismantis makes nein network calls. Everything below stays on your machine.
+Prismantis tätigt keine Netzwerkaufrufe. Alles Folgende bleibt auf deinem Rechner.
 
-- **Programs.** Clicking `⧉ html` oder `▣ png` runs the clipboard helper mit the copied table, diagram oder figure on stdin: `osascript` on macOS, `powershell.exe` on Windows (it liest `SystemRoot` to find it), oder `copyq` on Linux. With `latex` on, it runs `ratex-render` von your `PATH` mit the reply's formulas on stdin. It runs nothing else.
-- **Files.** It liest a local PNG that a reply links as a Markdown Bild, up to 2 MB, to draw it in kitty oder Ghostty. It liest zurück the PNGs `ratex-render` schreibt to `$TMPDIR/prismantis-latex-<session>-<id>`. It schreibt nein Dateien itself.
-- **Einstellungen.** `/prismantis setup` und `/prismantis theme` speichern your pick through `/config`, nur in prismantis's own options (`prismantis.theme`, `prismantis.tableStyle` und the other setup steps). Nothing else in your settings ändert.
-- **Desktop app colors.** Only while `desktopColors` ist `match`: at Sitzung starten und on `/prismantis theme`, it sets the desktop app's colors for the Sitzung through `$.theme.set`, von the aktuell palette. Turning `desktopColors` zurück to `off` calls `$.theme.clear()` once. It nie clears at Sitzung starten oder on a reload.
-- **Hooks.** It draws through `ui.render`, answers the `/prismantis` Befehl through `command.run`, watches its own `desktopColors` row in `config.set`, adds the Modell-only [diagram hints](https://github.com/NahumLitvin/prismantis#diagram-hints) note und, mit `keyPointHint` on, the key points note in `prompt.submit`, und adds `$.prismantis.markdown` for [other mods](https://github.com/NahumLitvin/prismantis#other-mods) in `engine.create`. `prismantis.markdown` is that call's own event.
+- **Programme.** Ein Klick auf `⧉ html` oder `▣ png` führt das Zwischenablage-Hilfsprogramm mit der kopierten Tabelle, dem Diagramm oder der Abbildung auf der Standardeingabe aus: `osascript` unter macOS, `powershell.exe` unter Windows (es liest `SystemRoot`, um es zu finden) oder `copyq` unter Linux. Mit aktiviertem `latex` führt es `ratex-render` aus deinem `PATH` aus, mit den Formeln der Antwort auf der Standardeingabe. Sonst führt es nichts aus.
+- **Dateien.** Es liest ein lokales PNG, das in einer Antwort als Markdown-Bild verlinkt ist, bis zu 2 MB, um es in kitty oder Ghostty zu zeichnen. Es liest die PNGs zurück, die `ratex-render` nach `$TMPDIR/prismantis-latex-<session>-<id>` schreibt. Selbst schreibt es keine Dateien.
+- **Einstellungen.** `/prismantis setup` und `/prismantis theme` speichern deine Auswahl über `/config`, ausschließlich in den eigenen Optionen von prismantis (`prismantis.theme`, `prismantis.tableStyle` und den übrigen Setup-Schritten). Andere Einstellungen werden nicht verändert.
+- **Farben der Desktop-App.** Nur solange `desktopColors` auf `match` steht: Bei Sitzungsbeginn und bei `/prismantis theme` setzt es die Farben der Desktop-App für die Sitzung über `$.theme.set`, aus der aktuellen Palette. Wird `desktopColors` wieder auf `off` gesetzt, ruft es einmal `$.theme.clear()` auf. Bei Sitzungsbeginn oder einem Reload löscht es nie.
+- **Hooks.** Es zeichnet über `ui.render`, beantwortet den Befehl `/prismantis` über `command.run`, überwacht seine eigene `desktopColors`-Zeile in `config.set`, ergänzt den nur für das Modell bestimmten Hinweis [diagram hints](https://github.com/NahumLitvin/prismantis#diagram-hints) und bei aktivem `keyPointHint` den Hinweis auf Kernpunkte in `prompt.submit` und stellt `$.prismantis.markdown` für [andere Mods](https://github.com/NahumLitvin/prismantis#other-mods) in `engine.create` bereit. `prismantis.markdown` ist das eigene Ereignis dieses Aufrufs.
 
 ## Lizenz
 
-[MIT](LICENSE), by Nahum Litvin. Bundled third-party code und palettes are credited in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+[MIT](LICENSE), von Nahum Litvin. Gebündelter Code und Paletten von Dritten sind in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) genannt.
 
 ## Quelle und Lizenz
 

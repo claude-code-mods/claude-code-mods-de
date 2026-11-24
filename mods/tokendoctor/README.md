@@ -8,9 +8,9 @@
 <h1 align="center">tokendoctor</h1>
 
 <p align="center">
-  <strong>The same Claude Code for up to 38% weniger</strong>
+  <strong>Dasselbe Claude Code für bis zu 38 % weniger</strong>
   <br>
-  Replays your own past Sitzungen to zeigen what jede ändern would have gespeichert, dann ändert nur what you pick.
+  Spielt deine eigenen vergangenen Sitzungen erneut ab, um zu zeigen, was jede Änderung eingespart hätte – und ändert nur, was du auswählst.
 </p>
 
 <p align="center">
@@ -30,23 +30,13 @@
   <img src="docs/demo.gif" alt="tokendoctor in a real Claude Code session: /tokendoctor:sessions, then the daily trend" width="880">
 </p>
 
-**Your past Sitzungen decide, nicht anyone's benchmark.** What a setting saves depends on how you
-work: how long your Sitzungen ausführen, which Modelle you verwenden, what the work is. A number von someone
-else's Sitzungen, mine included, says little about yours. So tokendoctor starts by looking zurück at
-your own.
+**Deine eigenen vergangenen Sitzungen entscheiden, nicht irgendein Benchmark.** Was eine Einstellung spart, hängt davon ab, wie du arbeitest: wie lange deine Sitzungen dauern, welche Modelle du verwendest und woran du arbeitest. Eine Zahl aus jemand anderem Sitzungen – meiner eingeschlossen – sagt über deine nur wenig aus. Deshalb blickt tokendoctor zuerst auf deine eigenen.
 
-**① Look zurück at your letzte 30 days.** `/tokendoctor:sessions` replays every Sitzung you had,
-request by request, at compaction windows of 200K, 300K, 400K und 600K, und zeigt what jede would
-have Kosten. It nur liest your transcripts, makes nein Modell calls und ändert nothing. The figure is
-an upper bound: a replay can't see work the Modell would have redone danach a summary.
+**① Zurückblick auf die letzten 30 Tage.** `/tokendoctor:sessions` spielt jede deiner Sitzungen Anfrage für Anfrage mit Kompaktierungsfenstern von 200K, 300K, 400K und 600K ab und zeigt, was jede gekostet hätte. Es liest nur deine Transkripte, tätigt keine Modellaufrufe und ändert nichts. Die Zahl ist eine Obergrenze: Eine Wiedergabe kann nicht sehen, welche Arbeit das Modell nach einer Zusammenfassung wiederholt hätte.
 
-**② Change nur what your Sitzungen zeigen pays, und undo it.** `/tokendoctor:optimize` proposes
-ändert von those numbers und prüft your settings against Claude Code's docs; it applies nur the
-ones you pick, jede shown as a diff erste. `/tokendoctor undo` puts any of them zurück.
+**② Nur ändern, was sich deinen Sitzungen zufolge lohnt – und rücknehmbar.** `/tokendoctor:optimize` schlägt aufgrund dieser Zahlen Änderungen vor und prüft deine Einstellungen anhand der Claude-Code-Dokumentation; angewendet werden nur die, die du auswählst, jeweils vorher als Diff angezeigt. Mit `/tokendoctor undo` kannst du jede davon rücknehmen.
 
-**③ Optional: slide statt summarize.** When Claude Code would stoppen to summarize the
-Gespräch, tokendoctor drops alt Werkzeug Ausgabe instead und keeps every Nachricht. Es gibt nein Modell
-call, so it takes milliseconds, nicht a minute.
+**③ Optional: verschieben statt zusammenfassen.** Wenn Claude Code das Gespräch zusammenfassen würde, verwirft tokendoctor stattdessen alte Werkzeugausgaben und behält jede Nachricht. Es gibt keinen Modellaufruf, daher dauert es Millisekunden statt einer Minute.
 
 ## Install
 
@@ -55,70 +45,51 @@ claude plugin marketplace add localixai/tokendoctor
 claude plugin install tokendoctor@tokendoctor
 ```
 
-Restart Claude Code und ausführen `/tokendoctor:sessions` to see what your letzte 30 days would have Kosten
-at jede Fenster. Nothing ändert until you pick it.
+Starte Claude Code neu und führe `/tokendoctor:sessions` aus, um zu sehen, was deine letzten 30 Tage bei jedem Fenster gekostet hätten. Es wird nichts geändert, bis du etwas auswählst.
 
-## What it found in mine
+## Was es in meinen Sitzungen gefunden hat
 
-Every request sendet the whole Gespräch to the Modell. On Modelle mit a 1M Fenster, Claude Code
-compacts nur near 967K Tokens, so the end of a long Sitzung is the expensive part. For me, two
-thirds of main-thread Kosten went to requests mit mehr than 400K in Kontext.
+Jede Anfrage sendet das gesamte Gespräch an das Modell. Bei Modellen mit einem 1M-Fenster kompaktiert Claude Code erst nahe 967K Tokens, deshalb ist das Ende einer langen Sitzung der teure Teil. Bei mir gingen zwei Drittel der Kosten im Hauptthread auf Anfragen mit mehr als 400K Kontext zurück.
 
-So I set a 400K Fenster und Sonnet for Subagenten. Comparing the month vorher mit the week danach,
-about 23K und 19K main-thread requests, Kontext per request went von 412K to 219K und Kosten per
-request fell 38% at API list prices. That's one person's vorher und danach, nicht a controlled
-experiment.
+Deshalb habe ich ein 400K-Fenster und Sonnet für Subagenten eingestellt. Verglichen mit dem Monat davor und der Woche danach – etwa 23K bzw. 19K Anfragen im Hauptthread – sank der Kontext pro Anfrage von 412K auf 219K und die Kosten pro Anfrage um 38 % nach API-Listenpreisen. Das ist ein Vorher-Nachher-Vergleich einer Person, kein kontrolliertes Experiment.
 
-The catch is mehr summaries, und jede is a pause: 79 seconds on average in my Sitzungen. That's
-what the slide is for. Your Sitzungen may zeigen something else entirely, which is the point of
-looking at them erste.
+Der Nachteil sind mehr Zusammenfassungen, und jede bedeutet eine Pause: durchschnittlich 79 Sekunden in meinen Sitzungen. Genau dafür gibt es das Verschieben. Deine Sitzungen können etwas ganz anderes zeigen – deshalb schaut man zuerst auf sie.
 
-## What the benchmark zeigt
+## Was der Benchmark zeigt
 
-On the [benchmark](bench/README.md), Claude Code builds a TypeScript Projekt against tests it
-can't ändern, so a ausführen counts nur if the tests pass. Cost is per Aufgabe, on Haiku 5.5:
+Beim [Benchmark](bench/README.md) baut Claude Code ein TypeScript-Projekt gegen Tests, die es nicht ändern darf; ein Lauf zählt also nur, wenn die Tests bestehen. Die Kosten gelten pro Aufgabe mit Haiku 5.5:
 
-| Compared | Cost | Time |
+| Vergleich | Kosten | Zeit |
 | --- | --- | --- |
-| Slide against a summary, a day of work | −19% | −33% |
-| Slide against a summary, an eval harness | −35% | −28% |
-| Slide against a summary, a short Aufgabe | +6% | −17% |
-| The settings advice alone, against Claude Code as it ships | dearer in 3 of 4 runs | |
-| The advice und the slide, a week of work | −11% to −21% | |
+| Verschieben statt Zusammenfassung, ein Arbeitstag | −19 % | −33 % |
+| Verschieben statt Zusammenfassung, ein Eval-Harness | −35 % | −28 % |
+| Verschieben statt Zusammenfassung, eine kurze Aufgabe | +6 % | −17 % |
+| Nur die Einstellungsempfehlungen, gegen Claude Code im Auslieferungszustand | in 3 von 4 Läufen teurer | |
+| Empfehlungen und Verschieben zusammen, eine Arbeitswoche | −11 % bis −21 % | |
 
-Every test passed in every ausführen. The advice alone didn't pay here because these Aufgaben rarely pass
-400K, which is where the Fenster starts to matter. If your Sitzungen don't either, your replay will
-zeigen it, und you should leave your Fenster alone. Every ausführen, the losing ones too, is in
-[bench/HISTORY.md](bench/HISTORY.md).
+Bei jedem Lauf bestanden alle Tests. Die Empfehlungen allein lohnten sich hier nicht, weil diese Aufgaben selten 400K überschreiten – dort beginnt das Fenster eine Rolle zu spielen. Wenn deine Sitzungen das ebenfalls nicht tun, zeigt dir deine Wiedergabe das, und du solltest dein Fenster unverändert lassen. Jeder Lauf, auch die Verlierer, steht in [bench/HISTORY.md](bench/HISTORY.md).
 
 <p align="center">
-  <img src="docs/dashboard.png" alt="The author's tokendoctor dashboard: 57% of the spend was Claude re-reading the conversation" width="880"><br>
-  <sub><code>/tokendoctor:Dashboard</code>: where every Token went, by day, Modell, Subagent und Projekt. One local Datei; this one is mine.</sub>
+  <img src="docs/dashboard.png" alt="Das tokendoctor-Dashboard des Autors: 57 % der Ausgaben gingen darauf, dass Claude das Gespräch erneut las" width="880"><br>
+  <sub><code>/tokendoctor:dashboard</code>: wohin jedes Token ging, nach Tag, Modell, Subagent und Projekt. Eine lokale Datei; diese hier gehört mir.</sub>
 </p>
 
 ## Befehle
 
-| Command | What it does |
+| Befehl | Was er tut |
 | --- | --- |
-| `/tokendoctor:sessions [days]` | Replays your past Sitzungen (30 days, oder `days`) at smaller windows: what jede would have gespeichert, dann where your Tokens went. Reads nur. |
-| `/tokendoctor:audit` | Your settings, memory und CLAUDE.md checked against the docs, by severity. Reads nur. |
-| `/tokendoctor:dashboard [days]` | Opens a local Dashboard of every Sitzung on this machine. |
-| `/tokendoctor:optimize [focus]` | Proposes up to five ändert von your numbers und applies the ones you pick. |
-| `/tokendoctor [name] [value]` | Shows, explains oder ändert a setting, mit nein Modell call. |
-| `/tokendoctor undo [n]` | Lists every ändern tokendoctor made und puts one zurück. |
+| `/tokendoctor:sessions [days]` | Spielt deine vergangenen Sitzungen (30 Tage oder `days`) mit kleineren Fenstern ab: was jedes eingespart hätte und wohin deine Tokens gingen. Nur lesend. |
+| `/tokendoctor:audit` | Prüft deine Einstellungen, dein Gedächtnis und CLAUDE.md anhand der Dokumentation, nach Schweregrad geordnet. Nur lesend. |
+| `/tokendoctor:dashboard [days]` | Öffnet ein lokales Dashboard aller Sitzungen auf diesem Rechner. |
+| `/tokendoctor:optimize [focus]` | Schlägt aufgrund deiner Zahlen bis zu füf Änderungen vor und wendet die ausgewählten an. |
+| `/tokendoctor [name] [value]` | Zeigt, erklärt oder ändert eine Einstellung, ohne Modellaufruf. |
+| `/tokendoctor undo [n]` | Listet alle Änderungen von tokendoctor auf und nimmt eine zurück. |
 
-Nothing leaves your machine: the nur network call is to two public pages of Claude Code's docs,
-once a day. It nie switches your Modelle on its own.
+Nichts verlässt deinen Rechner: Der einzige Netzwerkaufruf gilt einmal täglich zwei öffentlichen Dokumentationsseiten von Claude Code. Modelle wechselt es nie von selbst.
 
-## Documentation
+## Dokumentation
 
-**[tokendoctor.localix.ai/docs](https://tokendoctor.localix.ai/docs)** has the rest: the
-[38 checks](https://tokendoctor.localix.ai/docs/audit), every
-[setting](https://tokendoctor.localix.ai/docs/settings),
-[how the slide works](https://tokendoctor.localix.ai/docs/slide) (und Team und Enterprise
-logins), the commands von a shell, the [measurements](https://tokendoctor.localix.ai/docs/proof)
-und the [limits](https://tokendoctor.localix.ai/docs/limits). To work on tokendoctor itself, see
-[CONTRIBUTING.md](CONTRIBUTING.md).
+**[tokendoctor.localix.ai/docs](https://tokendoctor.localix.ai/docs)** enthält den Rest: die [38 Prüfungen](https://tokendoctor.localix.ai/docs/audit), jede [Einstellung](https://tokendoctor.localix.ai/docs/settings), [wie das Verschieben funktioniert](https://tokendoctor.localix.ai/docs/slide) (sowie Team- und Enterprise-Anmeldungen), die Befehle von der Shell aus, die [Messwerte](https://tokendoctor.localix.ai/docs/proof) und die [Grenzen](https://tokendoctor.localix.ai/docs/limits). Um an tokendoctor selbst zu arbeiten, siehe [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Lizenz
 

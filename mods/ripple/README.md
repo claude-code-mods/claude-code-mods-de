@@ -1,10 +1,10 @@
 # ripple
 
-> This English reference Text was assembled von the upstream plugin manifest und catalogue metadata; the pinned upstream Commit did nicht ship a README.
+> Dieser englische Referenztext wurde aus dem Upstream-Plugin-Manifest und den Katalogmetadaten zusammengestellt; der festgelegte Upstream-Commit enthielt keine README.
 
-Picks reasoning effort per Prompt und a worker per delegated Aufgabe, keeps the Cache warm und zeigt where jede request went.
+Wählt die Denkintensität pro Prompt und einen Worker pro delegierter Aufgabe, hält den Cache warm und zeigt, wohin jede Anfrage ging.
 
-Picks the reasoning effort for every Prompt und the worker for every delegated Aufgabe, can behalten the Prompt Cache warm, und zeigt where ClaudeRipple sent jede request.
+Wählt die Denkintensität für jeden Prompt und den Worker für jede delegierte Aufgabe, kann den Prompt-Cache warm halten und zeigt, wohin ClaudeRipple jede Anfrage gesendet hat.
 
 ## Installation
 

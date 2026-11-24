@@ -1,10 +1,10 @@
 # turbo
 
-> This English reference Text was assembled von the upstream plugin manifest und catalogue metadata; the pinned upstream Commit did nicht ship a README.
+> Dieser englische Referenztext wurde aus dem Upstream-Plugin-Manifest und den Katalogmetadaten zusammengestellt; der festgelegte Upstream-Commit enthielt keine README.
 
-A human-gated agentic software factory: you decide what to build und judge the Ergebnis, Skills build und ship it.
+Eine agentische Softwarefabrik mit menschlicher Freigabe: Du entscheidest, was gebaut wird, und bewertest das Ergebnis; Skills bauen und liefern es aus.
 
-A human-gated agentic software factory: you decide what to build und judge the Ergebnis, while Skills shape, build, polish, und ship the ändern, und learn von it.
+Eine agentische Softwarefabrik mit menschlicher Freigabe: Du entscheidest, was gebaut wird, und bewertest das Ergebnis, während Skills die Änderungen gestalten, bauen, verfeinern und ausliefern – und daraus lernen.
 
 ## Installation
 
