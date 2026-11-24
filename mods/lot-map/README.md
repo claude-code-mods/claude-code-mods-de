@@ -8,7 +8,7 @@ Es läuft auf deinem Rechner und sendet nichts nach draußen. „Lokal" heißt n
 
 *Eine erfundene Sitzung, wiedergegeben mit dem eigenen Zeichencode des Mods. [Video (MP4)](docs/demo.mp4). Oder [im Browser ausprobieren](https://alexeyw.github.io/lot-map/): Die Seite führt denselben Code aus und zeigt, was jeder Aufruf dem Mod überlässt und was dieser behält.*
 
-## Install
+## Installation
 
 An der Eingabeaufforderung einer Terminalsitzung:
 
@@ -31,7 +31,7 @@ claude plugin install lot-map@lot-map
 
 In der Desktop-App: klicke auf **+** neben dem Eingabefeld, dann auf **Plugins**, auf **Add marketplace** mit `alexeyw/lot-map` und schließlich auf **Add plugin**.
 
-Der Fensterbereich öffnet sich automatisch beim Start einer Sitzung; mit deaktiviertem `openAtStart` wartet er auf `/lot-map`. Im Terminal braucht er mindestens 144 Spalten, sonst gib `/lot-map` ein; ohne ausdrückliche Anfrage zeichnet er nur Text, also die Karte als Bild oder in Brailleschrift nur auf Wunsch: siehe [Im Terminal](#im-terminal). Entwickelt und getestet wurde er mit Claude Code 2.1.321 unter macOS; Nutzer berichten, dass er auch unter Windows und Linux funktioniert.
+Der Fensterbereich öffnet sich automatisch beim Start einer Sitzung; mit deaktiviertem `openAtStart` wartet er auf `/lot-map`. Im Terminal braucht er mindestens 144 Spalten, sonst gib `/lot-map` ein; ohne ausdrückliche Anfrage zeichnet er nur Text, also die Karte als Bild oder in Brailleschrift nur auf Wunsch: siehe [Im Terminal](#im-terminal). Er wurde mit Claude Code 2.1.321 unter macOS entwickelt und getestet; Nutzer berichten, dass er auch unter Windows und Linux funktioniert.
 
 Bei einer Team- oder Enterprise-Anmeldung kann das Protokoll Meldungen wie `lot-map: its classic.PreToolUse hook was skipped` enthalten. Schalte `guardedHooks` aus, und sie verschwinden; [Optionen](#was-angezeigt-wird) erklärt, was die Karte dafür verliert.
 
@@ -63,16 +63,16 @@ Was sich in welcher Version geändert hat, steht in [CHANGELOG.md](CHANGELOG.md)
 | Skills | Skills, Werkzeugsuche sowie der Katalog für Skills, Plugins und Connectors |
 | Hooks | Settings-Hooks, die einen Aufruf ablehnen, um Erlaubnis bitten, Kontext hinzufügen oder eine Pause einlegen |
 
-Unter Windows wird das PowerShell-Werkzeug genauso gelesen wie Bash, mit PowerShells eigenen Namen: `Get-Content` und `Select-String` lassen Dateien aufleuchten, `Invoke-WebRequest` das Netzwerk. Ein über seinen vollen Pfad gestartetes Programm wird anhand seines Namens gelesen, auch in einem Pfad mit Leerzeichen in Anführungszeichen, und `CURL.EXE` gilt als `curl`.
+Unter Windows wird das PowerShell-Werkzeug genauso gelesen wie Bash, mit PowerShells eigenen Namen: `Get-Content` und `Select-String` lassen Dateien aufleuchten, `Invoke-WebRequest` das Netzwerk. Ein über seinen vollen Pfad gestartetes Programm wird anhand seines Namens erkannt, auch wenn der Pfad Leerzeichen in Anführungszeichen enthält, und `CURL.EXE` gilt als `curl`.
 
 Die Shell-Stationen richten sich nach dem Namen des Befehls, nicht nach seiner Wirkung: ein Skript, das selbst eine Verbindung öffnet, etwa `python -c „…"`, erscheint als Shell. Ein Befehl hinter `sudo`, `env`, `timeout`, `nohup`, `xargs` und ähnlichen wird als der Befehl gelesen, den er ausführt, und `find … -exec` als der Befehl, dessen Ausführung er verlangt. Ebenso ein Befehl innerhalb einer Schleife oder Bedingung (`for … do`, `if … then`, `while`, `!`, `{ … }`) und eine Zeile, die einer Shell oder `eval` übergeben wird (`bash -c „…"`). Der Text eines Here-Documents wird nicht gelesen, eine darüber geschriebene Datei erscheint also als Datei, egal was der Text enthält. Eine Zeile wird bis zu ihren ersten 8.000 Zeichen gelesen. `npx` gilt nur mit `-y` als Netzwerk, da es ohne diese Option meist bereits Installiertes ausführt.
 
-Ein Impuls fliegt beim Beginn hinaus und kehrt am Ende zurück. Ablehnungen und Fehler färben sich rot.
+Beim Beginn eines Aufrufs fliegt ein Impuls nach außen und kehrt am Ende zurück. Ablehnungen und Fehler färben sich rot.
 
 ## Die Karte lesen
 
 - **Die Route.** Eine dünne Linie verbindet die letzten Stationen, die die Hauptschleife durchlaufen hat, in ihrer Reihenfolge; das neueste Teilstück zeichnet sich selbst. Ein Teilstück bleibt 40 Sekunden und verblasst dann über 20 weitere, sodass eine Minute nach Ende der Arbeit nur noch die Speichen übrig sind; ihre Dicke verrät, wo gearbeitet wurde. Modellschritte werden ausgelassen, sonst liefe jedes Teilstück durch Modell.
-- **Abgelaufene Speichen.** Eine Speiche wird dicker und heller, je mehr ihre Station benutzt wird; am Ende einer Sitzung zeigt die Karte so, wo die Arbeit stattfand.
+- **Abgenutzte Speichen.** Eine Speiche wird dicker und heller, je mehr ihre Station benutzt wird; am Ende einer Sitzung zeigt die Karte so, wo die Arbeit stattfand.
 - **Wie lange.** Während eines Aufrufs wachsen zwei Uhrzeiger um eine Station: der innere dreht sich in einer Minute, der äußere in zehn.
 - **Hintergrundarbeit.** Ein in den Hintergrund geschickter Befehl, ein Monitor, ein Hintergrund-Subagent oder ein Workflow bleibt nach Ende der auslösenden Runde auf seiner Station leuchten, mit wachsenden Uhrzeigern, bis die Aufgabe ihr Ende meldet. Eine fehlgeschlagene Aufgabe lässt den roten Punkt stehen. Die Meldung selbst erscheint nicht als deine Nachricht.
 - **Mehrere gleichzeitig.** Gleichzeitig startende Aufrufe fliegen nebeneinander, und die Station zeigt ihre Anzahl, etwa `×3`.
@@ -85,7 +85,7 @@ Ein Impuls fliegt beim Beginn hinaus und kehrt am Ende zurück. Ablehnungen und 
 
 Unter der Karte stehen eine Zeile mit der aktuellen Tätigkeit und die letzten 16 Zeilen (bei `logRows` auf `fill` so viele, wie der Desktop-Fensterbereich hergibt): `●` läuft, `·` fertig, `✕` fehlgeschlagen oder blockiert, `◆` ein Modellwechsel. Aufeinanderfolgende abgeschlossene Aufrufe an derselben Station werden zu einer Zeile zusammengefasst, mit `+2` für die zwei weiteren, die sie vertritt. Ein noch laufender Aufruf wird nie durch spätere Einträge aus der Liste gedrängt: Er bleibt als letzte Zeile, bis er endet, damit Liste und Karte dasselbe sagen. Solche Zeilen nehmen höchstens die Hälfte der Liste ein; wenn mehr läuft, wird die letzte mit `+22` für den Rest markiert.
 
-Jede Zeile ist eine Zeile Text. Ihre Wörter werden am Rand des Fensterbereichs abgeschnitten; die Zeit steht rechts in einer Spalte, mit einem Bindestrich für Vorgänge ohne Dauer wie eine eintreffende Nachricht, und in der Zeile der Antwort die Dauer der ganzen Runde. Eine Zeile mit einer langen Beschriftung hat ein `▸` vor der Zeit: Drücke es, um die ganze Zeile zu lesen, und noch einmal, um sie zu schließen. Jeweils eine Zeile ist offen. Im Terminal enthält die Zeile der aktuellen Tätigkeit auch den Kontextprozentsatz und das Modell rechts, da es dort keine Zeichnung dafür gibt.
+Jede Zeile ist eine einzelne Textzeile. Ihre Wörter werden am Rand des Fensterbereichs abgeschnitten; die Zeit steht rechts in einer Spalte, mit einem Bindestrich für Vorgänge ohne Dauer wie eine eintreffende Nachricht, und in der Zeile der Antwort die Dauer der ganzen Runde. Eine Zeile mit einer langen Beschriftung hat ein `▸` vor der Zeit: Drücke es, um die ganze Zeile zu lesen, und noch einmal, um sie zu schließen. Jeweils eine Zeile ist offen. Im Terminal enthält die Zeile der aktuellen Tätigkeit auch den Kontextprozentsatz und das Modell rechts, da es dort keine Zeichnung dafür gibt.
 
 ### Was jeder Aufruf zum Kontext hinzufügt
 
@@ -293,11 +293,11 @@ claude plugin validate .
 
 Die Wörter liegen in `hooks/text.ts`; eine neue Sprache ist eine weitere Tabelle dort und ein weiterer Wert von `language` in `.claude-plugin/plugin.json`.
 
-Das Terminalbild entsteht in drei Dateien: `hooks/scene.ts` liest die Zeichnung von `drawMap`, `hooks/raster.ts` malt sie, und `hooks/png.ts` verpackt die Pixel für das Terminal. Ein Test malt jede Art von Zeichnung und schlägt fehl, wenn der Maler etwas nicht kennt; eine Änderung an der Zeichnung, die mehr von SVG braucht, zeigt sich dort zuerst. Ein anderer Test, `the terminal picture's font has every letter the map writes, in every language`, benennt die Buchstaben, die eine neue Sprache in `hooks/font.ts` ergänzen muss; [FONTS.md](FONTS.md) erklärt, wie man diese Datei neu erstellt.
+Das Terminalbild entsteht in drei Dateien: `hooks/scene.ts` liest die Zeichnung von `drawMap`, `hooks/raster.ts` malt sie, und `hooks/png.ts` verpackt die Pixel für das Terminal. Ein Test malt jede Art von Zeichnung und schlägt fehl, wenn der Maler etwas nicht kennt; eine Änderung an der Zeichnung, die mehr von SVG braucht, zeigt sich dort zuerst. Ein anderer Test mit dem Namen `the terminal picture's font has every letter the map writes, in every language` benennt die Buchstaben, die eine neue Sprache in `hooks/font.ts` ergänzen muss; [FONTS.md](FONTS.md) erklärt, wie man diese Datei neu erstellt.
 
 Die Braille-Karte wird von `hooks/braille.ts` gezeichnet: einer zweiten Zeichnung desselben Bretts, die ihre Stationen aus `STATIONS` und ihre Zeiten aus `hooks/draw.ts` bezieht. Tests in `hooks/braille.test.tsx` prüfen sie für jede Station unter beiden Layouts, und einer in `hooks/lot-map.test.tsx` die Namen jeder Sprache. Etwas Neues auf der Karte wird entweder dort ebenfalls gezeichnet oder zur Liste des von Braille Ausgelassenen hinzugefügt, unter [Im Terminal](#die-karte-in-brailleschrift): das `INVENTORY` in `hooks/braille.test.tsx` hat eine Zeile für alles, was die erste Zeichnung zeigt, ein Test verpflichtet beide Zeichnungen darauf, und `scripts/check-surface.mjs` hält diese Liste an denselben Zeilen fest.
 
-Bevor du eine Änderung sendest, lies [CONTRIBUTING.md](CONTRIBUTING.md). Was der Mod verspricht und welche Prüfungen hinter jedem Punkt stehen, steht in [PRINCIPLES.md](PRINCIPLES.md).
+Bevor du eine Änderung sendest, lies [CONTRIBUTING.md](CONTRIBUTING.md). Welche Zusagen der Mod macht und welche Prüfungen hinter jedem Punkt stehen, steht in [PRINCIPLES.md](PRINCIPLES.md).
 
 ## Lizenz
 

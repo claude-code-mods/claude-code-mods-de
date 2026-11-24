@@ -457,17 +457,17 @@ Diagnostiziere und behebe Fehler durch eine dialogbasierte Untersuchung mit syst
 ```
 
 **Wichtige Funktionen:**
-- **Dialogbasierter Ablauf** – natürliches Gespraech, keine starren Checklisten oder Prozeduren
+- **Dialogbasierter Ablauf** – natürliches Gespräch, keine starren Checklisten oder Prozeduren
 - **Progressive Offenlegung** – beginnt mit einer Zusammenfassung, zeigt Details auf Anfrage
-- **Nur beobachtbare Aktionen** – berichtet nur, was tatsaechlich geprüft und gefunden wurde
-- **Vom Benutzer gesteuert** – schlaegt naechste Schritte vor, laesst den Benutzer die Richtung bestimmen
+- **Nur beobachtbare Aktionen** – berichtet nur, was tatsächlich geprüft und gefunden wurde
+- **Vom Benutzer gesteuert** – schlägt nächste Schritte vor, lässt den Benutzer die Richtung bestimmen
 - **Hypothesenverfolgung** – bildet und testet systematisch priorisierte Hypothesen
-- **Belegbasiert** – erfindet nie Begruendungen; alle Schlussfolgerungen sind belegt
+- **Belegbasiert** – erfindet nie Begründungen; alle Schlussfolgerungen sind belegt
 
 <details>
 <summary><strong>Details anzeigen</strong></summary>
 
-Verwendet einen dialogbasierten Ansatz in fünf natürlichen Phasen: Problem verstehen, eingrenzen, Grundursache finden, beheben und prüfen, abschliessen. Der Debugger berichtet nur beobachtbare Aktionen („Ich habe X geprüft und Y gefunden") und erfindet nie Begruendungen. Benutzer koennen jederzeit fragen: „Was hast du geprüft?" und erhalten ehrliche, ueberpruefbare Antworten.
+Verwendet einen dialogbasierten Ansatz in fünf natürlichen Phasen: Problem verstehen, eingrenzen, Grundursache finden, beheben und prüfen, abschliessen. Der Debugger berichtet nur beobachtbare Aktionen („Ich habe X geprüft und Y gefunden") und erfindet nie Begründungen. Benutzer können jederzeit fragen: „Was hast du geprüft?" und erhalten ehrliche, überprüfbare Antworten.
 
 ```mermaid
 flowchart TD
@@ -483,7 +483,7 @@ flowchart TD
 ```
 
 **Die vier Gebote:**
-1. **Dialogisch, nicht prozedural** – es ist ein Gespraech, keine Checkliste
+1. **Dialogisch, nicht prozedural** – es ist ein Gespräch, keine Checkliste
 2. **Nur beobachtbar** – „Ich habe X angesehen und Y gefunden", nicht „Das ist wahrscheinlich…"
 3. **Progressive Offenlegung** – kurz beginnen, auf Anfrage ausführen
 4. **Benutzer hat die Kontrolle** – „Soll ich…?" statt „Ich mache jetzt…"
@@ -496,7 +496,7 @@ flowchart TD
 
 Erstelle oder aktualisiere eine Projekt-Constitution mit Governance-Regeln durch musterbasierte Entdeckungsanalyse.
 
-**Zweck:** Pruefbare Projektregeln festlegen, die bei Implementierung, Review und Validierung durchgesetzt werden.
+**Zweck:** Prüfbare Projektregeln festlegen, die bei Implementierung, Review und Validierung durchgesetzt werden.
 
 **Verwendung:**
 ```bash
@@ -509,25 +509,25 @@ Erstelle oder aktualisiere eine Projekt-Constitution mit Governance-Regeln durch
 - **Regeln aus Entdeckung** – analysiert tatsächliche Muster in der Codebasis, nimmt keine Frameworks an
 - **L1/L2/L3-Stufensystem** – L1 (blockierend + Autofix), L2 (blockierend, manuell), L3 (beratend)
 - **Dreischichtige Durchsetzung** – geprüft bei specify (SDD), implement und review
-- **Muster- und Pruefregeln** – unterstuetzt Regex-Muster und semantische, vom LLM interpretierte Prüfungen
+- **Muster- und Prüfregeln** – unterstützt Regex-Muster und semantische, vom LLM interpretierte Prüfungen
 - **Sanfte Degradation** – das System funktioniert normal, auch wenn keine Constitution existiert
 
 <details>
 <summary><strong>Details anzeigen</strong></summary>
 
-Erzeugt `CONSTITUTION.md` im Projektstamm (wie README, LICENSE, CODE_OF_CONDUCT). Die Constitution definiert pruefbare Leitplanken, die Verstöße während der Entwicklung erkennen.
+Erzeugt `CONSTITUTION.md` im Projektstamm (wie README, LICENSE, CODE_OF_CONDUCT). Die Constitution definiert prüfbare Leitplanken, die Verstöße während der Entwicklung erkennen.
 
 **Wesentlicher Unterschied:**
 - **CLAUDE.md** = Projektbeschreibung, KI-Anleitung („React mit TypeScript verwenden")
-- **CONSTITUTION.md** = pruefbare Regeln, die Verstöße abfangen („Keine Barrel-Exports")
+- **CONSTITUTION.md** = prüfbare Regeln, die Verstöße abfangen („Keine Barrel-Exports")
 
 **Stufendefinitionen:**
 
 | Stufe | Name | Blockierend | Autofix | Anwendungsfall |
 |-------|------|----------|---------|----------|
 | **L1** | Must | Ja | KI korrigiert automatisch | Sicherheit, Korrektheit, kritische Architektur |
-| **L2** | Should | Ja | Nein | Wichtige Regeln, die menschliches Urteilsvermoegen erfordern |
-| **L3** | May | Nein | Nein | Stilpraeferenzen, Vorschläge |
+| **L2** | Should | Ja | Nein | Wichtige Regeln, die menschliches Urteilsvermögen erfordern |
+| **L3** | May | Nein | Nein | Stilpräferenzen, Vorschläge |
 
 **Beispiel für ein Regelformat:**
 
@@ -550,7 +550,7 @@ Secrets must never be committed to source control.
 | Phase | Befehl | Durchsetzung |
 |-------|---------|-------------|
 | **Planung** | `/specify` (SDD) | SDD darf nicht gegen Verfassungsprinzipien verstoßen |
-| **Aufgabe** | `/implement` | Aufgabenreihenfolge beachtet Verfassungsprioritaeten |
+| **Aufgabe** | `/implement` | Aufgabenreihenfolge beachtet Verfassungsprioritäten |
 | **Implementierung** | `/implement` | Generierter Code geprüft; L1/L2-Verstöße blockieren Abschluss |
 
 ```mermaid
@@ -580,7 +580,7 @@ npx the-startup
 ```
 
 **Was er tut:**
-- Unterstuetzt sowohl Claude-Marketplace-Installationen als auch dateibasierte Installationen für andere Harnesses
+- Unterstützt sowohl Claude-Marketplace-Installationen als auch dateibasierte Installationen für andere Harnesses
 - Fragt nach der Mehrfachauswahl von Plugins
 - Fragt bei dateibasiertem Installationsmodus nach Harness + Installationspfad
 - Kopiert die dateibasierten Installationsartefakte aus dem entfernten GitHub-Repository
@@ -588,7 +588,7 @@ npx the-startup
 **Flags:**
 - `--help` – Nutzungsinformationen anzeigen
 
-**Hinweis:** Ausgabe-Styles werden ueber `/config` gewaehlt – siehe [Ausgabe-Styles](#output-styles).
+**Hinweis:** Ausgabe-Styles werden über `/config` gewählt – siehe [Ausgabe-Styles](#output-styles).
 
 ---
 
@@ -609,7 +609,7 @@ Das Plugin `start` enthält fünf autonome Skills, die automatisch anhand des Ko
 
 | Skill | Zweck |
 |-------|---------|
-| `implement` | Fuehrt die Slice-Schleife als Dynamic Workflow aus – durch Barrieren getrenntes Code→Eval-Retry pro Slice |
+| `implement` | Führt die Slice-Schleife als Dynamic Workflow aus – durch Barrieren getrenntes Code→Eval-Retry pro Slice |
 
 ---
 
@@ -658,15 +658,15 @@ Der Capture-Ablauf prüft vor dem Anlegen neuer Dateien immer die vorhandene Dok
 
 ## Ausgabe-Styles
 
-Das Plugin `start` liefert drei Ausgabe-Styles – eine Registerbreite pro Unternehmensphase. Ein Style verändert, wie Claude kommuniziert und wie viel Prozess er anwendet, nicht sein Wissen. Alle drei behalten Claudes eingebaute Entwicklungsanweisungen (`keep-coding-instructions: true`), und ein Style wirkt nur auf das Hauptgespraech – Subagenten und die Workflows des Plugins sind unberührt.
+Das Plugin `start` liefert drei Ausgabe-Styles – eine Registerbreite pro Unternehmensphase. Ein Style verändert, wie Claude kommuniziert und wie viel Prozess er anwendet, nicht sein Wissen. Alle drei behalten Claudes eingebaute Entwicklungsanweisungen (`keep-coding-instructions: true`), und ein Style wirkt nur auf das Hauptgespräch – Subagenten und die Workflows des Plugins sind unberührt.
 
 Wähle das Register passend dazu, für wen die Arbeit bestimmt ist:
 
 | Style | Register | Wann greifen |
 |-------|----------|-------------------|
-| **The Garage** | Pre-Startup – das Kleinste bauen, das funktioniert, und möglichst wenig darueber reden | Prototypen und Spikes; noch nichts ist tragend, du findest heraus, ob die Sache funktioniert |
+| **The Garage** | Pre-Startup – das Kleinste bauen, das funktioniert, und möglichst wenig darüber reden | Prototypen und Spikes; noch nichts ist tragend, du findest heraus, ob die Sache funktioniert |
 | **The Startup** | Solo – eine Ingenieurin oder ein Ingenieur, ein Agent, kein Zeremoniell | Du bist allein; keine Delegation, kein Plan-zur-Freigabe-Theater, kein Status für Dritte |
-| **The ScaleUp** | Koordiniert – Arbeit, die durch andere Menschen laeuft | Jemand, der nicht im Gespraech war, liest, was du schreibst, und fasst an, was du änderst; delegiere und hinterlasse eine Spur |
+| **The ScaleUp** | Koordiniert – Arbeit, die durch andere Menschen laeuft | Jemand, der nicht im Gespräch war, liest, was du schreibst, und fasst an, was du änderst; delegiere und hinterlasse eine Spur |
 
 ### Einen Style aktivieren
 
@@ -674,7 +674,7 @@ Der Befehl `/output-style` wurde in Claude Code v2.1.91 entfernt. Aktuelle Auswa
 
 - **Interaktiv:** `/config` → Output style.
 - **Direkt:** `/config outputStyle=The Startup` (Claude Code v2.1.181+).
-- **Fuer ein Projekt festgelegt** (per git mit dem Team geteilt) in `.claude/settings.json`:
+- **Für ein Projekt festgelegt** (per git mit dem Team geteilt) in `.claude/settings.json`:
 
   ```json
   { "outputStyle": "The Garage" }
@@ -682,7 +682,7 @@ Der Befehl `/output-style` wurde in Claude Code v2.1.91 entfernt. Aktuelle Auswa
 
   Verwende `.claude/settings.local.json` für eine persönliche Projektauswahl oder `~/.claude/settings.json` für alle Projekte. Rangfolge: lokal > Projekt > Benutzer. Eine Änderung gilt ab der nächsten Sitzung (oder nach `/clear`).
 
-Dieses Plugin erzwingt bewusst **keinen** Style (`force-for-plugin` ist bei allen dreien nicht gesetzt): die Phase bestimmst du, und ein erzwungener Style wuerde sowohl deine `/config`-Auswahl als auch jede Einstellungs-Festlegung ueberschreiben, solange das Plugin aktiv ist.
+Dieses Plugin erzwingt bewusst **keinen** Style (`force-for-plugin` ist bei allen dreien nicht gesetzt): die Phase bestimmst du, und ein erzwungener Style würde sowohl deine `/config`-Auswahl als auch jede Einstellungs-Festlegung überschreiben, solange das Plugin aktiv ist.
 
 ---
 
@@ -745,7 +745,7 @@ Optional: /document after implementation for documentation sync
 
 **Was passiert:**
 - Optional: Erstellt den Git-Branch `feature/001-notification-system`
-- Fuehrt die Slice-Schleife als Dynamic Workflow aus
+- Führt die Slice-Schleife als Dynamic Workflow aus
 - Pro Slice: ein Code-Agent baut ihn, ein Eval-Agent weist ihn anhand von Holdout-Szenario-Aufgaben nach
 - Wiederholungen mit gefilterten Fehlerzusammenfassungen, bis die Zufriedenheitsschwelle erreicht ist
 - Optional: Erstellt bei Abschluss einen PR
@@ -757,7 +757,7 @@ Optional: /document after implementation for documentation sync
 ```
 
 **Was passiert:**
-- Parallele Spezialisten prüfen (Sicherheit, Performance, Qualitaet, Tests + bedingte Perspektiven)
+- Parallele Spezialisten prüfen (Sicherheit, Performance, Qualität, Tests + bedingte Perspektiven)
 - Erzeugt einen konsolidierten Bericht mit Schweregrad-Rangfolge
 
 **5. Dokumentation erzeugen (optional)**
@@ -767,9 +767,9 @@ Optional: /document after implementation for documentation sync
 ```
 
 **Was passiert:**
-- Fuegt JSDoc-/TSDoc-Kommentare hinzu
+- Fügt JSDoc-/TSDoc-Kommentare hinzu
 - Aktualisiert die README, falls nötig
-- Berichtet ueber die Dokumentationsabdeckung
+- Berichtet über die Dokumentationsabdeckung
 
 ---
 
@@ -805,7 +805,7 @@ Dialogbasierte Untersuchung mit beobachtbaren Belegen und vom Benutzer gesteuert
 /document audit
 ```
 
-Berichtet ueber die Dokumentationsabdeckung und findet veraltete oder fehlende Dokumentation.
+Berichtet über die Dokumentationsabdeckung und findet veraltete oder fehlende Dokumentation.
 
 ---
 
@@ -813,7 +813,7 @@ Berichtet ueber die Dokumentationsabdeckung und findet veraltete oder fehlende D
 
 ### Beispiel: Wissenserfassung mit dem Document-Skill
 
-**Szenario:** Waehrend der Implementierung entdeckt ein Agent ein Muster.
+**Szenario:** Während der Implementierung entdeckt ein Agent ein Muster.
 
 ```
 Agent output: "I implemented a retry mechanism with exponential backoff for API calls"
@@ -852,13 +852,13 @@ plugins/start/skills/
 
 ### Spec-getriebene Entwicklung
 
-**Das Problem:** Funktionen ohne klare Anforderungen fuehren zu technischer Schuld, Nacharbeit und Inkonsistenz.
+**Das Problem:** Funktionen ohne klare Anforderungen führen zu technischer Schuld, Nacharbeit und Inkonsistenz.
 
 **Unser Ansatz:**
 
 1. **Zuerst spezifizieren** – umfassende Spezifikationen vor dem Code
-2. **Pruefen und verfeinern** – Validierung mit den Beteiligten
-3. **Mit Sicherheit implementieren** – validierte Plaene ausführen
+2. **Prüfen und verfeinern** – Validierung mit den Beteiligten
+3. **Mit Sicherheit implementieren** – validierte Pläne ausführen
 4. **Dokumentieren und lernen** – Muster zur Wiederverwendung erfassen
 
 ### Kernprinzipien
@@ -866,14 +866,14 @@ plugins/start/skills/
 - **Zweimal messen, einmal schneiden** – Planung im Voraus spart Zeit
 - **Dokumentation als Code** – Spezifikationen entwickeln sich mit deiner Codebasis
 - **Parallele Ausführung** – mehrere Spezialisten, klare Grenzen
-- **Qualitaets-Gates** – DOR/DOD setzen Standards durch
+- **Qualitäts-Gates** – DOR/DOD setzen Standards durch
 - **Progressive Offenlegung** – Details nur bei Bedarf laden
 
 ---
 
 ## Weiterführende Literatur
 
-- **[Haupt-README](../../README.md)** – Projektuebersicht und Installation
+- **[Haupt-README](../../README.md)** – Projektübersicht und Installation
 
 ## Quelle und Lizenz
 
