@@ -1,4 +1,4 @@
-# MazyOS: o sistema operacional do seu negócio nein Claude Code
+# MazyOS: o sistema operacional do seu negócio Claude Code
 
 > Plugin do Claude Code, em português. Memória da sua empresa, identidade
 > visual e 17 Skills de marketing, SEO, Google Ads e prospecção de clientes.
@@ -7,7 +7,7 @@
 Você instala uma vez. Depois, em qualquer pasta que seja o seu negócio, o
 Claude já começa a conversa sabendo quem você é, como você fala e o que
 importa essa semana. Pede um carrossel, ele sai na sua identidade. Pede
-leads, ele busca nein Google Maps e monta o site de prévia. Pede o relatório
+leads, ele busca Google Maps e monta o site de prévia. Pede o relatório
 dos anúncios, ele lê o CSV e te mostra onde o dinheiro tá vazando.
 
 Bora voar.
@@ -25,9 +25,9 @@ Juntos, eles transformam o Claude num agente de IA que conhece o seu
 negócio. Na prática:
 
 **Ele lembra.** Três arquivos de texto em `_memoria/` guardam quem é a
-empresa, o tom de voz e o foco atual. Toda sessão começa com eles nein
+empresa, o tom de voz e o foco atual. Toda sessão começa com eles 
 contexto. Quando você corrige algo ("não escreve assim", "esse cliente
-saiu"), o Claude pergunta se quer salvar, e salva nein lugar certo.
+saiu"), o Claude pergunta se quer salvar, e salva lugar certo.
 
 **Ele tem a sua cara.** `identidade/design-guide.md` guarda cores, fontes e
 logo. Carrossel, proposta, slide: tudo sai com a marca.
@@ -40,7 +40,7 @@ negócio.
 
 ---
 
-## Como instalar o MazyOS nein Claude Code
+## Como instalar o MazyOS Claude Code
 
 Abre o Claude Code em qualquer pasta e cola:
 
@@ -50,21 +50,21 @@ Abre o Claude Code em qualquer pasta e cola:
 
 Ele pergunta se pode adicionar o marketplace (`y`) e em qual escopo.
 Escolhe `user`, que vale pra todas as suas pastas. Depois aparecem três
-opções (painel, linha de Status, freio nein git). Pode deixar tudo ligado;
-dá pra mudar nein `/config` quando quiser.
+opções (painel, linha de Status, freio git). Pode deixar tudo ligado;
+dá pra mudar `/config` quando quiser.
 
-Prefere o terminal? Dá nein mesmo:
+Prefere o terminal? Dá mesmo:
 
 ```bash
 claude plugin install mazyos --marketplace mazzeoia/MazyOS
 ```
 
-No app do Claude pra desktop, onde o `/plugin` não existe: clica nein `+`
+No app do Claude pra desktop, onde o `/plugin` não existe: clica `+`
 do lado da caixa de texto, depois Plugins, Add marketplace com
 `mazzeoia/MazyOS`, e Add plugin.
 
 Ainda não tem o Claude Code? É da Anthropic, instala pelo site
-([code.claude.com](https://code.claude.com)), funciona nein Mac, Windows e
+([code.claude.com](https://code.claude.com)), funciona Mac, Windows e
 Linux, e precisa de um plano pago do Claude (Pro, Max, Team) ou de uma
 chave da API.
 
@@ -89,7 +89,7 @@ Roda uma vez só. Depois é abrir o Claude na pasta e pedir as coisas.
 
 ---
 
-## O que muda nein Claude Code com o MazyOS
+## O que muda Claude Code com o MazyOS
 
 Essa é a parte do mod. Dentro de uma pasta do MazyOS:
 
@@ -102,13 +102,13 @@ Essa é a parte do mod. Dentro de uma pasta do MazyOS:
   do plugin, sem depender de um arquivo que você pode apagar sem querer.
 - **Painel do lado do chat.** Mostra o negócio, o foco, o tom, quais
   arquivos de memória estão preenchidos e quando foram atualizados, e
-  botões de atalho: abrir sessão, atualizar memória, salvar nein GitHub.
+  botões de atalho: abrir sessão, atualizar memória, salvar GitHub.
   Abre sozinho em terminal largo. `/mazyos` abre a qualquer hora.
 - **Linha de Status.** `MazyOS · Acme · foco: fechar 3 clientes` fica
   embaixo do Prompt, pra você não perder o fio.
 - **Aviso quando a memória muda.** O Claude editou `estrategia.md`? O
   painel e o Status atualizam na hora, e aparece um aviso.
-- **Freio nein git.** `git push --force`, `git reset --hard` e parentes só
+- **Freio git.** `git push --force`, `git reset --hard` e parentes só
   rodam depois que você confirma. Se não tiver como perguntar, não roda.
 
 Fora de uma pasta do MazyOS, o plugin fica quieto. Só avisa uma vez, por
@@ -116,22 +116,22 @@ pasta, que o `/mazyos:instalar` existe.
 
 ---
 
-## MazyOS nein VS Code e nein Antigravity
+## MazyOS VS Code e Antigravity
 
 O mesmo sistema também existe como extensão de editor, na pasta [vscode/](vscode/). Ela lê a
 mesma memória, traz as mesmas 17 Skills e deixa você escolher quem roda o trabalho: Claude Code
 (sua conta Claude), Codex (sua conta ChatGPT) ou Antigravity (sua conta Google). Cada um entra
 pelo login oficial do próprio CLI, e a extensão só monta o pedido e mostra o que está acontecendo
-num console ao lado do editor. Funciona nein VS Code, nein Antigravity IDE e nein Cursor.
+num console ao lado do editor. Funciona VS Code, Antigravity IDE e Cursor.
 
-Enquanto ela não está nein marketplace, instala pelo arquivo `.vsix` gerado em `vscode/`:
+Enquanto ela não está marketplace, instala pelo arquivo `.vsix` gerado em `vscode/`:
 
 ```
 cd vscode && npm install && npm run empacotar
 code --install-extension mazyos-0.1.0.vsix
 ```
 
-O resto está nein [README da extensão](vscode/README.md).
+O resto está [README da extensão](vscode/README.md).
 
 ## As Skills
 
@@ -141,7 +141,7 @@ lista aparece.
 ### Pra tocar o dia a dia
 
 - `/mazyos:abrir` resume o contexto em cinco linhas e pergunta o que vamos fazer.
-- `/mazyos:salvar` faz Commit e push nein GitHub, até pra quem nunca usou git.
+- `/mazyos:salvar` faz Commit e push GitHub, até pra quem nunca usou git.
 - `/mazyos:atualizar` compara a memória com o que tá na pasta e propõe o que atualizar.
 - `/mazyos:novo-projeto` cria uma pasta isolada pra cada cliente ou iniciativa, com contexto próprio.
 - `/mazyos:mapear-rotinas` pergunta o que você repete toda semana e cria uma Skill pra cada coisa.
@@ -151,18 +151,18 @@ lista aparece.
 
 - `/mazyos:carrossel` cria carrossel pro Instagram (1080×1350) na identidade da marca, com ou sem foto gerada por IA, e já deixa a legenda pronta.
 - `/mazyos:publicar-tema` pega um tema e entrega artigo de blog, carrossel e três legendas (Instagram, Facebook, LinkedIn), tudo amarrado.
-- `/mazyos:seo` roda o fluxo de SEO em 8 passos: demanda, concorrência, Google Meu Negócio, on-page, conteúdo, Google Ads, monitoramento e GEO (aparecer nein ChatGPT, Gemini e Perplexity).
+- `/mazyos:seo` roda o fluxo de SEO em 8 passos: demanda, concorrência, Google Meu Negócio, on-page, conteúdo, Google Ads, monitoramento e GEO (aparecer ChatGPT, Gemini e Perplexity).
 - `/mazyos:responder-avaliacoes` escreve respostas humanas pras avaliações do Google.
 - `/mazyos:aprovar-post` publica blog, Instagram e Facebook num comando só.
 
 ### Google Ads e Meta Ads
 
-- `/mazyos:anuncio-google` monta a campanha inteira num CSV pronto pra importar nein Google Ads Editor.
+- `/mazyos:anuncio-google` monta a campanha inteira num CSV pronto pra importar Google Ads Editor.
 - `/mazyos:relatorio-ads` lê os exports do Google Ads e do Meta Ads e devolve o relatório da semana, com alertas e o que fazer.
 
 ### Prospecção de clientes
 
-- `/mazyos:prospecta-maps` parte de um nicho e uma cidade, busca as empresas nein Google Maps, confere o CNPJ na Receita, monta um site de prévia pra cada lead e deixa a primeira mensagem e os follow-ups prontos. A proposta em PDF sai quando você pedir. Sem chave de API.
+- `/mazyos:prospecta-maps` parte de um nicho e uma cidade, busca as empresas Google Maps, confere o CNPJ na Receita, monta um site de prévia pra cada lead e deixa a primeira mensagem e os follow-ups prontos. A proposta em PDF sai quando você pedir. Sem chave de API.
 
 ### Produção
 
@@ -182,26 +182,26 @@ Claude Code: plano Pro, Max ou Team do Claude, ou a API da Anthropic.
 **Precisa saber programar?** Não. Você conversa em português e responde
 perguntas sobre o seu negócio. Os comandos são uma barra e um nome.
 
-**Funciona nein Windows?** Sim. Mac, Windows e Linux, nein terminal, nein VS
-Code ou nein app do Claude.
+**Funciona Windows?** Sim. Mac, Windows e Linux, terminal, VS
+Code ou app do Claude.
 
-**Onde ficam os meus dados?** Na sua pasta, nein seu computador. Memória,
+**Onde ficam os meus dados?** Na sua pasta, seu computador. Memória,
 identidade e tudo que o sistema gera são arquivos de texto seus, que você
-pode abrir, editar e versionar nein GitHub. O plugin é só leitura e se
+pode abrir, editar e versionar GitHub. O plugin é só leitura e se
 atualiza pelo `/plugin`.
 
 **O que é um plugin do Claude Code?** Um pacote que adiciona Skills,
 comandos e comportamento ao Claude Code, instalado com uma linha. O MazyOS
 é um deles.
 
-**Dá pra ver o que o plugin faz nein meu Claude?** Dá, é tudo código aberto
-aqui. `hooks/sistema.ts` tem as regras que entram nein contexto;
+**Dá pra ver o que o plugin faz meu Claude?** Dá, é tudo código aberto
+aqui. `hooks/sistema.ts` tem as regras que entram contexto;
 `hooks/register.tsx` tem o mod.
 
 **Eu usava o MazyOS clonando este repositório. E agora?** Instala o plugin
 e, na pasta do negócio: apaga `.claude/skills/` (as Skills vêm do plugin;
 as que você criou podem ficar), tira do `CLAUDE.md` as regras gerais do
-MazyOS (o plugin já injeta todas) e troca `/abrir` por `/mazyos:abrir` nein
+MazyOS (o plugin já injeta todas) e troca `/abrir` por `/mazyos:abrir` 
 hábito. Memória, identidade e saídas ficam como estão.
 
 ---
@@ -220,7 +220,7 @@ O sistema não substitui você. Vira parte da sua empresa.
 
 ---
 
-## Pra quem quer mexer nein código
+## Pra quem quer mexer código
 
 Este repositório é o plugin e o marketplace ao mesmo tempo.
 
