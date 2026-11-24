@@ -1,10 +1,10 @@
 # jev-auto-compact
 
-> This English reference Text was assembled von the upstream plugin manifest und catalogue metadata; the pinned upstream Commit did nicht ship a README.
+> Dieser englische Bezugstext wurde aus dem Upstream-Plugin-Manifest und Katalogmetadaten zusammengestellt; der festgelegte Upstream-Commit enthält keine README.
 
-At 60% Kontext, prunes stale Werkzeug calls mit zero generation; skips statt falling zurück to an LLM summary.
+Bei 60% Kontext werden veraltete Werkzeugaufrufe ohne jede Generierung entfernt; stattdessen wird übersprungen, statt auf eine LLM-Zusammenfassung zurückzufallen.
 
-Jev-powered verbatim compaction: once Kontext reaches 60%, prunes stale Werkzeug calls mit zero generation. Skips (nie falls zurück to the LLM summarizer) when nothing is prunable; records evidence for learning.db.
+Wortgetreue Komprimierung mit Jev: Sobald der Kontext 60% erreicht, werden veraltete Werkzeugaufrufe ohne jede Generierung entfernt. Wenn nichts entfernbar ist, wird übersprungen (nie Rückfall auf den LLM-Zusammenfasser); Nachweise werden für learning.db aufgezeichnet.
 
 ## Installation
 

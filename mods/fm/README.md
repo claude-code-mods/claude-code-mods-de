@@ -1,10 +1,10 @@
 # fm
 
-> This English reference Text was assembled von the upstream plugin manifest und catalogue metadata; the pinned upstream Commit did nicht ship a README.
+> Dieser englische Bezugstext wurde aus dem Upstream-Plugin-Manifest und Katalogmetadaten zusammengestellt; der festgelegte Upstream-Commit enthält keine README.
 
-The sailboat working animation und a Gespräch-only transcript, sharing a calm-mode preference across Sitzungen.
+Die animierte Segeljacht als Arbeitsanzeige und eine Unterhaltung ausschließlich als Transkript, wobei die Einstellung für den ruhigen Modus über Sitzungen hinweg geteilt wird.
 
-Firstmate Calm for Claude Code: the sailboat working animation und Gespräch-only transcript presentation, sharing the per-home config/calm preference mit the Pi Calm extension. Its Hooks module may load through CLAUDE_CODE_ENABLE_FUNCTION_HOOKS oder Claude Code's tengu_plugin_Hooks_modules rollout flag, aber der Mod activates nur when CLAUDE_CODE_ENABLE_FUNCTION_HOOKS is exactly 1 und is otherwise a complete nein-op.
+Firstmate Calm für Claude Code: die animierte Segeljacht als Arbeitsanzeige und die Darstellung der Unterhaltung nur als Transkript, wobei die Einstellung `calm` pro Home-Verzeichnis mit der Pi-Calm-Erweiterung geteilt wird. Sein Hooks-Modul kann über `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS` oder Claude Codes Rollout-Flag `tengu_plugin_hooks_modules` geladen werden, der Mod aktiviert sich aber nur, wenn `CLAUDE_CODE_ENABLE_FUNCTION_HOOKS` genau `1` ist; andernfalls tut er gar nichts.
 
 ## Installation
 
