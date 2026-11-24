@@ -1,7 +1,7 @@
 <h1 align="center">Claude Code Filetree</h1>
 
 <p align="center">
-  An IDE-style Datei tree for Claude Code that zeigt what Claude is doing und where in Dateien
+  Ein Dateibaum im IDE-Stil für Claude Code, der zeigt, was Claude tut und an welcher Stelle in Dateien
 </p>
 
 <p align="center">
@@ -21,7 +21,7 @@
 </details>
 
 <details>
-<summary><b>Claude Code in Desktop App</b></summary>
+<summary><b>Claude Code in der Desktop-App</b></summary>
 
 <p align="center">
   <img src="media/0.8.2/desktop-light.png" alt="The file tree in the Desktop app in light mode, with the header buttons including the Clawd shimmer button, the branch row, search row and folders" width="600">
@@ -29,66 +29,66 @@
 
 </details>
 
-**Key features:**
+**Wichtige Funktionen:**
 
-* Show/nav alle Dateien in a Verzeichnis (mit support for Git Status, nvim bindings)
-* Animations zeigen where Claude is reading/working
-* Keyboard shortcuts:
-   * Nav directories mit `z` (zoxide-like)
-   * Search mit `s` oder `i` (in highlighted Ordner) oder `q` (in Datei contents)
-   * Diff Dateien mit `d` oder alle changed Dateien in a Ordner
-* Terminal-first features: File previews, Verzeichnis size treemap, und mehr
+* Alle Dateien in einem Verzeichnis anzeigen und durch sie navigieren (mit Git-Status und nvim-Tastenbelegungen)
+* Animationen zeigen, wo Claude liest/arbeitet
+* Tastaturkürzel:
+   * Verzeichnisse mit `z` navigieren (ähnlich zoxide)
+   * Suchen mit `s` oder `i` (im hervorgehobenen Ordner) oder `q` (in Dateiinhalten)
+   * Dateien mit `d` vergleichen oder alle geänderten Dateien in einem Ordner
+* Funktionen mit Terminal im Vordergrund: Dateivorschau, Treemap der Verzeichnisgröße und mehr
 
 ---
 
 ## Installation
 
-The repo is its own plugin marketplace. Run this in the terminal:
+Das Repository ist sein eigener Plugin-Marketplace. Führe dies im Terminal aus:
 
 ```bash
 claude plugin marketplace add data-goblin/claude-code-filetree
 claude plugin install filetree@claude-code-filetree
 ```
 
-Or inside a Claude Code Sitzung:
+Oder innerhalb einer Claude-Code-Sitzung:
 
 ```text
 /plugin marketplace add data-goblin/claude-code-filetree
 /plugin install filetree@claude-code-filetree
 ```
 
-An installieren fails mit `Unrecognized key: "options"` on Claude Code older than 2.1.287: ausführen `claude update`, dann installieren erneut.
+Bei Claude Code älter als 2.1.287 schlägt die Installation mit `Unrecognized key: "options"` fehl: führe `claude update` aus und installiere erneut.
 
 ## Funktionen
 
-- File tree of the cwd oder a pinned Ordner, mit Git, size, Zeile count und date columns ([tree](docs/tree.md))
-- Collapse alle, und expand alle up to three levels deep ([tree](docs/tree.md))
-- Symlink arrows, a brain on Agent instruction Dateien, und Nerd Font, plain oder Text glyphs ([tree](docs/tree.md))
-- Search by Name across unopened folders, by case oder regular expression, scoped to one Ordner ([search](docs/search.md))
-- Search inside Dateien mit `git grep` oder `grep -r`, und öffnen a match at its Zeile ([search](docs/search.md))
-- Jump to any Ordner zoxide style mit `z` ([search](docs/search.md))
-- Git Status per Datei und Ordner, Zeile counts on changed Dateien, und the Branch mit ahead und behind ([git](docs/git.md))
-- Git und GitHub commands Claude runs zeigen as a Status Zeile ([git](docs/git.md))
-- Claude's liest, schreibt und commits shimmer in the tree, und automatisch-collapse closes the folders it opened ([activity](docs/activity.md))
-- The Activity shimmer setting turns the shimmer off in every Sitzung; the Clawd Schaltfläche in the Desktop app header flips it ([activity](docs/activity.md))
-- File references mit a Zeile in Claude's replies become links to that Zeile ([activity](docs/activity.md))
-- Follow work moves the Sitzung to the repo Claude works in ([activity](docs/activity.md))
-- IDE-style multi-select; the shaded rows go to Claude as Kontext: the selected row, oder up to 100 marked rows ([context](docs/context.md)):
-  - klicken selects one row und clears the marks
-  - mit rows marked, j / k move nur the cursor, und `v` marks oder unmarks the row under it
-  - shift+klicken marks the range von the letzte klicken oder j / k move, in tree order
-  - ctrl+klicken marks oder unmarks one row ohne opening it; alt+klicken on macOS
-  - double-click oder Enter öffnet a Datei
-  - the leeren selection Schaltfläche clears every marked und selected row
-  - marked rows zeigen the selection background; `y`, `Y` und `u` copy the shaded rows
-  - mit rows marked, the row under the cursor zeigt an accent tint in the Desktop app und the accent cursor mark in the terminal
-- Split preview of code, Markdown, Bilder, Video frames, PDF und Word pages ([preview and treemap](docs/preview-treemap.md))
-- Treemap of a Ordner by bytes oder Zeilen, mit Claude's activity lit ([preview and treemap](docs/preview-treemap.md))
-- Diff of a Datei oder every changed Datei in a Ordner, in the pane oder your diff Werkzeug ([diff](docs/diff.md))
-- Open Dateien in their default app, an editor in a tmux oder herdr pane, oder any Befehl ([open](docs/open.md))
-- Guard Dateien und folders von Claude's edits, und see Dateien written outside the repo ([guards](docs/guards.md))
-- Keyboard-driven: vim-style moves, a shortcuts overlay, und alt+l / alt+h in the terminal ([keys](docs/keys.md))
-- `/filetree` commands und where the pane zeigt in the terminal und the Desktop app ([sidebar](docs/sidebar.md))
+- Dateibaum des aktuellen Arbeitsverzeichnisses oder eines angehefteten Ordners, mit Spalten für Git, Größe, Zeilenzahl und Datum ([tree](docs/tree.md))
+- Alles einklappen und bis zu drei Ebenen tief wieder ausklappen ([tree](docs/tree.md))
+- Symlink-Pfeile, ein Gehirn bei Agenten-Anweisungsdateien sowie Nerd-Font-, einfache oder Text-Glyphen ([tree](docs/tree.md))
+- Suche nach Namen auch in ungeöffneten Ordnern, mit Groß-/Kleinschreibung oder regulärem Ausdruck, auf einen Ordner begrenzt ([search](docs/search.md))
+- Suche in Dateien mit `git grep` oder `grep -r`, und Treffer an ihrer Zeile öffnen ([search](docs/search.md))
+- Mit `z` im zoxide-Stil zu jedem Ordner springen ([search](docs/search.md))
+- Git-Status pro Datei und Ordner, Zeilenzahlen bei geänderten Dateien sowie der Branch mit ahead/behind ([git](docs/git.md))
+- Git- und GitHub-Befehle, die Claude ausführt, erscheinen als Statuszeile ([git](docs/git.md))
+- Claudes Lese-, Schreib- und Commit-Vorgänge shimmern im Baum, und automatisches Einklappen schließt die geöffneten Ordner wieder ([activity](docs/activity.md))
+- Die Einstellung Activity shimmer schaltet das Shimmern in allen Sitzungen ab; die Clawd-Schaltfläche im Header der Desktop-App schaltet es um ([activity](docs/activity.md))
+- Dateiverweise mit Zeilenangabe in Claudes Antworten werden Links zu dieser Zeile ([activity](docs/activity.md))
+- Follow work verschiebt die Sitzung in das Repository, an dem Claude arbeitet ([activity](docs/activity.md))
+- Mehrfachauswahl im IDE-Stil; die schattierten Zeilen gehen als Kontext an Claude: die ausgewählte Zeile oder bis zu 100 markierte Zeilen ([context](docs/context.md)):
+  - Klick wählt eine Zeile aus und löscht die Markierungen
+  - Bei markierten Zeilen bewegen j / k nur den Cursor, und `v` markiert oder demarkiert die Zeile darunter
+  - Shift+Klick markiert den Bereich vom letzten Klick oder j/k-Zug, in Baumreihenfolge
+  - Strg+Klick markiert oder demarkiert eine Zeile, ohne sie zu öffnen; unter macOS Alt+Klick
+  - Doppelklick oder Enter öffnet eine Datei
+  - die Schaltfläche zum Aufheben der Auswahl löscht alle markierten und ausgewählten Zeilen
+  - markierte Zeilen zeigen den Auswahlhintergrund; `y`, `Y` und `u` kopieren die schattierten Zeilen
+  - bei markierten Zeilen zeigt die Zeile unter dem Cursor in der Desktop-App eine Akzenttönung und im Terminal die Akzent-Cursor-Markierung
+- Geteilte Vorschau von Code, Markdown, Bildern, Videoframes, PDF- und Word-Seiten ([preview and treemap](docs/preview-treemap.md))
+- Treemap eines Ordners nach Bytes oder Zeilen, mit Claudes Aktivität hervorgehoben ([preview and treemap](docs/preview-treemap.md))
+- Diff einer Datei oder aller geänderten Dateien in einem Ordner, im Bereich oder in deinem Diff-Werkzeug ([diff](docs/diff.md))
+- Dateien in ihrer Standard-App öffnen, einen Editor in einem tmux- oder herdr-Bereich oder einen beliebigen Befehl ([open](docs/open.md))
+- Dateien und Ordner vor Claudes Änderungen schützen und außerhalb des Repos geschriebene Dateien sehen ([guards](docs/guards.md))
+- Tastaturgetrieben: vim-artige Bewegungen, ein Kürzel-Overlay sowie alt+l / alt+h im Terminal ([keys](docs/keys.md))
+- `/filetree`-Befehle und wo der Bereich im Terminal und in der Desktop-App erscheint ([sidebar](docs/sidebar.md))
 
 <img src="media/filetree-git.gif" alt="A committed file shimmers green and the footer shows the commit" width="800">
 
@@ -96,7 +96,7 @@ An installieren fails mit `Unrecognized key: "options"` on Claude Code older tha
 
 ## Einstellungen
 
-All settings are in `/config` under filetree, jede mit its own Beschreibung there.
+Alle Einstellungen stehen in `/config` unter filetree, mit jeweils eigener Beschreibung dort.
 
 ```yaml
 Claude activity:  reads and writes | writes | reads | none
@@ -130,58 +130,58 @@ Palette:          key=#hex pairs over the terminal colors
 Glyphs:           auto | nerd | plain | text
 ```
 
-In the terminal the accent colors folders, the root, the cursor, search matches und the top-level boxes of the cells treemap. Es ist the terminal's bright blue mit a dark Claude theme und its blue mit a light one. `accent=#hex` in Palette sets another color for alle of them.
+Im Terminal färbt der Akzent Ordner, die Wurzel, den Cursor, Suchtreffer und die oberen Kästen der Zellen-Treemap ein. Er ist das hellblau des Terminals bei dunklem Claude-Theme bzw. dessen Blau bei hellem. `accent=#hex` in Palette setzt für alle eine andere Farbe.
 
-Follow work is described in [Claude activity](docs/activity.md).
+Follow work ist unter [Claude activity](docs/activity.md) beschrieben.
 
-Open at starten applies to every neu Sitzung, `/clear` included. When you öffnen oder schließen the tree mit `/filetree`, that choice lasts until the nächste `/clear`. After `/clear`, the tree ist öffnen oder closed as Open at starten says.
+Open at start gilt für jede neue Sitzung, auch nach `/clear`. Wenn du den Baum mit `/filetree` öffnest oder schließt, gilt diese Wahl bis zum nächsten `/clear`. Danach ist der Baum je nach Open at start geöffnet oder geschlossen.
 
 ## Voraussetzungen
 
 ```yaml
-required:  Claude Code 2.1.306 or newer, git
+required:  Claude Code 2.1.306 oder neuer, git
 optional:
-  inotifywait:            live updates on Linux (inotify-tools)
-  magick or ffmpeg:       images other than PNG, video frames
-  pdftoppm or gs:         PDF pages
-  soffice:                Word and office pages
-  pandoc, pdftotext:      document text in tmux, herdr and other terminals
-  tmux or herdr:          an editor or diff tool in a new pane
-  Nerd Fonts 3.2+:        icons for Glyphs auto, which draws plain Unicode without one or with an older one
-pictures:  Ghostty or kitty, outside tmux and herdr, on Linux and macOS
+  inotifywait:            Live-Aktualisierungen unter Linux (inotify-tools)
+  magick oder ffmpeg:     Bilder außer PNG, Videoframes
+  pdftoppm oder gs:       PDF-Seiten
+  soffice:                Word- und Office-Seiten
+  pandoc, pdftotext:      Dokumenttext in tmux, herdr und anderen Terminals
+  tmux oder herdr:        ein Editor oder Diff-Werkzeug in einem neuen Bereich
+  Nerd Fonts 3.2+:        Icons für Glyphs auto; ohne oder mit älterer Font werden einfache Unicode-Zeichen gezeichnet
+pictures:  Ghostty oder kitty, außerhalb von tmux und herdr, unter Linux und macOS
 ```
 
-## Considerations
+## Hinweise
 
-- The Desktop app has nein split preview oder treemap
-- The Desktop app shimmers at most four rows at once; mehr lit rows zeigen in their color ohne the shimmer, while the terminal shimmers them alle. If the pane still floods, the Clawd Schaltfläche in the header oder the Activity shimmer setting turns the shimmer off
-- The Desktop app draws at most 150 rows around the cursor, und fewer when rows are deep, have long paths oder zeigen git ändert; a note counts the rows it leaves out
-- GIFs und videos zeigen one still frame
-- Windows sizes folders through Datei listings, und the treemap draws one level
-- Row clicks need herdr 0.9.1 oder later; ausführen `herdr update`
+- Die Desktop-App hat keine geteilte Vorschau und keine Treemap
+- Die Desktop-App lässt höchstens vier Zeilen gleichzeitig shimmern; weitere leuchtende Zeilen erscheinen in ihrer Farbe ohne Shimmer, während das Terminal alle shimmern lässt. Flutet der Bereich trotzdem, schaltet die Clawd-Schaltfläche im Header oder die Einstellung Activity shimmer das Shimmern ab
+- Die Desktop-App zeichnet höchstens 150 Zeilen um den Cursor herum, weniger bei tiefen Zeilen, langen Pfaden oder Git-Änderungen; eine Notiz zählt die ausgelassenen Zeilen
+- GIFs und Videos zeigen ein einzelnes Standbild
+- Unter Windows werden Ordnergrößen über Dateiauflistungen bestimmt, und die Treemap zeichnet eine Ebene
+- Zeilenklicks benötigen herdr 0.9.1 oder neuer; führe `herdr update` aus
 
-## Contributing
+## Mitmachen
 
-Open pull requests against a release Branch, nicht `main`:
+Öffne Pull Requests gegen einen Release-Branch, nicht gegen `main`:
 
-- Fixes: the patch Branch, such as `release/0.8.2`
-- Funktionen: the minor Branch, such as `release/0.9.0`
+- Fehlerbehebungen: den Patch-Branch, etwa `release/0.8.2`
+- Funktionen: den Minor-Branch, etwa `release/0.9.0`
 
-Keep the version of that Branch.
+Behalte die Version dieses Branches bei.
 
-Turn on the git Hooks once per clone. The pre-commit Hook runs the fast prüft in seconds: grep rules, types, oxlint, und `claude plugin validate` when the manifests ändern. The pre-push Hook prüft the version against the release Branch und runs das Plugin tests:
+Aktiviere die Git-Hooks einmal pro Clone. Der Pre-Commit-Hook führt in Sekunden die schnellen Prüfungen aus: grep-Regeln, Typen, oxlint und `claude plugin validate`, wenn sich Manifeste ändern. Der Pre-Push-Hook prüft die Version gegen den Release-Branch und führt die Plugin-Tests aus:
 
 ```bash
 git config core.hooksPath .githooks
 ```
 
-The same prüft ausführen on macOS, Windows und Linux in CI on every push that touches das Plugin.
+Dieselben Prüfungen laufen in CI auf macOS, Windows und Linux bei jedem Push, der das Plugin berührt.
 
 ## Lizenz
 
-[MIT](LICENSE). The treemap labels verwenden glyphs von [Terminus Font](https://terminus-font.sourceforge.net/) by Dimitar Zhekov (Lat2-Terminus16, SIL Open Font Lizenz 1.1).
+[MIT](LICENSE). Die Treemap-Beschriftungen verwenden Glyphen aus [Terminus Font](https://terminus-font.sourceforge.net/) von Dimitar Zhekov (Lat2-Terminus16, SIL Open Font License 1.1).
 
-*This Projekt is inspired by my Omarchy app [FileBlade](https://github.com/data-goblin/fileblade)*
+*Dieses Projekt ist inspiriert von meiner Omarchy-App [FileBlade](https://github.com/data-goblin/fileblade)*
 
 ## Quelle und Lizenz
 
