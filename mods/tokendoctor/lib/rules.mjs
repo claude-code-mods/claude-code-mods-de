@@ -688,7 +688,7 @@ const RULES = [
       const window = Number(String(SCOPES.map((sc) => s.settings[sc].autoCompactWindow).find(Boolean) ?? '').replace(/k$/i, '000')) || null
       return {
         severity: pct < 50 ? 'warn' : 'info',
-        title: `Automatische Verdichtung setzt bei ${pct}% of the window`,
+        title: `Automatische Verdichtung setzt bei ${pct}% des Fensters ein`,
         detail:
           `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=${pct}${window ? `: about ${Math.round((window * pct) / 100000)}K of the ${Math.round(window / 1000)}K window` : ''}. ` +
           'It can only lower the point (a value above the default is ignored), and it applies to subagents too. ' +

@@ -380,7 +380,7 @@ export function summarize(sessions) {
   if (big > 0.3) {
     findings.push({
       id: 'late-compaction', severity: 'warn',
-      title: `${Math.round(big * 100)}% of main-thread cost was spent with more than ${BIG_CONTEXT / 1000}K tokens in context`,
+      title: `${Math.round(big * 100)}% der Hauptthread-Kosten entfielen auf mehr als ${BIG_CONTEXT / 1000}K Token im Kontext`,
       detail:
         (avgPre ? `Compaction ran at about ${Math.round(avgPre / 1000)}K tokens on average. ` : '') +
         'Every turn re-sends the whole context, so turns late in a long conversation cost the most. ' +

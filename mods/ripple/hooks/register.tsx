@@ -2837,7 +2837,7 @@ export const register: Register = on => {
     if ((e.trigger === 'precompute' || e.trigger === 'auto') && !e.agentId && currentTurn === null) {
       try {
         if (!await read($, busy) && await warmHolds($)) {
-          await $.ui.log('ClaudeRipple: idle compaction skipped, Warmhalten hält den Cache dieses Chats\'s Cache', { to: 'debug' })
+          await $.ui.log('ClaudeRipple: Verdichtung im Leerlauf übersprungen, Warmhalten hält den Cache dieses Chats', { to: 'debug' })
           return { skip: 'Warmhalten hält den Cache dieses Chats\'s cache' }
         }
       } catch (error) { await report($, 'session.compact warm', error) }
