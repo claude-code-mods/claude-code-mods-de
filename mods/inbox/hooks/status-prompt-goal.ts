@@ -9,7 +9,7 @@ import { duration } from './text'
 /** The mark on a milestone line that no subject serves. */
 const NO_WORK_LINKED = 'no work linked'
 /** The mark on an open milestone line that open work serves and that says nothing on where it stands. */
-const NO_TEXT = 'no text'
+const NO_TEXT = 'kein Text'
 /** The mark on the milestone line the work takes up after the one under way. */
 const NEXT_MARK = 'next'
 /** The mark on a milestone line `tooBigMilestones` names, with how many subjects serve it and how many milestones the goal has room for. */

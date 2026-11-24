@@ -32,5 +32,5 @@ export function capitalized(text: string): string {
   return text.charAt(0).toUpperCase() + text.slice(1)
 }
 
-export const ISSUE_LABEL = 'File Issue'
-export const SHOW_EXPLANATION_LABEL = 'Show explanation'
+export const ISSUE_LABEL = 'Problem melden'
+export const SHOW_EXPLANATION_LABEL = 'Erklärung anzeigen'

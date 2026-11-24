@@ -25,7 +25,7 @@ export type PathStep = {
   startsLater: boolean
 }
 
-export const LATER_TEXT = 'Later'
+export const LATER_TEXT = 'Später'
 /**
  * The milestones the goal shows, in path order. Done ones come in the order they closed. Then the ones under way, in
  * the plan's order. The first queued one in the plan's order is next, and the rest sit under Later. The dropped ones follow them, with

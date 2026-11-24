@@ -17,7 +17,7 @@ const feature = atom({ plugin: 'engineer', key: 'feature' } as const, null)
 const agents = atom({ plugin: 'engineer', key: 'agents' } as const, [])
 
 const PANE = 'dae'
-const SYNC = 'DAE progress sync'
+const SYNC = 'DAE-Fortschrittssync'
 const ICON = { running: '▶', done: '✓', failed: '✗' } as const
 
 type LedgerRow = { role: string; modelClass: string; shape: string; runs: number; tokens: number; ms: number }
@@ -55,7 +55,7 @@ function drawStatus($: $, f: EngineerFeature | null, rows: readonly EngineerAgen
   const running = rows.filter(a => a.status === 'running').length
   $.ui.status([
     f.cp !== null ? `CP${f.cp} ▸ ${f.met}/${f.total}` : f.slug,
-    `${running} agent${running === 1 ? '' : 's'}`,
+    `${running} ${running === 1 ? 'Agent' : 'Agenten'}`,
     `${kTok(rows.reduce((n, a) => n + a.tokens, 0))} tok`,
   ].join(' · '))
 }
@@ -76,7 +76,7 @@ async function startSync($: $, dir: string, handoff: string): Promise<string> {
   const running = syncs.get(dir)
   if (running !== undefined) {
     running.isPending = true
-    return 'a progress sync is already läuft for this feature und re-runs when it ends'
+    return 'Für dieses Feature läuft bereits ein Fortschrittssync; er startet nach seinem Ende erneut.'
   }
   const slug = slugOf(dir)
   syncs.set(dir, { isPending: false })
@@ -91,10 +91,10 @@ async function startSync($: $, dir: string, handoff: string): Promise<string> {
   })
   if (spawned.deny !== undefined || spawned.agentId === undefined) {
     syncs.delete(dir)
-    return `the progress sync could nicht starten (${spawned.deny ?? 'no agent'}): dispatch an economy /engineer.progress-log ${slug} yourself`
+    return `Der Fortschrittssync konnte nicht gestartet werden (${spawned.deny ?? 'kein Agent'}): starte /engineer.progress-log ${slug} selbst mit einem Economy-Modell.`
   }
   syncs.set(dir, { agentId: spawned.agentId, isPending: false })
-  return `progress sync dispatched (Agent ${spawned.agentId}); do nicht dispatch /engineer.progress-log yourself for this handoff`
+  return `Fortschrittssync gestartet (Agent ${spawned.agentId}); starte für diese Übergabe nicht selbst /engineer.progress-log.`
 }
 
 async function onHandoff($: $, dir: string, path: string): Promise<string> {
@@ -103,11 +103,11 @@ async function onHandoff($: $, dir: string, path: string): Promise<string> {
     loadFeature($, dir),
   ])
   const verdict = check.stdout.trim().split('\n')[0] ?? ''
-  if (check.exitCode !== 0) alert($, `DAE ${slugOf(dir)}: handoff prüfen failed: ${verdict}`)
-  if (f?.human_action_needed) alert($, `DAE ${f.slug}: a gate needs you (human_action_needed: ja)`)
+  if (check.exitCode !== 0) alert($, `DAE ${slugOf(dir)}: Übergabe prüfen fehlgeschlagen: ${verdict}`)
+  if (f?.human_action_needed) alert($, `DAE ${f.slug}: Ein Gate benötigt dich (human_action_needed: ja)`)
   await show($, f)
   const sync = await startSync($, dir, path)
-  return `engineer mod: dae_handoff.py ${check.exitCode === 0 ? 'passed' : `FAILED: ${verdict}`}; ${sync}.`
+  return `Engineer-Mod: dae_handoff.py ${check.exitCode === 0 ? 'bestanden' : `FEHLGESCHLAGEN: ${verdict}`}; ${sync}.`
 }
 
 /** The carve-out holds only for the feature's own PR: we are on its branch and its bar is green. */
@@ -145,9 +145,9 @@ async function anchorFor($: $, agentId: string | undefined): Promise<string | un
   const cp = row?.cp ?? target.cp
   return [
     '[engineer re-anchor after compaction]',
-    `Role: ${row?.role ?? 'main session'} · Checkpoint: ${cp !== null ? `CP${cp}` : 'unknown'} · Autonomy: ${target.autonomy_level ?? 'unset'}`,
+    `Role: ${row?.role ?? 'Hauptsitzung'} · Checkpoint: ${cp !== null ? `CP${cp}` : 'unbekannt'} · Autonomy: ${target.autonomy_level ?? 'nicht gesetzt'}`,
     `Feature: ${target.dir}`,
-    `Latest handoff: ${target.last_handoff ?? 'none yet'}`,
+    `Latest handoff: ${target.last_handoff ?? 'noch keine'}`,
     'Keep this role. Re-read the latest handoff before acting; if the next action is unclear, run /engineer.reorient.',
   ].join('\n')
 }
@@ -161,7 +161,7 @@ export const register: Register = (on, options) => {
   on('session.start', async ($, e, next) => {
     const [resolved] = await Promise.all([
       py($, 'dae_resolve.py', e.cwd).catch(() => undefined),
-      $.command.register({ name: PANE, description: 'DAE coordinator pane: läuft Agenten, segment, Kosten' }),
+      $.command.register({ name: PANE, description: 'DAE-Koordinatorbereich: laufende Agenten, Segment, Kosten' }),
       $.tool.register({
         name: 'cost_ledger',
         description:
@@ -180,14 +180,14 @@ export const register: Register = (on, options) => {
 
   on('command.run', { command: PANE }, async $ => {
     await $.ui.open({ id: PANE, title: 'DAE' })
-    return { text: 'DAE pane opened.' }
+    return { text: 'DAE-Bereich geöffnet.' }
   })
 
   on('tool.call', { tool: 'mcp__engineer__cost_ledger' }, async $ => {
     const rows = Object.values(await getLedger($)).map(r => ({
       ...r, avgTokens: Math.round(r.tokens / r.runs), avgMinutes: +(r.ms / r.runs / 60000).toFixed(1),
     }))
-    return { result: rows.length ? JSON.stringify(rows, null, 1) : 'No runs recorded yet: verwenden the priors.' }
+    return { result: rows.length ? JSON.stringify(rows, null, 1) : 'Noch keine Läufe erfasst: verwende die Schätzwerte.' }
   })
 
   // --- 1. handoff-write hook: validate, then sync deterministically ----------
@@ -218,18 +218,18 @@ export const register: Register = (on, options) => {
     const actions = prMerges((e.input as { command: string }).command)
     if (actions.length === 0) return next(e)
     // The one carve-out: verify:auto may merge its own PR when the bar is green.
-    if (actions.every(a => a.endsWith('(current branch)')) && (await mergeReady($))) return next(e)
-    return { decision: 'ask', reason: `DAE: ${actions.join(' + ')} needs an explicit OK. ${EXTERNAL_RULE}` }
-  }).catch(() => ({ decision: 'deny', reason: `DAE: the PR-merge guard failed. ${EXTERNAL_RULE}` }))
+    if (actions.every(a => a.endsWith('(aktueller Branch)')) && (await mergeReady($))) return next(e)
+    return { decision: 'ask', reason: `DAE: ${actions.join(' + ')} erfordert eine ausdrückliche Bestätigung. ${EXTERNAL_RULE}` }
+  }).catch(() => ({ decision: 'deny', reason: `DAE: Die PR-Merge-Sperre hat versagt. ${EXTERNAL_RULE}` }))
 
   on('tool.call', { tool: ['Write', 'Edit', 'NotebookEdit'] }, async ($, e, next) => {
     if (e.agentId === undefined) return next(e)
     const row = (await read($, agents)).find(a => a.id === e.agentId)
     if (row === undefined || !isVerifier(row.role)) return next(e)
     const path = 'file_path' in e ? e.file_path : e.notebook_path
-    return scope.handoffFeature(path) !== undefined ? next(e) : { deny: `DAE: the verifier may not edit ${path}. ${VERIFIER_RULE}` }
+    return scope.handoffFeature(path) !== undefined ? next(e) : { deny: `DAE: Der Verifizierer darf ${path}. ${VERIFIER_RULE}` }
   }).catch(($, e, next) =>
-    next.called || e.agentId === undefined ? next(e) : { deny: `DAE: the verifier guard failed. ${VERIFIER_RULE}` })
+    next.called || e.agentId === undefined ? next(e) : { deny: `DAE: Die Verifizierer-Sperre hat versagt. ${VERIFIER_RULE}` })
 
   on('agent.spawn', async ($, e, next) => {
     if (e.resume !== undefined) return next(e)
@@ -248,7 +248,7 @@ export const register: Register = (on, options) => {
     ticker ??= $.clock.every(5000, () => $.ui.invalidate('ui.render')) // elapsed time in the pane
     await updateStatus($)
     return ran
-  }).catch(($, e, next) => (next.called ? next(e) : { deny: 'DAE: the dispatch guard failed (model-classes.md, gauntlet.md).' }))
+  }).catch(($, e, next) => (next.called ? next(e) : { deny: 'DAE: Die Dispatch-Sperre hat versagt (model-classes.md, gauntlet.md).' }))
 
   // --- 4/5/6. agent ends: pane, toast + sound, cost ledger ---------------------
 
@@ -266,7 +266,7 @@ export const register: Register = (on, options) => {
       addToLedger($, row, tokens, e.durationMs),
     ])
     if (row.role !== 'progress-log' || isFailed) {
-      alert($, `DAE: ${row.role}${row.cp ? ` (CP${row.cp})` : ''} ${isFailed ? `failed: ${e.reason}` : 'fertig'}`)
+      alert($, `DAE: ${row.role}${row.cp ? ` (CP${row.cp})` : ''} ${isFailed ? `fehlgeschlagen: ${e.reason}` : 'fertig'}`)
     }
     if (!(await read($, agents)).some(a => a.status === 'running')) {
       ticker?.cancel()
@@ -278,13 +278,13 @@ export const register: Register = (on, options) => {
       const isPending = syncs.get(dir)?.isPending === true
       syncs.delete(dir)
       await show($, await loadFeature($, dir))
-      if (isPending) await startSync($, dir, 'the newest one under handoffs/')
+      if (isPending) await startSync($, dir, 'die neueste Datei unter handoffs/')
     }
     return next(e)
   })
 
   on('tool.call', { tool: 'AskUserQuestion' }, async ($, e, next) => {
-    if (e.agentId === undefined && shownDir !== undefined) alert($, 'DAE: a gate needs you')
+    if (e.agentId === undefined && shownDir !== undefined) alert($, 'DAE: Ein Gate benötigt dich')
     return next(e)
   })
 
@@ -321,7 +321,7 @@ export const register: Register = (on, options) => {
     const room = Math.max(1, e.props.scroll.bodyRows - 2)
     return (
       <Box flexDirection="column">
-        <Text bold>{f ? `${f.slug}${f.segment ? ` · segment ${f.segment}` : ''}` : 'No DAE feature in scope'}</Text>
+        <Text bold>{f ? `${f.slug}${f.segment ? ` · Segment ${f.segment}` : ''}` : 'Kein DAE-Feature im Geltungsbereich'}</Text>
         {rows.length === 0 && <Text dimColor>No DAE agents dispatched this session.</Text>}
         {rows.slice(-room).map(a => (
           <Text dimColor={a.status !== 'running'} color={a.status === 'failed' ? 'red' : undefined}>

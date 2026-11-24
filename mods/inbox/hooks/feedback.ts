@@ -167,7 +167,7 @@ const WORKING_LABELS: Record<string, string> = {
 
 const DONE_LABELS: Record<string, (text: string) => string> = {
   address: () => 'Handed off',
-  issue: () => 'Asked to Datei',
+  issue: () => 'Um eine Datei gebeten',
   discuss: () => 'Discussed',
   explain: () => 'Explained',
   compare: () => 'Compared',
@@ -175,11 +175,11 @@ const DONE_LABELS: Record<string, (text: string) => string> = {
   type: () => 'Replied',
   'thread-address': () => 'Addressed',
   'thread-discuss': () => 'Discussed',
-  'thread-draft': () => 'Drafted a reply',
+  'thread-draft': () => 'Antwort entworfen',
   'pr-conflicts': () => 'Asked to resolve conflicts',
-  'pr-merge': () => 'Asked to merge',
+  'pr-merge': () => 'Zum Mergen gebeten',
   'pr-address-all': text => text.replace(/^Address\b/, 'Addressed'),
-  'check-fix': () => 'Asked to fix',
+  'check-fix': () => 'Um eine Korrektur gebeten',
   'pr-rank-again': () => 'Ranked',
 }
 
@@ -314,7 +314,7 @@ function localText(r: LocalResult, look: Look): string {
   const parts = isPrs ? [{ ...r.parts[0]!, name: `${r.parts.length} PRs` }] : r.parts
   if (r.state === 'pending') return `${parts.map(p => `${VERBS[p.kind].pending} ${p.name}`).join(DOT)}…`
   const text = parts
-    .map(p => (p.error === null ? doneText(p) : `Could nicht ${VERBS[p.kind].failed} ${p.name}: ${p.error}`))
+    .map(p => (p.error === null ? doneText(p) : `${VERBS[p.kind].failed} von ${p.name} fehlgeschlagen: ${p.error}`))
     .join(DOT)
   if (r.state === 'failed') return text
   const isCommand = parts.some(p => p.kind === 'copy' && p.isCommand)
@@ -341,9 +341,9 @@ export function feedbackText(f: Feedback, look: Look): string {
     case 'working':
       return f.label
     case 'stillOpen':
-      return 'Still öffnen'
+      return 'Immer noch offen'
     case 'noComparison':
-      return 'No comparison came zurück'
+      return 'Kein Vergleich zurückgegeben'
     case 'closed':
       return f.label
   }

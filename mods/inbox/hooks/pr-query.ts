@@ -243,7 +243,7 @@ export function readPrNode(
 function errorWords(e: GraphQlError, repo: string): string {
   if (e.type === 'NOT_FOUND') return `not found on GitHub, or no access to ${repo}`
 
-  return (e.message ?? e.type ?? 'GitHub could not read it').trim()
+  return (e.message ?? e.type ?? 'GitHub konnte es nicht lesen').trim()
 }
 
 /**
@@ -283,7 +283,7 @@ export function readPrsAnswer(
     prs[ref] = {
       node,
       error: node ? null : own ? errorWords(own, repo) : 'GitHub did not answer for it',
-      threadsError: node && threads ? `could not read its review threads: ${errorWords(threads, repo)}` : null,
+      threadsError: node && threads ? `Prüfungsdiskussionen konnten nicht gelesen werden: ${errorWords(threads, repo)}` : null,
     }
   })
 

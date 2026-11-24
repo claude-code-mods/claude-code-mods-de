@@ -56,14 +56,14 @@ export const planKeys = (text: string | undefined, wants: readonly KeyWant[] = F
     try {
       parsed = JSON.parse(text)
     } catch (err) {
-      return { kind: 'invalid', reason: `nicht valid JSON (${err instanceof Error ? err.message : String(err)})` }
+      return { kind: 'invalid', reason: `ungültiges JSON (${err instanceof Error ? err.message : String(err)})` }
     }
-    if (!isRecord(parsed)) return { kind: 'invalid', reason: 'the top level is nicht a JSON object' }
+    if (!isRecord(parsed)) return { kind: 'invalid', reason: 'die oberste Ebene ist kein JSON-Objekt' }
     doc = parsed
   }
   const raw = doc.bindings ?? []
-  if (!Array.isArray(raw)) return { kind: 'invalid', reason: '"bindings" is nicht an array' }
-  if (!raw.every(b => isRecord(b) && typeof b.context === 'string' && isRecord(b.bindings))) return { kind: 'invalid', reason: 'a "bindings" entry lacks a string "Kontext" oder a "bindings" object' }
+  if (!Array.isArray(raw)) return { kind: 'invalid', reason: '"bindings" ist kein Array' }
+  if (!raw.every(b => isRecord(b) && typeof b.context === 'string' && isRecord(b.bindings))) return { kind: 'invalid', reason: 'ein "bindings"-Eintrag hat keinen Zeichenfolgen-"context" und kein "bindings"-Objekt' }
   const blocks = raw as Block[]
   const add: KeyWant[] = []
   const clash: KeyClash[] = []
@@ -97,10 +97,10 @@ async function placeKeys($: EngineInterface, path: string): Promise<Place | { re
   const own = await $.fs.stat(path, { resolve: true }).catch(() => undefined)
   if (!own) return { path, atomic: false }
   const target = own.realPath
-  if (!target) return { refused: `cannot resolve where ${path} leads` }
-  if (own.kind !== 'file') return { refused: `${target} is not a regular file` }
+  if (!target) return { refused: `Pfad ${path} kann nicht aufgelöst werden` }
+  if (own.kind !== 'file') return { refused: `${target} ist keine reguläre Datei` }
   if ((await $.env.get('OS')) === 'Windows_NT') return { path: target, atomic: false }
-  if ((await $.process.run(['test', '-w', target])).exitCode !== 0) return { refused: `${target} is read-only` }
+  if ((await $.process.run(['test', '-w', target])).exitCode !== 0) return { refused: `${target} ist schreibgeschützt` }
   return { path: target, atomic: true }
 }
 
@@ -114,42 +114,42 @@ async function writeKeys($: EngineInterface, place: Place, text: string): Promis
     await $.fs.write(tmp, text)
     await $.process.run(['chmod', '--reference', place.path, tmp]).catch(() => undefined)
     const moved = await $.process.run(['mv', '-f', tmp, place.path])
-    return moved.exitCode === 0 ? undefined : `could nicht replace ${place.path}: ${moved.stderr.trim()}`
+    return moved.exitCode === 0 ? undefined : `${place.path} konnte nicht ersetzt werden: ${moved.stderr.trim()}`
   } finally {
     await $.process.run(['rm', '-f', tmp]).catch(() => undefined)
   }
 }
 
-const KEEP = 'Keep mine'
-const REPLACE = 'Replace'
-const FREE = 'Add the free ones nur'
-const ADD = 'Add them'
+const KEEP = 'Meine behalten'
+const REPLACE = 'Ersetzen'
+const FREE = 'Nur die freien hinzufügen'
+const ADD = 'Hinzufügen'
 
 export async function bindKeys($: EngineInterface, home: string): Promise<string> {
   const dir = (await $.env.get('CLAUDE_CONFIG_DIR')) || `${home}/.claude`
   const path = `${dir.replace(/[\\/]+$/, '')}/keybindings.json`
   const text = (await $.fs.exists(path)) ? await $.fs.read(path).catch(() => null) : undefined
-  if (text === null) return `Could nicht lesen ${path}; nothing changed.`
+  if (text === null) return `${path} konnte nicht gelesen werden; nichts wurde geändert.`
   const plan = planKeys(text)
-  if (plan.kind === 'invalid') return `${path} is ${plan.reason}; fix it and run /filetree keys again. Nothing changed.`
-  if (plan.kind === 'done') return 'Already set: in the terminal, alt+l moves the keys to the Datei tree und alt+h (oder Escape) gives them zurück. The Desktop app does nicht lesen keybindings.json; klicken the tree there.'
+  if (plan.kind === 'invalid') return `${path}: ${plan.reason}; korrigiere es und führe /filetree keys erneut aus. Nichts wurde geändert.`
+  if (plan.kind === 'done') return 'Bereits eingerichtet: Im Terminal verschiebt alt+l die Tasten in den Dateibaum und alt+h (oder Escape) gibt sie zurück. Die Desktop-App liest keybindings.json nicht; klicke dort auf den Baum.'
   const place = await placeKeys($, path)
-  if ('refused' in place) return `Did nicht schreiben: ${place.refused}. Nothing changed.`
+  if ('refused' in place) return `Schreiben fehlgeschlagen: ${place.refused}. Nichts wurde geändert.`
   const adds = plan.add.map(w => `${w.context} ${w.key}`).join(', ')
   const ask = async (q: string, o: string[]) => $.ui.ask(q, { header: 'filetree', options: o }).catch(() => '')
   let replace = false
   if (plan.clash.length > 0) {
     const clashes = plan.clash.map(w => `${w.where} ${w.spelled} is ${w.bound}`).join(', ')
-    const pick = await ask(`${clashes}. Replace with the file tree keys${adds ? ` and add ${adds}` : ''} in ${path}?`, adds ? [REPLACE, KEEP, FREE] : [REPLACE, KEEP])
+    const pick = await ask(`${clashes}. Durch die Dateibaum-Tasten ersetzen${adds ? ` und ${adds} hinzufügen` : ''} in ${path}?`, adds ? [REPLACE, KEEP, FREE] : [REPLACE, KEEP])
     if (pick === REPLACE) replace = true
-    else if (!(adds && pick === FREE)) return `Kept your bindings; nothing changed in ${path}.`
+    else if (!(adds && pick === FREE)) return `Deine Tastenbelegungen wurden behalten; ${path} wurde nicht geändert.`
   } else {
-    const pick = await ask(`Add ${adds} to ${path}, so alt+l moves the keys to the Datei tree und alt+h gives them zurück?`, [ADD, 'Cancel'])
-    if (pick !== ADD) return `Cancelled; nothing changed in ${path}.`
+    const pick = await ask(`${adds} zu ${path} hinzufügen, damit alt+l die Tasten in den Dateibaum verschiebt und alt+h sie zurückgibt?`, [ADD, 'Cancel'])
+    if (pick !== ADD) return `Abgebrochen; ${path} wurde nicht geändert.`
   }
   const now = (await $.fs.exists(path)) ? await $.fs.read(path).catch(() => null) : undefined
-  if (now !== text) return `${path} changed while you were asked; run /filetree keys again. Nothing changed.`
+  if (now !== text) return `${path} wurde während der Rückfrage geändert; führe /filetree keys erneut aus. Nichts wurde geändert.`
   const refused = await writeKeys($, place, plan.merge(replace)).catch((err: unknown) => (err instanceof Error ? err.message : String(err)))
-  if (refused) return `Did nicht schreiben: ${refused}.`
-  return `Wrote ${path}: alt+l moves the keys to the Datei tree, alt+h (oder Escape) gives them zurück in the terminal; the Desktop app does nicht lesen keybindings.json. Claude Code picks the ändern up within about 3 seconds.`
+  if (refused) return `Schreiben fehlgeschlagen: ${refused}.`
+  return `${path} geschrieben: Im Terminal verschiebt alt+l die Tasten in den Dateibaum, alt+h (oder Escape) gibt sie zurück; die Desktop-App liest keybindings.json nicht. Claude Code übernimmt die Änderung in etwa 3 Sekunden.`
 }

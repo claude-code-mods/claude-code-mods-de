@@ -61,7 +61,7 @@ export function refuseDoneNotification(ledger: Ledger, notificationId: string, r
   }
 }
 
-const STALE_TEXT = 'This changed vorher your drücken. Nothing was sent.'
+const STALE_TEXT = 'Dies hat sich vor deinem Klick geändert. Nichts wurde gesendet.'
 
 export function noteText(): string {
   return STALE_TEXT

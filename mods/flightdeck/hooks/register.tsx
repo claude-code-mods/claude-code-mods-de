@@ -166,8 +166,8 @@ async function refreshStatus($: EngineInterface, cfg: Config) {
   const parts = [
     ctxFill.pct !== null ? `ctx ${Math.round(ctxFill.pct)}%` : null,
     cards.length > 0 ? `Agenten ${running}/${cards.length}` : null,
-    a.consults.length > 0 || a.ids.length > 0 ? `${cfg.architectLabel.toLowerCase()} ${isAdvising(a) ? 'advising' : a.consults.length}` : null,
-    s.deny > 0 ? `denied ${s.deny}` : null,
+    a.consults.length > 0 || a.ids.length > 0 ? `${cfg.architectLabel.toLowerCase()} ${isAdvising(a) ? 'berät' : a.consults.length}` : null,
+    s.deny > 0 ? `abgelehnt ${s.deny}` : null,
   ]
   // Only fields with something to say; with none, no status entry at all.
   const shown = parts.filter(Boolean)
@@ -185,8 +185,8 @@ async function consultStarted($: EngineInterface, cfg: Config, id: string, via: 
   const moment = momentOf(t)
   const at = await $.clock.now()
   await update($, architect, a => startConsult(normalize(DEFAULT_ARCHITECT, a), { id, at, moment, via }))
-  if (moment === 'vorher fertig') await update($, turn, x => ({ ...normalize(DEFAULT_TURN, x), isReviewing: true }))
-  await say($, cfg.architectLabel.toLowerCase(), cfg.moments ? `${moment} · ${via}` : `consulted · ${via}`, 'consult')
+  if (moment === 'vor der Fertigstellung') await update($, turn, x => ({ ...normalize(DEFAULT_TURN, x), isReviewing: true }))
+  await say($, cfg.architectLabel.toLowerCase(), cfg.moments ? `${moment} · ${via}` : `konsultiert · ${via}`, 'consult')
   await refreshStatus($, cfg)
 }
 
@@ -196,13 +196,13 @@ async function consultEnded($: EngineInterface, cfg: Config, advice: string | nu
   const text = first ? shorten(first.replace(/^[#>*\s-]+/, ''), 160) : null
   await update($, architect, a => endConsult(normalize(DEFAULT_ARCHITECT, a), at, text, id))
   await update($, turn, t => ({ ...normalize(DEFAULT_TURN, t), isReviewing: false }))
-  await say($, cfg.architectLabel.toLowerCase(), text ? `advice: ${shorten(text, 60)}` : 'advice returned', 'consult')
+  await say($, cfg.architectLabel.toLowerCase(), text ? `Rat: ${shorten(text, 60)}` : 'Rat zurückgegeben', 'consult')
   await refreshStatus($, cfg)
 }
 
 async function noteAdvice($: EngineInterface, cfg: Config, advice: string) {
   await update($, architect, x => ({ ...normalize(DEFAULT_ARCHITECT, x), lastAdvice: advice }))
-  await say($, cfg.architectLabel.toLowerCase(), `advice: ${shorten(advice, 60)}`, 'consult')
+  await say($, cfg.architectLabel.toLowerCase(), `Rat: ${shorten(advice, 60)}`, 'consult')
 }
 
 async function isArchitectType($: EngineInterface, cfg: Config, type: string) {
@@ -258,7 +258,7 @@ export const register: Register = (on, options) => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'flightdeck',
-      description: 'Flightdeck, the live Agent Dashboard: öffnen, schließen, zurücksetzen, oder set the layout',
+      description: 'Flightdeck, das Live-Agent-Dashboard: öffnen, schließen, zurücksetzen oder Layout festlegen',
       argumentHint: '[open|close|reset|layout auto|compact|wide|mini]',
     })
     await migrate($)
@@ -304,7 +304,7 @@ export const register: Register = (on, options) => {
     const [verb = 'open', arg = ''] = e.args.trim().split(/\s+/)
     if (verb === 'close') {
       await $.ui.close({ id: PANE })
-      return { text: 'Flightdeck closed.' }
+      return { text: 'Flightdeck geschlossen.' }
     }
     if (verb === 'reset') {
       await resetAll($)
@@ -316,11 +316,11 @@ export const register: Register = (on, options) => {
       if (!layout) return { text: 'Verwendung: /flightdeck layout automatisch|compact|wide|mini' }
       await update($, view, v => ({ ...normalize(DEFAULT_VIEW, v), layout }))
       const opened = await openPane($, cfg)
-      return { text: opened.isPlaced ? `Flightdeck layout: ${layout}.` : `Layout set to ${layout}; the pane is nicht shown yet: ${opened.reason}` }
+      return { text: opened.isPlaced ? `Flightdeck layout: ${layout}.` : `Layout auf ${layout} gesetzt; der Bereich wird noch nicht angezeigt: ${opened.reason}` }
     }
     const opened = await openPane($, cfg)
-    if (!opened.isPlaced) return { text: `Flightdeck is nicht shown yet: ${opened.reason}` }
-    return { text: 'Flightdeck opened. Focus it mit ctrl+x tab; 1-6 expand cards, f/s/o öffnen the gate rows.' }
+    if (!opened.isPlaced) return { text: `Flightdeck wird noch nicht angezeigt: ${opened.reason}` }
+    return { text: 'Flightdeck geöffnet. Mit ctrl+x tab fokussieren; 1-6 klappt Karten auf, f/s/o öffnet die Gate-Zeilen.' }
   })
 
   on('classic.UserPromptSubmit', async ($, e, next) => {
@@ -385,7 +385,7 @@ export const register: Register = (on, options) => {
             return r.usage
           })
         }
-        if (isCompaction) await say($, 'main', 'Kontext compacted (estimated)')
+        if (isCompaction) await say($, 'main', 'Kontext kompaktiert (geschätzt)')
       }
       // Time the response as it passes: its first piece that is neither the engine's envelope nor the
       // stop. One clock read in the stream and nothing stored until it has ended.
@@ -428,7 +428,7 @@ export const register: Register = (on, options) => {
     if (cards.some(c => c.id === id)) {
       const step = { model: e.model, usage: result.usage, stopReason: result.stopReason }
       await update($, agents, list => listOf<unknown>(list).map(normalizeCard).map(c => (c.id === id ? applyStep(c, step) : c)))
-      if (result.stopReason === 'max_tokens') await say($, await whoIs($, id), 'hit max_tokens', 'error', id)
+      if (result.stopReason === 'max_tokens') await say($, await whoIs($, id), 'max_tokens erreicht', 'error', id)
     } else if (!a.ids.includes(id)) {
       const now = await $.clock.now()
       await update($, loops, l => stepLoop(listOf<Loop>(l), id, now))
@@ -472,7 +472,7 @@ export const register: Register = (on, options) => {
         const u = normalize(DEFAULT_USAGE, x)
         return { ...u, compactions: u.compactions + 1, lastCompactAt: now }
       })
-      await say($, 'main', `Kontext compacted (${e.trigger})`)
+      await say($, 'main', `Kontext kompaktiert (${e.trigger})`)
     }
     return done
   })
@@ -492,7 +492,7 @@ export const register: Register = (on, options) => {
       await update($, gate, g => recordCheck(normalizeGate(g), check))
       // The status line updates when the call settles; only a refusal ends here.
       if (verdict.decision === 'deny') {
-        await say($, 'gate', `denied by rule · ${check.detail}`, 'error')
+        await say($, 'gate', `durch Regel abgelehnt · ${check.detail}`, 'error')
         await refreshStatus($, cfg)
       }
     }
@@ -537,7 +537,7 @@ export const register: Register = (on, options) => {
       )
     }
     // The log keeps what is worth a glance: refusals, errors and edits; the rest is on the cards.
-    if (ran.deny !== undefined) await say($, await whoIs($, e.agentId), `${text}  denied`, 'error', e.agentId ?? null)
+    if (ran.deny !== undefined) await say($, await whoIs($, e.agentId), `${text}  abgelehnt`, 'error', e.agentId ?? null)
     else if (hasFailed) await say($, await whoIs($, e.agentId), `${text}  ✗`, 'error', e.agentId ?? null)
     else if (isEdit) await say($, await whoIs($, e.agentId), text, 'info', e.agentId ?? null)
     if (isSettled || !didRun) await refreshStatus($, cfg)
@@ -641,7 +641,7 @@ export const register: Register = (on, options) => {
       )
       // This run's own length: a resumed agent's card clock also spans the idle time between runs.
       const took = fmtDuration(e.durationMs)
-      await say($, await whoIs($, id), status === 'done' ? `done · ${took}` : status, status === 'done' ? 'done' : 'error', id)
+      await say($, await whoIs($, id), status === 'done' ? `fertig · ${took}` : status, status === 'done' ? 'done' : 'error', id)
     } else {
       await update($, loops, l => listOf<Loop>(l).map(x => (x.id === id ? { ...x, isDone: true, lastAt: now } : x)))
     }
@@ -660,7 +660,7 @@ export const register: Register = (on, options) => {
     const key = faultKey(e.surface, e.module)
     if (e.requestId === PANE && !faulted.has(key)) {
       faulted.add(key)
-      $.ui.log(`flightdeck: ${e.module} faulted on ${e.surface} (${e.phase}: ${e.reason}); drawing it ohne animation`)
+      $.ui.log(`flightdeck: ${e.module} Fehler auf ${e.surface} (${e.phase}: ${e.reason}); wird ohne Animation gezeichnet`)
       $.ui.invalidate('ui.render')
     }
     return next(e)
@@ -798,7 +798,7 @@ export const register: Register = (on, options) => {
             {modelName} · main
           </Text>
           <Box flexShrink={0}>
-            <Text color={m.isRunning ? C.main : C.dim}>{m.isRunning ? '● working' : '○ idle'}</Text>
+            <Text color={m.isRunning ? C.main : C.dim}>{m.isRunning ? '● arbeitet' : '○ untätig'}</Text>
           </Box>
         </Box>
         {line(
@@ -810,8 +810,8 @@ export const register: Register = (on, options) => {
                 { text: m.effort || '—', color: C.main, bold: true },
               ],
             },
-            m.mode ? { spans: [{ text: `mode ${m.mode}`, dim: true }] } : null,
-            { spans: [{ text: `${m.steps} req`, dim: true }] },
+            m.mode ? { spans: [{ text: `Modus ${m.mode}`, dim: true }] } : null,
+            { spans: [{ text: `${m.steps} Anfr.`, dim: true }] },
           ],
           w - 4,
           3,
@@ -830,7 +830,7 @@ export const register: Register = (on, options) => {
                 u.tokens !== null ? { spans: [{ text: `${kTokens(u.tokens)}/${kTokens(ctxFill.window)}`, dim: true }] } : null,
                 u.compactions > 0 ? { spans: [{ text: compactMark(u), color: C.amber }], lead: 1 } : null,
                 // Left out first when the line is short; the ~ in the mark still says it.
-                u.compactions > 0 && u.isCompactEstimate ? { spans: [{ text: '(estimated)', color: C.faint }] } : null,
+                u.compactions > 0 && u.isCompactEstimate ? { spans: [{ text: '(geschätzt)', color: C.faint }] } : null,
               ],
               w - 4,
             )
@@ -871,7 +871,7 @@ export const register: Register = (on, options) => {
         <Box flexDirection="column" borderStyle="round" borderColor={C.arch} paddingX={1} width={w}>
           <Box justifyContent="space-between">
             <Text color={C.arch} bold wrap="truncate">
-              {cfg.architectLabel} · {advising ? 'advising' : 'on call'}
+              {cfg.architectLabel} · {advising ? 'berät' : 'on call'}
             </Text>
             <Box flexShrink={0}>
               <Text>
@@ -888,15 +888,15 @@ export const register: Register = (on, options) => {
           {lastConsult ? (
             <Text dimColor wrap="truncate">
               {advising
-                ? `consulting since ${fmtClock(lastConsult.at)}`
-                : `letzte ${fmtDuration(now - (lastConsult.endAt ?? lastConsult.at))} ago · took ${fmtDuration((lastConsult.endAt ?? now) - lastConsult.at)}`}
+                ? `berät seit ${fmtClock(lastConsult.at)}`
+                : `vor ${fmtDuration(now - (lastConsult.endAt ?? lastConsult.at))} · dauerte ${fmtDuration((lastConsult.endAt ?? now) - lastConsult.at)}`}
             </Text>
           ) : (
-            <Text dimColor>not consulted yet</Text>
+            <Text dimColor>noch nicht konsultiert</Text>
           )}
           {cfg.moments ? (
             <Box flexWrap="wrap" columnGap={2}>
-              {(['vorher a plan', 'Fehler repeats', 'vorher fertig'] as const).map(mo => {
+              {(['vor einem Plan', 'Fehler wiederholen sich', 'vor der Fertigstellung'] as const).map(mo => {
                 const isOn = lastConsult?.moment === mo
                 return (
                   <Text color={isOn ? C.arch : C.dim} bold={isOn}>
@@ -904,7 +904,7 @@ export const register: Register = (on, options) => {
                   </Text>
                 )
               })}
-              <Text color={C.faint}>(inferred)</Text>
+              <Text color={C.faint}>(vermutet)</Text>
             </Box>
           ) : null}
           {a.lastAdvice ? (
@@ -942,13 +942,13 @@ export const register: Register = (on, options) => {
         <Box flexDirection="column" borderStyle="round" borderColor={C.gate} paddingX={1} width={w}>
           <Box justifyContent="space-between">
             <Text color={C.gate} bold wrap="truncate">
-              {cfg.gateLabel} · permissions
+              {cfg.gateLabel} · Berechtigungen
             </Text>
             <Box flexShrink={0}>
-              <Text dimColor>{`${s.total} checks`}</Text>
+              <Text dimColor>{`${s.total} Prüfungen`}</Text>
             </Box>
           </Box>
-          {strip.length === 0 ? <Text color={C.faint}>no checks yet</Text> : markRow(strip.map(checkMark))}
+          {strip.length === 0 ? <Text color={C.faint}>noch keine Prüfungen</Text> : markRow(strip.map(checkMark))}
           {line([...totals, !isShort && w >= 80 && g.recent.some(c => c.inSubagent) ? { spans: [{ text: 'dim: in Subagenten', color: C.faint }] } : null], w - 4, 2)}
           {/* Below about 44 columns the three rows' buttons take two Zeilen rather than ausführen past the box. */}
           <Box columnGap={2} flexWrap="wrap">
@@ -977,7 +977,7 @@ export const register: Register = (on, options) => {
                     <Box width={12} flexShrink={0}>
                       <Text>
                         <Text color={verdictColor(c)}>{c.verdict === 'deny' ? '✗ ' : '■ '}</Text>
-                        <Text color={C.dim}>{c.verdict === 'rule' ? 'allowed' : c.verdict === 'cleared' ? decider : c.verdict === 'ask' ? 'pending' : 'denied'}</Text>
+                        <Text color={C.dim}>{c.verdict === 'rule' ? 'erlaubt' : c.verdict === 'cleared' ? decider : c.verdict === 'ask' ? 'offen' : 'abgelehnt'}</Text>
                       </Text>
                     </Box>
                     <Text dimColor={c.inSubagent} wrap="truncate">
@@ -1004,11 +1004,11 @@ export const register: Register = (on, options) => {
       const header = (
         <Box justifyContent="space-between" width={w}>
           <Text bold wrap="truncate">
-            {isNarrow ? `Agenten · ${running.length}/${cards.length}` : `Agenten · ${running.length} läuft · ${cards.length} gesamt`}
+            {isNarrow ? `Agenten · ${running.length}/${cards.length}` : `Agenten · ${running.length} aktiv · ${cards.length} gesamt`}
           </Text>
           {cards.length > 0 ? (
             <Box flexShrink={0}>
-              <Text color={C.faint}>{`1-${Math.min(cards.length, useLanes ? 6 : fit)}${isNarrow ? '' : ' expand'}`}</Text>
+              <Text color={C.faint}>{`1-${Math.min(cards.length, useLanes ? 6 : fit)}${isNarrow ? '' : ' aufklappen'}`}</Text>
             </Box>
           ) : null}
         </Box>
@@ -1017,7 +1017,7 @@ export const register: Register = (on, options) => {
         return (
           <Box flexDirection="column" width={w}>
             {header}
-            <Text color={C.faint}>no subagents yet</Text>
+            <Text color={C.faint}>noch keine Subagenten</Text>
           </Box>
         )
       }
@@ -1085,7 +1085,7 @@ export const register: Register = (on, options) => {
                     {sameModel ? c.type : `${c.type} · ${prettyModel(c.model)}`}
                   </Text>
                   <Text dimColor wrap="truncate">
-                    {c.steps > 0 ? `ctx ${kTokens(c.ctx)} · out ${kTokens(c.out)} · ${c.steps} st` : 'starting…'}
+                    {c.steps > 0 ? `ctx ${kTokens(c.ctx)} · out ${kTokens(c.out)} · ${c.steps} Schritte` : 'startet…'}
                   </Text>
                   <Box columnGap={1}>
                     <Text color={c.lastStop === 'max_tokens' ? C.warn : statusColor(c)}>
@@ -1109,8 +1109,8 @@ export const register: Register = (on, options) => {
           <Text bold wrap="wrap">
             {expandedCard.description || expandedCard.type}
           </Text>
-          <Text dimColor wrap="truncate">{`${expandedCard.type} · ${prettyModel(expandedCard.model)} · ${expandedCard.status} · ${expandedCard.steps} steps`}</Text>
-          {expandedCard.tools.length === 0 ? <Text color={C.faint}>no tool calls yet</Text> : null}
+          <Text dimColor wrap="truncate">{`${expandedCard.type} · ${prettyModel(expandedCard.model)} · ${expandedCard.status} · ${expandedCard.steps} Schritte`}</Text>
+          {expandedCard.tools.length === 0 ? <Text color={C.faint}>noch keine Werkzeugaufrufe</Text> : null}
           {expandedCard.tools.map(n => (
             <Text color={n.isError ? C.warn : C.text} wrap="truncate">
               {`${n.isError ? '✗' : '·'} ${n.text}`}
@@ -1133,7 +1133,7 @@ export const register: Register = (on, options) => {
       return (
         <Box width={w} columnGap={1}>
           <Text bold>{isNarrow ? 'loops' : 'other loops'}</Text>
-          <Text dimColor>{isNarrow ? `${lp.length} · ${active} active` : `${lp.length} seen · ${active} active`}</Text>
+          <Text dimColor>{isNarrow ? `${lp.length} · ${active} aktiv` : `${lp.length} gesehen · ${active} aktiv`}</Text>
           {markRow(
             dots.map(l => (
               <Text color={isLoopActive(l, now) ? C.agent : l.isDone ? C.dim : C.faint}>{isLoopActive(l, now) ? '●' : l.isDone ? '✓' : '○'}</Text>
@@ -1151,16 +1151,16 @@ export const register: Register = (on, options) => {
         <Box flexDirection="column" borderStyle="round" borderColor={C.main} borderDimColor={!m.isRunning && !isReview} paddingX={1} width={w}>
           {m.isRunning ? (
             <Box width={w - 4} columnGap={1} overflow="hidden">
-              <Text color={C.main} wrap="truncate">{`◐ zurück to ${modelName.toLowerCase()} · Zug`}</Text>
+              <Text color={C.main} wrap="truncate">{`◐ zurück zu ${modelName.toLowerCase()} · Zug`}</Text>
               <Box flexShrink={0}>{clock('turn-clock', t.startedAt, null, C.main)}</Box>
-              {w >= 60 ? <Text dimColor wrap="truncate">{`· ${plural(t.edits, 'edit')} · ${plural(t.errors, 'error')}`}</Text> : null}
+              {w >= 60 ? <Text dimColor wrap="truncate">{`· ${t.edits} Änderungen · ${t.errors} Fehler`}</Text> : null}
             </Box>
           ) : r ? (
             line(
               [
                 { spans: [{ text: r.reason === 'answer' ? '✓' : '✗', color: r.reason === 'answer' ? C.gate : C.warn }] },
                 {
-                  spans: [{ text: `letzte Zug ${fmtDuration(r.durationMs)} · ${plural(r.agents, 'agent')} · ${plural(r.edits, 'edit')} · ${plural(r.errors, 'error')}` }],
+                  spans: [{ text: `letzter Zug ${fmtDuration(r.durationMs)} · ${r.agents} Agenten · ${r.edits} Änderungen · ${r.errors} Fehler` }],
                   fill: true,
                 },
                 r.costDelta !== null ? { spans: [{ text: `· +${fmtUsd(r.costDelta)}`, color: C.main }] } : null,
@@ -1168,11 +1168,11 @@ export const register: Register = (on, options) => {
               w - 4,
             )
           ) : (
-            <Text color={C.faint}>no turn finished yet</Text>
+            <Text color={C.faint}>noch kein Zug abgeschlossen</Text>
           )}
           {isReview ? (
             <Text color={C.arch} wrap="wrap">
-              {`${cfg.architectLabel.toLowerCase()} reviewing vorher fertig (inferred)`}
+              {`${cfg.architectLabel.toLowerCase()} prüft vor der Fertigstellung (vermutet)`}
             </Text>
           ) : null}
         </Box>
@@ -1191,9 +1191,9 @@ export const register: Register = (on, options) => {
     const logPanel = (w: number) => (
       <Box flexDirection="column" borderStyle="round" borderColor={C.faint} paddingX={1} marginTop={1} width={w}>
         <Text dimColor wrap="truncate">
-          {viewed ? 'Sitzung log · this Agent' : 'Sitzung log'}
+          {viewed ? 'Sitzungsprotokoll · dieser Agent' : 'Sitzungsprotokoll'}
         </Text>
-        {shownLines.length === 0 ? <Text color={C.faint}>nothing yet</Text> : null}
+        {shownLines.length === 0 ? <Text color={C.faint}>noch nichts</Text> : null}
         {shownLines.map(l => (
           <Box>
             <Box width={w < 40 ? 6 : 9} flexShrink={0}>
@@ -1279,7 +1279,7 @@ export const register: Register = (on, options) => {
             return (
               <Svg
                 source={`<svg xmlns="http://www.w3.org/2000/svg" width="${pxW}" height="${svgH}" viewBox="0 0 ${pxW} ${svgH}">${rects}</svg>`}
-                alt={`${cards.length} agents on a time axis`}
+                alt={`${cards.length} Agenten auf einer Zeitachse`}
               />
             )
           })()
@@ -1289,7 +1289,7 @@ export const register: Register = (on, options) => {
     const isMini = layout === 'mini' || (layout === 'auto' && e.props.placement === 'inline')
     if (isMini) {
       const live = [...cards.filter(c => c.status === 'running'), ...cards.filter(c => c.status !== 'running').reverse()].slice(0, 3)
-      const counts = `${s.rule} allowed · ${s.cleared} ${decider}${s.ask > 0 ? ` · ${s.ask} pending` : ''} · ${s.deny} denied`
+      const counts = `${s.rule} erlaubt · ${s.cleared} ${decider}${s.ask > 0 ? ` · ${s.ask} offen` : ''} · ${s.deny} abgelehnt`
       const strip = g.recent.slice(-Math.max(4, marksIn(W - cfg.gateLabel.length - 2 - counts.length, isTerminal)))
       const mg = ctxFill.pct !== null ? gauge(ctxFill.pct, 6) : null
       return (
@@ -1299,7 +1299,7 @@ export const register: Register = (on, options) => {
               {
                 spans: [
                   { text: modelName, color: C.main, bold: true },
-                  { text: m.isRunning ? ' ● working' : ' ○ idle', color: m.isRunning ? C.main : C.dim },
+                  { text: m.isRunning ? ' ● arbeitet' : ' ○ untätig', color: m.isRunning ? C.main : C.dim },
                 ],
               },
               mg
@@ -1316,7 +1316,7 @@ export const register: Register = (on, options) => {
                   ? { spans: [{ text: compactMark(u), color: C.amber }] }
                   : null,
               u.costUsd !== null ? { spans: [{ text: `· ${fmtUsd(u.costUsd)}`, dim: true }] } : null,
-              showArchitect ? { spans: [{ text: `· ${cfg.architectLabel.toLowerCase()} ${advising ? 'advising' : a.consults.length}`, color: C.arch }] } : null,
+              showArchitect ? { spans: [{ text: `· ${cfg.architectLabel.toLowerCase()} ${advising ? 'berät' : a.consults.length}`, color: C.arch }] } : null,
             ],
             W,
           )}
@@ -1340,12 +1340,12 @@ export const register: Register = (on, options) => {
             </Box>
           ))}
           {cards.length > live.length ? (
-            <Text color={C.faint} wrap="truncate">{`+${cards.length - live.length} mehr Agenten · /flightdeck layout compact for alle`}</Text>
+            <Text color={C.faint} wrap="truncate">{`+${cards.length - live.length} weitere Agenten · /flightdeck layout compact für alle`}</Text>
           ) : null}
-          {lp.length > 0 ? <Text dimColor wrap="truncate">{`other loops ${lp.length} · ${lp.filter(l => isLoopActive(l, now)).length} active`}</Text> : null}
+          {lp.length > 0 ? <Text dimColor wrap="truncate">{`andere Schleifen ${lp.length} · ${lp.filter(l => isLoopActive(l, now)).length} aktiv`}</Text> : null}
           {!m.isRunning && r ? (
             <Text dimColor wrap="truncate">
-              {`letzte Zug ${fmtDuration(r.durationMs)} · ${plural(r.agents, 'agent')} · ${plural(r.edits, 'edit')} · ${plural(r.errors, 'error')}${r.costDelta !== null ? ` · +${fmtUsd(r.costDelta)}` : ''}`}
+              {`letzter Zug ${fmtDuration(r.durationMs)} · ${r.agents} Agenten · ${r.edits} Änderungen · ${r.errors} Fehler${r.costDelta !== null ? ` · +${fmtUsd(r.costDelta)}` : ''}`}
             </Text>
           ) : null}
         </Box>
@@ -1415,7 +1415,7 @@ export const register: Register = (on, options) => {
     return (
       <Box flexDirection="column" width={Math.max(20, e.props.bodyColumns)}>
         <Text bold>FLIGHTDECK</Text>
-        <Text color={C.warn} wrap="wrap">{`draw failed (${next.error.kind}): ${next.error.message ?? 'no message'}`}</Text>
+        <Text color={C.warn} wrap="wrap">{`Zeichnen fehlgeschlagen (${next.error.kind}): ${next.error.message ?? 'keine Meldung'}`}</Text>
       </Box>
     )
   })

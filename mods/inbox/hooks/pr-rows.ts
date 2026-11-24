@@ -46,9 +46,9 @@ export function isBlockPressShown(pr: PrView, lastActions: Record<string, LastAc
   return !blockingChecks(pr).some(c => isSamePress(lastActions[prCheckId(pr, c)]?.result))
 }
 
-export const GH_MISSING_TEXT = 'The inbox could nicht find gh. It needs gh to lesen your PRs.'
+export const GH_MISSING_TEXT = 'Der Posteingang konnte gh nicht finden. Er benötigt gh, um deine PRs zu lesen.'
 
-export const GH_SIGNED_OUT_TEXT = 'gh is nicht signed in to GitHub. Run gh auth login so the inbox can lesen your PRs.'
+export const GH_SIGNED_OUT_TEXT = 'gh ist nicht bei GitHub angemeldet. Führe gh auth login aus, damit der Posteingang deine PRs lesen kann.'
 
 /**
  * Why the PRs cannot be read, as the PRs tab says it once at the top, or null when nothing stops it. A missing gh

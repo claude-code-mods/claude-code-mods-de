@@ -10,7 +10,7 @@ import { screenTabOf } from './tabs'
 /** Each empty tab's title. The Status tab's is its own name. */
 const EMPTY_TITLES = {
   needsYou: NOTHING_NEEDED_TEXT,
-  findings: 'No findings yet',
+  findings: 'Noch keine Befunde',
   prs: 'No PRs',
   prsFetching: 'Checking for PRs…',
 } as const
@@ -61,7 +61,7 @@ export const EMPTY_STATUS_TEXT: { title: string; hint: string } = {
 
 /** The hint under an empty PRs tab. */
 export function prsEmptyHint(place: string): string {
-  return `Your PRs zeigen here when this ${place} öffnet oder links one, oder when your Branch has one.`
+  return `Deine PRs erscheinen hier, wenn dieses ${place} einen öffnet oder verlinkt oder wenn dein Branch einen hat.`
 }
 
 /**

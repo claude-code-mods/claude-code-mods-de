@@ -87,7 +87,7 @@ async function requireDurableCommand<S extends Session>(
   const durable = await host.readDurable()
   const saved = durable.remoteCommands[id]
   if (!saved || JSON.stringify(saved) !== JSON.stringify(expected) || (durable.remoteCommandFloor ?? 0) < floor)
-    throw new Error('The command could not be confirmed saved. Nothing was sent.')
+    throw new Error('Der Befehl konnte nicht als gespeichert bestätigt werden. Nichts wurde gesendet.')
 }
 
 const rejected = (error: string): PressOutcome => ({
@@ -304,7 +304,7 @@ export async function applyRemoteCommand<S extends Session>(
   const finalRevision = newRevision(host)
   const result = await host.update(s => ({
     ...(outcome.error || outcome.isUnconfirmed
-      ? blockRemoteDeferred(s, command.id, 'This action could not be confirmed saved.')
+      ? blockRemoteDeferred(s, command.id, 'Diese Aktion konnte nicht als gespeichert bestätigt werden.')
       : s),
     remoteCommands: {
       ...s.remoteCommands,

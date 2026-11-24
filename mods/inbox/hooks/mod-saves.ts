@@ -204,7 +204,7 @@ async function dropEndedSaves(e: SaveEngine, keep: string, size: number): Promis
 async function pruneSaves(e: SaveEngine, keep: string) {
   const keys = await e.store.keys()
   const running = await e.runningSessions()
-  if (!running) e.log('inbox: which sessions run could not be told, so the prune counts every other one as ended')
+  if (!running) e.log('inbox: laufende Sitzungen konnten nicht bestimmt werden, daher zählt die Bereinigung jede andere als beendet')
   const { count, saves } = await endedSaves(e, keys, keep, running)
   const stale = saves.slice(0, Math.max(0, count - KEPT_SESSIONS)).map(age => age.key)
   // `p:` keys held the last-session offer, which earlier builds saved per folder.
@@ -290,7 +290,7 @@ function retryHeld(e: SaveEngine, id: string, entry: Held) {
     if (held.get(id) !== entry) return
     try {
       const saved = await readSaved(e, id)
-      if (!saved) throw new Error('the store could not read the session')
+      if (!saved) throw new Error('der Speicher konnte die Sitzung nicht lesen')
       if (isOvertaken(entry, saved)) return dropOvertaken(e, id)
       await writeSaved(e, id, entry.savedAt, entry.session)
       dropHeldNow(id)
@@ -388,7 +388,7 @@ export async function readRemoteState(e: SaveEngine, id: string, live: Session) 
 
 export async function readDurableSession(e: SaveEngine, id: string): Promise<Session> {
   const saved = await readSaved(e, id)
-  if (!saved?.session) throw new Error('The Inbox state could not be confirmed saved.')
+  if (!saved?.session) throw new Error('Der gespeicherte Zustand des Posteingangs konnte nicht bestätigt werden.')
   return upgradeSession(saved.session)
 }
 

@@ -99,7 +99,7 @@ function quoted(options: string[]): string {
 function recText(item: Item, canSend: (field: string) => boolean): string {
   if (!item.rec)
     return canSend('rec')
-      ? ` It has nein rec: when du kannst recommend an Option, record it erneut mit ${canSend('why') ? 'rec and why' : 'rec'}.`
+      ? ` Es gibt keine Empfehlung: Wenn du eine Option empfehlen kannst, erfasse sie erneut mit ${canSend('why') ? 'rec und why' : 'rec'}.`
       : ''
 
   return item.recReason || !canSend('why')

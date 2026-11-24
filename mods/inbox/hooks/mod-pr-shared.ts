@@ -59,7 +59,7 @@ export async function dropUnreadSharedViews(e: Pick<SaveEngine, 'store' | 'sleep
     })
   } catch (err) {
     e.log(
-      `inbox: dropping the shared PR views nein fetch liest failed: ${err instanceof Error ? err.message : String(err)}`,
+      `inbox: gemeinsame PR-Ansichten werden verworfen, da das Lesen fehlgeschlagen ist: ${err instanceof Error ? err.message : String(err)}`,
     )
 
     return false

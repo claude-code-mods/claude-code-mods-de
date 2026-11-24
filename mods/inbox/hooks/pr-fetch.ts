@@ -197,7 +197,7 @@ export async function fetchTracked(
     const chunkFailure = runFailureOf(r, TIMED_OUT_CODE, fetchedAt)
     const answer = chunkFailure ? null : readPrsAnswer(r.stdout, chunk)
     if (!answer) {
-      failure ??= chunkFailure ?? { kind: 'error', at: fetchedAt, text: "GitHub's Antwort could nicht be lesen" }
+      failure ??= chunkFailure ?? { kind: 'error', at: fetchedAt, text: "GitHub-Antwort konnte nicht gelesen werden" }
       skipped.push(...chunk)
       continue
     }
@@ -229,7 +229,7 @@ export function fetchFailureWords(f: PrFetchFailure): string {
     case 'limit':
       return f.resetsAt === null ? "GitHub's limit is used up" : `GitHub's limit resets at ${clockTime(f.resetsAt)}`
     case 'unreachable':
-      return 'could not reach GitHub'
+      return 'GitHub ist nicht erreichbar'
     case 'timed-out':
       return GH_TIMED_OUT_TEXT
     case 'error':
@@ -269,4 +269,4 @@ function urlRef(json: string): string | null {
   }
 }
 
-export const GH_TIMED_OUT_TEXT = `gh did nicht Antwort within ${GH_TIMEOUT_MS / 1000} seconds`
+export const GH_TIMED_OUT_TEXT = `gh hat innerhalb von ${GH_TIMEOUT_MS / 1000} Sekunden nicht geantwortet`

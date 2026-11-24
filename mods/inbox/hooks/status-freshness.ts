@@ -6,7 +6,7 @@ import { duration } from './text'
 const STALE_AFTER_CALLS = 5
 
 const STATUS_FAILED =
-  "The inbox couldn't aktualisieren this page von one of the Agent's replies. What changed in that reply may be missing. It will lesen the whole Gespräch to fix this danach the nächste reply. If that fails, it waits longer vorher jede neu try."
+  "Der Posteingang konnte diese Seite nicht von einer Antwort des Agenten aktualisieren. Änderungen aus dieser Antwort fehlen möglicherweise. Er wird nach der nächsten Antwort das gesamte Gespräch lesen, um dies zu korrigieren. Falls das fehlschlägt, wartet er vor jedem neuen Versuch länger."
 
 /** What the page says from a Status, without code's times, children or links. */
 function pageWords(o: SessionStatus | null): string {

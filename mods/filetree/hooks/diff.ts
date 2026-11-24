@@ -32,7 +32,7 @@ export function splitPatch(patch: string): { path: string; lines: DiffLine[] }[]
       const plus = /^\+\+\+ (?:b\/)?(.+)$/m.exec(part)?.[1]
       const head = /^diff --git a\/.+ b\/(.+)$/m.exec(part)?.[1]
       const lines = parseDiff(part)
-      const note = /^Binary files /m.test(part) ? 'binary file changed' : /^rename from /m.test(part) ? 'renamed, no text change' : /^copy from /m.test(part) ? 'copied, no text change' : /^(old|new) mode /m.test(part) ? 'file mode changed' : 'changed, no text diff'
+      const note = /^Binary files /m.test(part) ? 'Binärdatei geändert' : /^rename from /m.test(part) ? 'umbenannt, kein Text geändert' : /^copy from /m.test(part) ? 'kopiert, kein Text geändert' : /^(old|new) mode /m.test(part) ? 'Dateimodus geändert' : 'geändert, kein Textunterschied'
       return { path: (plus && plus !== '/dev/null' ? plus : head) ?? '', lines: lines.length || !note ? lines : [{ kind: ' ' as const, text: `(${note})`, old: 1, new: 1 }] }
     })
     .filter(f => f.path && f.lines.length)

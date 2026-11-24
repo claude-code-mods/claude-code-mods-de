@@ -37,7 +37,7 @@ function steps(helps: Help[]): HelpStep[] {
     .filter(h => h !== copy)
     .map(h =>
       h === open
-        ? { label: `Copy ${copy.name ?? 'snippet'} und öffnen ${baseName(open.path)}`, step: [copy, open] }
+        ? { label: `${copy.name ?? 'Ausschnitt'} kopieren und ${baseName(open.path)} öffnen`, step: [copy, open] }
         : { label: helpLabel(h), step: [h] },
     )
 }

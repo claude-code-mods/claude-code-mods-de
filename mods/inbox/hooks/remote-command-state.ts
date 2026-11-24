@@ -68,7 +68,7 @@ export async function confirmRemoteDelivery<S extends Session>(
   const isSaved = attempt && durable && JSON.stringify(attempt) === JSON.stringify(durable)
   const commandsSaved = commandIds.every(id => saved.remoteCommands[id]?.deliveryId === deliveryId)
   if (!isSaved || !commandsSaved)
-    throw new Error('The delivery attempt could not be confirmed saved. Nothing was sent.')
+    throw new Error('Die Zustellung konnte nicht als gespeichert bestätigt werden. Nichts wurde gesendet.')
 }
 
 export function cancelRemoteCommand<S extends Session>(s: S, row: string): S {
@@ -95,7 +95,7 @@ export function remoteReceipts(s: Session) {
               : c.error
                 ? c.state === 'stale'
                   ? 'This item changed before the action.'
-                  : 'The host could not confirm this action.'
+                  : 'Der Host konnte diese Aktion nicht bestätigen.'
                 : null,
         row: c.row,
         deliveryId: c.deliveryId,

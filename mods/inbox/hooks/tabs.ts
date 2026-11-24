@@ -29,7 +29,7 @@ export function shownTabs(): readonly DrawnTab[] {
 }
 
 /** The `/inbox` command's description: what the tabs show. */
-export const INBOX_COMMAND_TEXT = 'Show where this Sitzung stands und what waits on you'
+export const INBOX_COMMAND_TEXT = 'Zeigen, wo diese Sitzung steht und was auf dich wartet'
 
 /** How a look names its tabs: by their words, or by their symbols. */
 export type TabNaming = 'words' | 'symbols'

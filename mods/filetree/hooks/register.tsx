@@ -80,7 +80,7 @@ const DOUBLE_MS = 450
 const FIND_LIMIT = 200
 const GREP_LIMIT = 200
 const MARK_LIMIT = 100
-const MARKS_FULL = `at most ${MARK_LIMIT} marks; drücken "${MARK_LIMIT} marked" in the footer to leeren them`
+const MARKS_FULL = `höchstens ${MARK_LIMIT} Markierungen; drücke "${MARK_LIMIT} marked" in der Fußzeile, um sie zu löschen`
 const GREP_MS = 15_000
 const GREP_WAIT_MS = 150
 const GREP_TEXT = 300
@@ -126,7 +126,7 @@ const SIZE_WALK_LIMIT = 50_000
 const AGE_TICK_MS = 60_000
 const GUARDS = 'guards'
 const SHIMMER_KEY = /^filetree(@[^.]+)?\.shimmer$/
-const OUTSIDE = 'schreibt outside the repo'
+const OUTSIDE = 'außerhalb des Repos geschrieben'
 
 let blink: Timer | null = null
 let cached: FileTree | null = null
@@ -412,7 +412,7 @@ async function list($: EngineInterface, dir: string): Promise<FileNode[] | null>
     if (!(await exists($, dir))) return []
     if (!unreadable.has(dir)) {
       unreadable.add(dir)
-      $.ui.toast(`could nicht list ${shortPath(dir)}: ${err instanceof Error ? err.message : String(err)}`)
+      $.ui.toast(`${shortPath(dir)} konnte nicht aufgelistet werden: ${err instanceof Error ? err.message : String(err)}`)
     }
     return null
   }
@@ -1151,10 +1151,10 @@ async function outcomes($: EngineInterface, p: Pending, ok: boolean, op: GitOper
   return p.actions.map(a => {
     if (a.verb === 'commit') {
       const sha = op?.commit?.sha || (after && after !== p.head ? after : '')
-      return sha ? { state: 'done', label: a.done, detail: sha.slice(0, 7) } : { state: 'failed', label: `${a.verb} failed`, detail: '' }
+      return sha ? { state: 'done', label: a.done, detail: sha.slice(0, 7) } : { state: 'failed', label: `${a.verb} fehlgeschlagen`, detail: '' }
     }
     if ((op && PROOF[a.verb]?.(op)) || (ok && chain.and)) return { state: 'done', label: a.done, detail: '' }
-    if (!ok && chain.and && chain.size === 1) return { state: 'failed', label: `${a.verb} failed`, detail: '' }
+    if (!ok && chain.and && chain.size === 1) return { state: 'failed', label: `${a.verb} fehlgeschlagen`, detail: '' }
     return { state: 'done', label: `ran ${a.kind}`, detail: '' }
   })
 }
@@ -1172,7 +1172,7 @@ async function finishGit($: EngineInterface, p: Pending, results: Outcome[]): Pr
 }
 
 function failAll(p: Pending): Outcome[] {
-  return p.actions.map(a => ({ state: 'failed', label: `${a.verb} failed`, detail: '' }))
+  return p.actions.map(a => ({ state: 'failed', label: `${a.verb} fehlgeschlagen`, detail: '' }))
 }
 
 function proven(p: Pending | null, results: Outcome[]): GitAction[] {
@@ -1280,7 +1280,7 @@ async function copyPaths($: EngineInterface, ids: string[], how: 'relative' | 'a
   const one = (id: string) => (how === 'name' ? id.slice(id.lastIndexOf('/') + 1) || id : how === 'relative' && id !== t.root && inside(t.root, id) ? id.slice(t.root.endsWith('/') ? t.root.length : t.root.length + 1) : id)
   const text = ids.map(one).join('\n')
   const done = await $.ui.copy({ text, ...(surface ? { surface } : {}) })
-  $.ui.toast(!done.isCopied ? `Could nicht copy the ${how === 'name' ? 'name' : 'path'}${ids.length > 1 ? 's' : ''}` : ids.length > 1 ? `Copied ${ids.length} ${how === 'name' ? 'names' : 'paths'}` : `Copied ${text}`)
+  $.ui.toast(!done.isCopied ? `${how === 'name' ? 'Name' : 'Pfad'}${ids.length > 1 ? 'en' : ''} konnte nicht kopiert werden` : ids.length > 1 ? `${ids.length} ${how === 'name' ? 'Namen' : 'Pfade'} kopiert` : `Kopiert: ${text}`)
 }
 
 function copyPath($: EngineInterface, id: string, absolute: boolean, surface?: RenderSurface): Promise<void> {
@@ -1336,7 +1336,7 @@ async function classifyLink($: EngineInterface, id: string): Promise<void> {
 function linkNote(state: LinkState | null | undefined): string {
   if (!state) return ' →'
   const to = state.target ? ` ${shortPath(state.target)}` : ''
-  return ` →${to}${state.kind === 'outside' ? ' (outside the tree)' : state.kind === 'broken' ? ' (broken: target missing)' : state.kind === 'circular' ? ' (circular link)' : ''}`
+  return ` →${to}${state.kind === 'outside' ? ' (außerhalb des Baums)' : state.kind === 'broken' ? ' (fehlerhaft: Ziel fehlt)' : state.kind === 'circular' ? ' (zirkulärer Link)' : ''}`
 }
 
 function picks(t: FileTree): { ids: string[]; marked: boolean } {
@@ -1668,7 +1668,7 @@ async function search($: EngineInterface, query: string): Promise<string[]> {
   const scope = t.searchScope ? `${t.searchScope.replace(/\/$/, '')}/` : ''
   for (let i = 0; i < index.rel.length && hits.length < SEARCH_REVEAL_LIMIT; i++) if ((!scope || (index.paths[i] ?? '').startsWith(scope)) && match(index.rel[i] ?? '')) hits.push(index.paths[i] ?? '')
   if ((await get($)).query !== query) return []
-  if (match.partial) void $.ui.toast(`regex search stopped danach ${hits.length} match${hits.length === 1 ? '' : 'es'}; the pattern is too slow to prüfen every Pfad`)
+  if (match.partial) void $.ui.toast(`Regex-Suche nach ${hits.length} ${hits.length === 1 ? 'Treffer' : 'Treffern'} gestoppt; das Muster ist zu langsam, um jeden Pfad zu prüfen`)
   await revealPaths($, hits)
   const shown = await get($)
   const ids = new Set(shown.nodes.map(n => n.id))
@@ -1733,7 +1733,7 @@ function grepRun($: EngineInterface, t: FileTree): void {
   const q = t.query.trim()
   if (!q) return
   if (badPattern(q, Boolean(t.searchRegex))) {
-    grep.note = 'nicht a valid pattern'
+    grep.note = 'kein gültiges Muster'
     return
   }
   grep.busy = true
@@ -1757,7 +1757,7 @@ async function grepSpawn($: EngineInterface, t: FileTree, q: string, mine: numbe
   let note = ''
   const timer = $.clock.after(GREP_MS, () => {
     if (grep.seq !== mine) return
-    note = `search stopped danach ${GREP_MS / 1000} seconds`
+    note = `Suche nach ${GREP_MS / 1000} Sekunden gestoppt`
     stop()
   })
   const files = new Map<string, GrepHit[]>()
@@ -1781,7 +1781,7 @@ async function grepSpawn($: EngineInterface, t: FileTree, q: string, mine: numbe
     if (fits && !(exact && body.length > GREP_LINE)) {
       const ok = fits(body)
       if (work.left < 0) {
-        note ||= 'search stopped: the pattern is too costly'
+        note ||= 'Suche gestoppt: das Muster ist zu aufwendig'
         costly = true
         stop()
         return
@@ -1813,7 +1813,7 @@ async function grepSpawn($: EngineInterface, t: FileTree, q: string, mine: numbe
     }
     if (rest && !capped) take(rest)
   } catch (error) {
-    err = /ENOENT|not found|no such file/i.test(messageOf(error)) ? `${t.top ? 'git' : 'grep'} is not installed` : messageOf(error).split('\n')[0] ?? ''
+    err = /ENOENT|not found|no such file/i.test(messageOf(error)) ? `${t.top ? 'git' : 'grep'} ist nicht installiert` : messageOf(error).split('\n')[0] ?? ''
   } finally {
     timer.cancel()
     if (grep.seq === mine) {
@@ -2149,10 +2149,10 @@ async function considerWork($: EngineInterface): Promise<void> {
     $.clock.after(0, async () => {
       try {
         await $.command.run({ command: 'cd', args: repo })
-        void $.ui.toast(`filetree moved to the cwd`)
+        void $.ui.toast(`filetree in das aktuelle Verzeichnis verschoben`)
         $.clock.after(400, () => void (follow ? followCwd($) : reset($, repo)))
       } catch (error) {
-        void $.ui.toast(`could nicht move Claude to ${shortPath(repo)}: ${error instanceof Error ? error.message : String(error)}`)
+        void $.ui.toast(`Claude konnte nicht nach ${shortPath(repo)} verschoben werden: ${error instanceof Error ? error.message : String(error)}`)
       }
     })
   } finally {
@@ -2167,7 +2167,7 @@ async function canCd($: EngineInterface): Promise<boolean> {
 async function jumpTo($: EngineInterface, dir: string): Promise<void> {
   if (!(await $.fs.exists(dir).catch(() => false))) {
     await forgetVisits($, [dir])
-    void $.ui.toast(`${shortPath(dir)} no longer exists`)
+    void $.ui.toast(`${shortPath(dir)} existiert nicht mehr`)
     void jumpRefresh($)
     return
   }
@@ -2180,7 +2180,7 @@ async function jumpTo($: EngineInterface, dir: string): Promise<void> {
     try {
       await $.command.run({ command: 'cd', args: dir })
     } catch (error) {
-      void $.ui.toast(`could nicht move Claude to ${dir}: ${error instanceof Error ? error.message : String(error)}`)
+      void $.ui.toast(`Claude konnte nicht nach ${dir} verschoben werden: ${error instanceof Error ? error.message : String(error)}`)
     }
   })
 }
@@ -2312,26 +2312,26 @@ function previewWindow(text: string, line: number): { text: string; first: numbe
 }
 
 async function readPreview($: EngineInterface, path: string, page = 1, line?: number): Promise<Preview> {
-  if (path === OUTSIDE) return { path, text: outside.map(shortPath).join('\n'), note: `${outside.length} file${outside.length === 1 ? '' : 's'} Claude wrote outside the repo this session` }
+  if (path === OUTSIDE) return { path, text: outside.map(shortPath).join('\n'), note: `${outside.length} ${outside.length === 1 ? 'Datei' : 'Dateien'} von Claude diese Sitzung außerhalb des Repos geschrieben` }
   let text = ''
   let note = ''
   try {
     const stat = await $.fs.stat(path)
     const kind = pictureKind(path)
-    if (stat.kind !== 'file') note = 'nicht a regular Datei'
+    if (stat.kind !== 'file') note = 'keine reguläre Datei'
     else if (kind === 'pdf' || kind === 'office') {
       text = await docText($, path, page)
       if (text === '\0encrypted') {
         text = ''
         note = 'encrypted'
-      } else if (!text) note = kind === 'pdf' && docCounts.has(path) ? `no text on page ${page}` : `${path.split('/').pop()}, ${formatSize(stat.size)}`
+      } else if (!text) note = kind === 'pdf' && docCounts.has(path) ? `kein Text auf Seite ${page}` : `${path.split('/').pop()}, ${formatSize(stat.size)}`
     }
-    else if (stat.size > 4_000_000) note = `${formatSize(stat.size)}, too large to preview`
+    else if (stat.size > 4_000_000) note = `${formatSize(stat.size)}, zu groß für die Vorschau`
     else {
       text = await $.fs.read(path)
       if (text.slice(0, 8000).includes('\0')) {
         text = ''
-        note = `binary Datei, ${formatSize(stat.size)}`
+        note = `Binärdatei, ${formatSize(stat.size)}`
       }
     }
   } catch (err) {
@@ -2346,8 +2346,8 @@ async function readPreview($: EngineInterface, path: string, page = 1, line?: nu
   if (lines.length > 1 && (text.length > PREVIEW_CHARS || lines.at(-1) === '')) lines.pop()
   lines = lines.map(l => (l.length > PREVIEW_LINE ? `${l.slice(0, PREVIEW_LINE)}…` : l))
   const fit = fitSerialized(lines, PREVIEW_CHARS)
-  if (first) note = `Zeilen ${(first + 1).toLocaleString('en')}–${(first + fit.length).toLocaleString('en')} of ${total.toLocaleString('en')} characters`
-  else if (total > PREVIEW_CHARS || fit.length < lines.length) note = `erste ${fit.length.toLocaleString('en')} Zeilen of ${total.toLocaleString('en')} characters`
+  if (first) note = `Zeilen ${(first + 1).toLocaleString('en')}–${(first + fit.length).toLocaleString('en')} von ${total.toLocaleString('en')} Zeichen`
+  else if (total > PREVIEW_CHARS || fit.length < lines.length) note = `erste ${fit.length.toLocaleString('en')} Zeilen von ${total.toLocaleString('en')} Zeichen`
   return { path, text: fit.join('\n'), note, page, ...(first ? { first } : {}) }
 }
 
@@ -2368,7 +2368,7 @@ async function loadDiff($: EngineInterface, path: string, folder: boolean): Prom
   if (!files.length) return false
   const many = folder || files.length > 1
   const lines = many ? groupFiles(files, folder ? groupSetting : 'off').flatMap(g => ('group' in g ? [{ kind: '@' as const, text: g.group, old: 0, new: 0 }] : [{ kind: '@' as const, text: g.file.path, old: 0, new: 0 }, ...g.file.lines])) : files.flatMap(f => f.lines)
-  const note = many ? `${files.length} changed file${files.length === 1 ? '' : 's'} against HEAD` : others.length ? 'untracked Datei' : 'ändert against HEAD'
+  const note = many ? `${files.length} gegenüber HEAD ${files.length === 1 ? 'geänderte Datei' : 'geänderte Dateien'}` : others.length ? 'nicht verfolgte Datei' : 'gegenüber HEAD geändert'
   previewed = { path, text: '', note, diff: lines }
   return true
 }
@@ -2392,18 +2392,18 @@ async function diffFile($: EngineInterface, path: string): Promise<void> {
     if (host === 'herdr') return await openInHerdr($, diffWithSetting, path)
     if (host === 'tmux') {
       const run = await $.process.run(tmuxCommand(targetSetting, dirname(path), [...words(diffWithSetting), path]), { timeoutMs: 10_000 })
-      if (run.exitCode !== 0) $.ui.toast(`could nicht diff ${shortPath(path)} mit ${diffWithSetting}: ${run.stderr.trim().split('\n')[0] || `exit ${run.exitCode}`}`)
+      if (run.exitCode !== 0) $.ui.toast(`Diff von ${shortPath(path)} mit ${diffWithSetting} fehlgeschlagen: ${run.stderr.trim().split('\n')[0] || `Exit ${run.exitCode}`}`)
       return
     }
     if (os === 'linux') {
       const argv = ['sh', '-c', LINUX_LAUNCH, 'sh', 'xdg-terminal-exec', 'sh', '-c', 'cd "$1" && shift && exec "$@"', 'sh', dirname(path), ...words(diffWithSetting), path]
       const run = await $.process.run(argv, { timeoutMs: 10_000 })
-      if (run.exitCode !== 0) $.ui.toast(`could nicht diff ${shortPath(path)} mit ${diffWithSetting}: ${run.stderr.trim().split('\n')[0] || `exit ${run.exitCode}`}`)
+      if (run.exitCode !== 0) $.ui.toast(`Diff von ${shortPath(path)} mit ${diffWithSetting} fehlgeschlagen: ${run.stderr.trim().split('\n')[0] || `Exit ${run.exitCode}`}`)
       return
     }
-    $.ui.toast('Diff mit: a terminal Befehl needs tmux, herdr oder Linux. Clear Diff mit to see the diff in the pane.')
+    $.ui.toast('Diff mit: ein Terminalbefehl benötigt tmux, herdr oder Linux. Diff mit löschen, um den Unterschied im Bereich zu sehen.')
   } catch {
-    $.ui.toast(`could nicht diff ${shortPath(path)} mit ${diffWithSetting}`)
+    $.ui.toast(`Diff von ${shortPath(path)} mit ${diffWithSetting} fehlgeschlagen`)
   }
 }
 
@@ -2423,21 +2423,21 @@ async function makePicture($: EngineInterface, job: PictureJob): Promise<Picture
       const doc = job.kind === 'pdf' || job.kind === 'office'
       const argv = ['sh', '-c', POSTER, 'sh', job.path, pictureBase, pictureSession, job.sig, doc ? job.kind : job.kind === 'video' ? 'video' : 'image', coderFor(job.path), String(CACHE_KEEP), POLICY, ...(doc ? [String(job.page), String(job.px), job.pdf] : [])]
       const made = doc ? await spawnRun($, job, argv) : await $.process.run(argv, { timeoutMs: 30_000 })
-      if (!made) return { state: 'failed', note: 'cancelled' }
+      if (!made) return { state: 'failed', note: 'abgebrochen' }
       const why = made.stderr.trim().split('\n').filter(Boolean)[0] ?? ''
-      if (made.exitCode === EXIT_MISSING) return { state: 'failed', note: why || 'nein decoder on PATH', missing: true }
+      if (made.exitCode === EXIT_MISSING) return { state: 'failed', note: why || 'kein Decoder im PATH', missing: true }
       if (made.exitCode === EXIT_LOCKED) return { state: 'failed', note: 'encrypted' }
-      if (made.exitCode === EXIT_FAILED) return { state: 'failed', note: `could nicht decode${why ? `: ${why}` : ''}` }
+      if (made.exitCode === EXIT_FAILED) return { state: 'failed', note: `Dekodieren fehlgeschlagen${why ? `: ${why}` : ''}` }
       const [out = '', count = ''] = made.stdout.trim().split('\n')
-      if (made.exitCode !== 0 || !isAbsolute(out)) return { state: 'failed', note: why || `could nicht decode, exit ${made.exitCode}` }
+      if (made.exitCode !== 0 || !isAbsolute(out)) return { state: 'failed', note: why || `Dekodieren fehlgeschlagen, Exit ${made.exitCode}` }
       file = out
       pages = Number(count) || 0
       sessionDir = dirname(file)
       size = await pngHeader($, file)
     }
-    return size ? { state: 'ready', file, generation: Math.floor(job.mtime) + job.page * 7 + job.px, ...size, ...(pages ? { pages } : {}) } : { state: 'failed', note: 'could nicht lesen the picture size' }
+    return size ? { state: 'ready', file, generation: Math.floor(job.mtime) + job.page * 7 + job.px, ...size, ...(pages ? { pages } : {}) } : { state: 'failed', note: 'Bildgröße konnte nicht gelesen werden' }
   } catch (err) {
-    return { state: 'failed', note: messageOf(err).split('\n')[0] ?? 'could not decode' }
+    return { state: 'failed', note: messageOf(err).split('\n')[0] ?? 'dekodieren fehlgeschlagen' }
   }
 }
 
@@ -2475,7 +2475,7 @@ async function spawnRun($: EngineInterface, job: PictureJob, argv: string[]): Pr
       else stderr += step.value.text
     }
   } catch {
-    if (!stopped) throw new Error('could not start sh')
+    if (!stopped) throw new Error('sh konnte nicht gestartet werden')
   } finally {
     current = null
   }
@@ -2509,7 +2509,7 @@ async function picture($: EngineInterface, path: string, page = 0, px = 0): Prom
   if (!kind) return null
   const stat = await $.fs.stat(path).catch(() => null)
   if (!stat) return { state: 'failed', note: 'could nicht lesen' }
-  if (stat.kind !== 'file') return { state: 'failed', note: 'nicht a regular Datei' }
+  if (stat.kind !== 'file') return { state: 'failed', note: 'keine reguläre Datei' }
   const doc = kind === 'pdf' || kind === 'office'
   const at = doc ? Math.max(1, page) : 0
   const wide = doc ? Math.max(200, Math.min(1600, Math.round(px / 100) * 100)) : 0
@@ -2518,7 +2518,7 @@ async function picture($: EngineInterface, path: string, page = 0, px = 0): Prom
   const pdf = kind === 'office' ? cacheName(path, stat.mtimeMs, stat.size, 0, 0, 'pdf') : ''
   const known = pictures.get(key)
   const gone = known?.sig === sig && known.picture.state === 'ready' && known.picture.file !== path && !(await $.fs.stat(known.picture.file).then(f => f.kind === 'file', () => false))
-  if (gone && known.retried) known.picture = { state: 'failed', note: 'the preview Cache was cleared' }
+  if (gone && known.retried) known.picture = { state: 'failed', note: 'der Vorschau-Cache wurde geleert' }
   if (gone && !known.retried) pictures.delete(key)
   else if (known?.sig === sig) {
     pictures.delete(key)
@@ -2851,7 +2851,7 @@ async function openFile($: EngineInterface, path: string, how: { mode?: string; 
   const os = await osName($)
   const host = mode === 'editor' ? await editorHost($, os) : ''
   if (mode === 'editor' && !host) {
-    $.ui.toast('Open mit: editor requires tmux oder herdr on Linux oder macOS. Clear Open mit to verwenden the default app, oder set a custom Befehl.')
+    $.ui.toast('Öffnen mit: editor erfordert unter Linux oder macOS tmux oder herdr. Öffnen mit löschen, um die Standard-App zu verwenden, oder einen eigenen Befehl festlegen.')
     return
   }
   const native = (p: string) => (os === 'win32' ? p.replace(/\//g, '\\') : p)
@@ -2861,9 +2861,9 @@ async function openFile($: EngineInterface, path: string, how: { mode?: string; 
     if (editor && host === 'herdr') return await openInHerdr($, editor, path, how.line)
     const { argv, init } = editor ? tmuxOpenCommand(editor, path, how.line, targetSetting) : custom ? { argv: os === 'linux' ? ['sh', '-c', LINUX_LAUNCH, 'sh', ...custom] : custom, init: { timeoutMs: 10_000 } } : openCommand(os, path)
     const run = await $.process.run(argv, init)
-    if (run.exitCode !== 0) $.ui.toast(`could not open ${path} with ${editor ?? custom?.[0] ?? argv[0]}: ${run.stderr.trim().split('\n')[0] || `exit ${run.exitCode}`}`)
+    if (run.exitCode !== 0) $.ui.toast(`${path} konnte nicht mit ${editor ?? custom?.[0] ?? argv[0]} geöffnet werden: ${run.stderr.trim().split('\n')[0] || `Exit ${run.exitCode}`}`)
   } catch {
-    $.ui.toast(`could nicht öffnen ${path} mit ${editor ?? custom?.[0] ?? 'the default app'}`)
+    $.ui.toast(`${path} konnte nicht mit ${editor ?? custom?.[0] ?? 'der Standard-App'} geöffnet werden`)
   }
 }
 
@@ -2883,15 +2883,15 @@ async function openInHerdr($: EngineInterface, editor: string, path: string, lin
 async function openTerminal($: EngineInterface, dir: string): Promise<void> {
   const host = await editorHost($, await osName($))
   if (!host) {
-    $.ui.toast('t öffnet a shell in a neu tmux oder herdr pane; ausführen Claude Code inside tmux oder herdr to verwenden it')
+    $.ui.toast('t öffnet eine Shell in einem neuen tmux- oder herdr-Bereich; führe Claude Code in tmux oder herdr aus, um es zu verwenden')
     return
   }
   try {
     const argv = host === 'tmux' ? tmuxCommand(targetSetting, dir, [(await $.env.get('SHELL')) || 'sh']) : herdrSplit((await $.env.get('HERDR_BIN_PATH')) || 'herdr', dir, targetSetting, (await $.env.get('HERDR_WORKSPACE_ID')) || '')
     const run = await $.process.run(argv, { timeoutMs: 10_000 })
-    if (run.exitCode !== 0) $.ui.toast(`could not open a terminal in ${shortPath(dir)}: ${(host === 'herdr' ? herdrError(run.stderr) : run.stderr.trim().split('\n')[0]) || `exit ${run.exitCode}`}`)
+    if (run.exitCode !== 0) $.ui.toast(`Terminal in ${shortPath(dir)} konnte nicht geöffnet werden: ${(host === 'herdr' ? herdrError(run.stderr) : run.stderr.trim().split('\n')[0]) || `Exit ${run.exitCode}`}`)
   } catch (err) {
-    $.ui.toast(`could not open a terminal in ${shortPath(dir)}: ${messageOf(err).split('\n')[0]}`)
+    $.ui.toast(`Terminal in ${shortPath(dir)} konnte nicht geöffnet werden: ${messageOf(err).split('\n')[0]}`)
   }
 }
 
@@ -3189,7 +3189,7 @@ async function noteOutside($: EngineInterface, file: string): Promise<void> {
   const abs = resolve(await cwdOf($), posix(file), home)
   if (!outsideOf(t.top || t.root, abs) || outside.includes(abs)) return
   outside = [...outside, abs]
-  if (outside.length === 1) $.ui.toast(`Claude wrote outside ${shortPath(t.top || t.root)}: ${shortPath(abs)}. w lists these schreibt.`)
+  if (outside.length === 1) $.ui.toast(`Claude hat außerhalb von ${shortPath(t.top || t.root)} geschrieben: ${shortPath(abs)}. w listet diese Dateien.`)
   if (previewed?.path === OUTSIDE) previewed = null
   void $.ui.invalidate('ui.render')
 }
@@ -3251,8 +3251,8 @@ export const register: Register = (on, options) => {
     guardsLoaded = null
     void loadGuards($)
     cached ??= { ...emptyTree(''), ...(await $.state.get(TREE)).value }
-    await $.command.register({ name: 'filetree', description: 'Show oder ausblenden the Datei tree; args: [Pfad | öffnen | keys] (nein Pfad = cwd, öffnen = nie ausblenden, keys = bind alt+l / alt+h to move the keys to und von the tree)', immediate: true })
-    if (palette.unknown.length) void $.ui.toast(`filetree palette: ignored ${palette.unknown.join(' ')}; verwenden key=#hex mit fg, bg, accent, muted, urgent, selection, hover, jump, added, modified, renamed, hinzufügen oder del`)
+    await $.command.register({ name: 'filetree', description: 'Dateibaum ein- oder ausblenden; Argumente: [Pfad | öffnen | keys] (kein Pfad = cwd, öffnen = nie ausblenden, keys = alt+l / alt+h binden, um Tasten in den Baum und zurück zu verschieben)', immediate: true })
+    if (palette.unknown.length) void $.ui.toast(`filetree-Palette: ${palette.unknown.join(' ')} ignoriert; verwende key=#hex mit fg, bg, accent, muted, urgent, selection, hover, jump, added, modified, renamed, add oder del`)
     const windows = (await $.env.get('OS')) === 'Windows_NT'
     useDrives(windows)
     inTmux = !windows && Boolean(await $.env.get('TMUX'))
@@ -3309,18 +3309,18 @@ export const register: Register = (on, options) => {
       noDock = true
       if (zjump.on) jumpClose($)
       await $.ui.close({ id: PANE }).catch(() => undefined)
-      return { text: 'File tree closed.' }
+      return { text: 'Dateibaum geschlossen.' }
     }
     const terminal = await $.session.surfaces().then(s => s.includes('terminal'), () => true)
-    if (terminal && !e.presentation.isFullscreen) return { text: 'filetree zeigt in the sidebar, which needs the fullscreen layout. Run /tui fullscreen, dann /filetree.' }
-    if (terminal && e.presentation.columns < 110) return { text: 'filetree zeigt in the sidebar, which needs a terminal at least 110 columns wide. Widen it, dann ausführen /filetree.' }
+    if (terminal && !e.presentation.isFullscreen) return { text: 'filetree wird in der Seitenleiste angezeigt; dafür ist das Vollbild-Layout nötig. Führe /tui fullscreen und dann /filetree aus.' }
+    if (terminal && e.presentation.columns < 110) return { text: 'filetree wird in der Seitenleiste angezeigt; dafür ist ein Terminal mit mindestens 110 Spalten nötig. Verbreitere es und führe dann /filetree aus.' }
     noDock = false
     const arg = given === 'open' ? '' : given
     const cwd = await cwdOf($)
     follow = !arg
     const root = arg ? resolve(cwd, arg, home) : cwd
     await reset($, root, focusOnOpen || given !== '' || mine?.isPlaced === true)
-    return { text: `File tree on ${shortPath(root)}${follow ? ' (moves with the cwd)' : ''}.` }
+    return { text: `Dateibaum: ${shortPath(root)}${follow ? ' (folgt dem cwd)' : ''}.` }
   })
 
   on('tool.call', async ($, e, next) => {
@@ -3389,13 +3389,13 @@ export const register: Register = (on, options) => {
       const path = resolve(cwd, posix(input), home)
       const hit = await guardFor($, path)
       if (!hit) return next(e)
-      return { decision: 'deny', reason: `${shortPath(hit)} is guarded in the file tree, so ${e.tool} on ${shortPath(path)} is refused. Leave it alone, or ask the user to unguard it with x in the tree.` }
+      return { decision: 'deny', reason: `${shortPath(hit)} ist im Dateibaum geschützt, daher wird ${e.tool} auf ${shortPath(path)} verweigert. Lass die Datei in Ruhe oder bitte den Benutzer, den Schutz im Baum mit x aufzuheben.` }
     }
     const hit = guardIn(input, list, cwd, home)
     if (!hit) return next(e)
     const verdict = await next(e)
     if (verdict.decision === 'deny') return verdict
-    return { decision: 'ask', decider: 'person', reason: `This command names ${shortPath(hit)}, which is guarded in the file tree. The check only reads the command text, so it can be a false alarm and can miss a path the command builds itself.` }
+    return { decision: 'ask', decider: 'person', reason: `Dieser Befehl nennt ${shortPath(hit)}, das im Dateibaum geschützt ist. Die Prüfung liest nur den Befehlstext, daher kann es ein Fehlalarm sein oder einen vom Befehl selbst erzeugten Pfad übersehen.` }
   })
 
   on('tool.call', { tool: 'Read' }, async ($, e, next) => {
@@ -3612,8 +3612,8 @@ export const register: Register = (on, options) => {
     const context = [...(e.context ?? [])]
     const picked = picks(t)
     const live = (await Promise.all(picked.ids.map(async p => ((await exists($, p)) ? p : '')))).filter(Boolean)
-    if (picked.marked && live.length) context.push(`The user has marked these entries in the file tree; "these" or "them" in the prompt likely refers to them:\n${live.join('\n')}`)
-    else if (!picked.marked && live[0]) context.push(`The user has this file selected in the file tree; "this" or "it" in the prompt likely refers to it: ${live[0]}`)
+    if (picked.marked && live.length) context.push(`Der Benutzer hat diese Einträge im Dateibaum markiert; "diese" oder "sie" in der Eingabe bezieht sich vermutlich darauf:\n${live.join('\n')}`)
+    else if (!picked.marked && live[0]) context.push(`Der Benutzer hat diese Datei im Dateibaum ausgewählt; "diese" oder "sie" in der Eingabe bezieht sich vermutlich darauf: ${live[0]}`)
     const mentions = [...e.text.matchAll(/@([^\s"'`]+)/g)]
       .map(m => (m[1] ?? '').replace(/[.,;:!?)]+$/, ''))
       .filter(Boolean)
@@ -3749,7 +3749,7 @@ export const register: Register = (on, options) => {
       return desk ? (
         <Box key={`tool-${id}`} position="relative" flexShrink={0} flexDirection="row" alignItems="center">
           {id === 'content' && Svg
-            ? <Svg key={`search-${id}-icon-${active ? 'on' : 'off'}`} source={iconSvg('file-text', glow(color, id), 16)} alt={`search file contents ${active ? 'on' : 'off'}`} width={16} height={16} />
+            ? <Svg key={`search-${id}-icon-${active ? 'on' : 'off'}`} source={iconSvg('file-text', glow(color, id), 16)} alt={`Dateiinhalte durchsuchen ${active ? 'an' : 'aus'}`} width={16} height={16} />
             : <Text color={glow(color, id)} hover={{ color: lighten(color) }} weight={active ? 'semibold' : 'regular'}>{label}</Text>}
           <Box position="absolute" top={0} left={0} right={0} bottom={0}>
             <Client key={`button-${id}`} module="./button.tsx" props={{ id, label: '', dim: !active } satisfies ButtonProps} width="100%" height="100%" />
@@ -3795,20 +3795,20 @@ export const register: Register = (on, options) => {
       previewLine = first + win.top + 1
       const name = t.preview !== t.root && inside(t.root, t.preview) ? relative(t.root, t.preview) : shortPath(t.preview)
       const listing = t.preview === OUTSIDE
-      const external = { id: 'external', label: glyphSetting === 'text' ? 'open' : unicode ? '↗' : '\u{eb14}', dim: true, hint: 'öffnen in default app' }
+      const external = { id: 'external', label: glyphSetting === 'text' ? 'öffnen' : unicode ? '↗' : '\u{eb14}', dim: true, hint: 'in Standard-App öffnen' }
       if (desk && Svg) {
         const step = p?.diff ? (p.diff.some(l => l.kind === '@') ? 'file' : 'hunk') : ''
         const toTree = t.nodes.find(n => n.id === t.preview)?.kind === 'dir'
         const edits = !listing && (editWithSetting || inTmux || inHerdr)
         previewDesk = true
         const acts: { id: string; key: string; icon: IconName; hint: string; run: () => Promise<void> }[] = [
-          { id: 'pv-k', key: 'k', icon: 'arrow-up', hint: step ? `previous ${step}` : 'up a Zeile', run: () => (step ? jumpDiff($, -1) : scrollPreview($, -1)) },
+          { id: 'pv-k', key: 'k', icon: 'arrow-up', hint: step ? `vorheriges ${step}` : 'eine Zeile aufwärts', run: () => (step ? jumpDiff($, -1) : scrollPreview($, -1)) },
           { id: 'pv-j', key: 'j', icon: 'arrow-down', hint: step ? `nächste ${step}` : 'down a Zeile', run: () => (step ? jumpDiff($, 1) : scrollPreview($, 1)) },
-          { id: 'pv-b', key: 'b', icon: 'page-up', hint: 'page up', run: () => scrollPreview($, 2 - previewRows) },
-          { id: 'pv-f', key: 'f', icon: 'page-down', hint: 'page down', run: () => scrollPreview($, previewRows - 2) },
-          ...(listing ? [] : [{ id: 'pv-d', key: 'd', icon: (p?.diff ? (toTree ? 'folder' : 'file') : 'diff') as IconName, hint: p?.diff ? (toTree ? 'zurück to the tree' : 'zurück to the Datei') : 'diff against HEAD', run: () => diffFile($, t.preview) }]),
-          ...(edits ? [{ id: 'pv-e', key: 'e', icon: 'pencil' as const, hint: `edit at Zeile ${previewLine}`, run: () => editPreview($, t.preview) }] : []),
-          ...(listing ? [] : [{ id: 'external', key: '', icon: 'external-link' as const, hint: 'öffnen in default app', run: () => pressHeader($, 'external') }]),
+          { id: 'pv-b', key: 'b', icon: 'page-up', hint: 'eine Seite aufwärts', run: () => scrollPreview($, 2 - previewRows) },
+          { id: 'pv-f', key: 'f', icon: 'page-down', hint: 'eine Seite abwärts', run: () => scrollPreview($, previewRows - 2) },
+          ...(listing ? [] : [{ id: 'pv-d', key: 'd', icon: (p?.diff ? (toTree ? 'folder' : 'file') : 'diff') as IconName, hint: p?.diff ? (toTree ? 'zurück zum Baum' : 'zurück zur Datei') : 'Unterschied zu HEAD', run: () => diffFile($, t.preview) }]),
+          ...(edits ? [{ id: 'pv-e', key: 'e', icon: 'pencil' as const, hint: `bei Zeile ${previewLine} bearbeiten`, run: () => editPreview($, t.preview) }] : []),
+          ...(listing ? [] : [{ id: 'external', key: '', icon: 'external-link' as const, hint: 'in Standard-App öffnen', run: () => pressHeader($, 'external') }]),
         ]
         previewActs = new Map(acts.map(a => [a.id, () => void a.run().then(() => (a.id === 'external' ? undefined : parkPreview($)))]))
         const tools = acts.map(a => ({ id: a.id, label: '', dim: true, hint: a.hint, icon: a.icon }))
@@ -3816,7 +3816,7 @@ export const register: Register = (on, options) => {
           <Box flexDirection="column" minHeight={Math.max(1, e.props.scroll?.bodyRows ?? 1)} backgroundColor={theme.bg || undefined}>
             <Box key="pv-head" flexDirection="row" alignItems="center">
               <Box key="pv-back" flexDirection="row" alignItems="center" flexShrink={0}>
-                <Svg key="pv-back-icon" source={rowSvg(0, null, 'chevron-left', mutedInk, DESK.muted, 0)} alt="zurück to Dateien" width={STEP_PX * 2} height={ROW_PX} />
+                <Svg key="pv-back-icon" source={rowSvg(0, null, 'chevron-left', mutedInk, DESK.muted, 0)} alt="zurück zu den Dateien" width={STEP_PX * 2} height={ROW_PX} />
                 <Button key="back" plain dimColor hover={{ dimColor: false }} hotkey="h" autoFocus label="Files" onPress={() => void closePreview($)} />
               </Box>
               <Text {...mutedText}>{' / '}</Text>
@@ -3981,17 +3981,17 @@ export const register: Register = (on, options) => {
     }
     const rootCounts = t.top ? countSegs(t.counts[t.root]) : []
     const plainButtons = [
-      ...(outside.length ? [{ id: 'outside', label: `${unicode ? '⚠' : '\u{ea6c}'} ${outside.length}`, dim: false, hint: `${outside.length} file${outside.length === 1 ? '' : 's'} written outside the repo`, icon: 'warning' as const }] : []),
-      ...(picked.ids.length ? [{ id: 'unselect', label: unicode ? '⊘' : '\u{eabd}', dim: false, hint: 'leeren selection', icon: 'ban' as const }] : []),
-      { id: 'up', label: unicode ? '↑' : '\u{f19f3}', dim: true, hint: 'parent Ordner', icon: 'folder-up-line' as const },
-      { id: 'cwd', label: unicode ? '⌂' : '\u{eb46}', dim: !follow, hint: 'go to cwd', icon: 'root-folder' as const },
-      { id: 'hidden', label: unicode ? (t.showHidden ? '⊙' : '○') : t.showHidden ? '\u{ea70}' : '\u{eae7}', dim: !t.showHidden, hint: t.showHidden ? 'ausblenden hidden Dateien' : 'zeigen hidden Dateien', icon: t.showHidden ? ('eye' as const) : ('eye-off' as const) },
-      { id: 'size', label: unicode ? '◫' : '\u{ea90}', dim: t.column === 'date', hint: t.column === 'date' ? 'zeigen sizes' : t.column === 'size' ? 'zeigen Zeilen of code' : t.column === 'loc' ? 'zeigen Datei counts' : 'zeigen dates', icon: 'columns' as const },
+      ...(outside.length ? [{ id: 'outside', label: `${unicode ? '⚠' : '\u{ea6c}'} ${outside.length}`, dim: false, hint: `${outside.length} ${outside.length === 1 ? 'Datei' : 'Dateien'} außerhalb des Repos geschrieben`, icon: 'warning' as const }] : []),
+      ...(picked.ids.length ? [{ id: 'unselect', label: unicode ? '⊘' : '\u{eabd}', dim: false, hint: 'Auswahl löschen', icon: 'ban' as const }] : []),
+      { id: 'up', label: unicode ? '↑' : '\u{f19f3}', dim: true, hint: 'übergeordneter Ordner', icon: 'folder-up-line' as const },
+      { id: 'cwd', label: unicode ? '⌂' : '\u{eb46}', dim: !follow, hint: 'zum aktuellen Verzeichnis', icon: 'root-folder' as const },
+      { id: 'hidden', label: unicode ? (t.showHidden ? '⊙' : '○') : t.showHidden ? '\u{ea70}' : '\u{eae7}', dim: !t.showHidden, hint: t.showHidden ? 'versteckte Dateien ausblenden' : 'versteckte Dateien anzeigen', icon: t.showHidden ? ('eye' as const) : ('eye-off' as const) },
+      { id: 'size', label: unicode ? '◫' : '\u{ea90}', dim: t.column === 'date', hint: t.column === 'date' ? 'Größen anzeigen' : t.column === 'size' ? 'Codezeilen anzeigen' : t.column === 'loc' ? 'Dateianzahl anzeigen' : 'Datumsangaben anzeigen', icon: 'columns' as const },
       { id: 'collapse', label: unicode ? '⊟' : '\u{eac5}', dim: true, hint: t.expanded.length ? 'collapse alle' : 'expand alle', icon: t.expanded.length ? 'square-minus' as const : 'square-plus' as const },
       { id: 'autocollapse', label: unicode ? '◷' : '\u{ea82}', dim: !autoCollapseOn(t), hint: 'automatisch-collapse opened folders', icon: 'folder-minus' as const },
       ...(nativeScroll ? [] : [{ id: 'split', label: unicode ? '⊡' : '\u{eb57}', dim: !t.split, hint: t.split ? 'ausblenden preview' : 'zeigen preview', icon: 'panel' as const }]),
       ...(desk ? [{ id: 'shimmer', label: '', dim: !shimmerOn, hint: shimmerOn ? 'deaktivieren Agent activity shimmer effect' : 'aktivieren Agent activity shimmer effect', icon: 'clawd' as const }] : []),
-      { id: 'refresh', label: unicode ? '↻' : '\u{eb37}', dim: !reloading, hint: 'reload tree und git', icon: 'refresh' as const },
+      { id: 'refresh', label: unicode ? '↻' : '\u{eb37}', dim: !reloading, hint: 'Baum und Git neu laden', icon: 'refresh' as const },
     ]
     const wordButtons = plainButtons.map(b => ({ ...b, label: b.id === 'outside' ? `outside ${outside.length}` : (WORDS[b.id] ?? b.label) }))
     const wordWidth = wordButtons.reduce((w, b) => w + b.label.length + 1, 1)
@@ -4158,7 +4158,7 @@ export const register: Register = (on, options) => {
     const gitSpan = zjump.on ? 0 : GIT_COLS.reduce((w, c) => w + (widths[c] ? (widths[c] ?? 0) + 1 : 0), 0)
     const metricSpan = zjump.on ? (jumpDate ? jumpDate + 1 : 0) : widths.metric ? (widths.metric ?? 0) + 1 : 0
     const gitLabel = e.props.bodyColumns - Math.max(metricSpan, 11) - 20 >= 12 ? 'Git (LOC)' : 'Git'
-    const metricLabel = zjump.on ? 'Last accessed' : t.column === 'size' ? 'Size' : t.column === 'loc' ? 'LOC' : t.column === 'files' ? '# Files' : 'Modified'
+    const metricLabel = zjump.on ? 'Zuletzt zugegriffen' : t.column === 'size' ? 'Größe' : t.column === 'loc' ? 'LOC' : t.column === 'files' ? '# Dateien' : 'Geändert'
     const headCell = (col: 'name' | 'git' | 'metric', label: string) => (!zjump.on ? sortCell(col, label) : desk ? <Text key={`head-${col}`} color={mutedInk}>{label}</Text> : <Text key={`head-${col}`} dimColor>{label}</Text>)
     const headerRow = () => (
       <Box key="sort-header" flexDirection="row" alignItems="center" {...(desk ? {} : { width: e.props.bodyColumns, height: 1 })}>
@@ -4215,7 +4215,7 @@ export const register: Register = (on, options) => {
     const note = (text: string): RowSpec => ({ id: '', left: [{ t: text, c: theme.muted }], right: [] })
     const jumpSpecs: RowSpec[] = zjump.rows.length
       ? zjump.rows.map(dir => ({ id: dir, left: clean([{ t: unicode ? '■ ' : '\u{e5ff} ', c: palette.jump ?? JUMP_COLOR }, { t: dir.split('/').filter(Boolean).pop() ?? dir, c: theme.fg || undefined }, { t: `  ${shortPath(dirname(dir))}`, c: theme.muted }]), right: jumpWhen(dir) ? [{ t: ` ${jumpWhen(dir)} `, c: theme.muted }] : [] }))
-      : [note('nein matching Ordner')]
+      : [note('kein passender Ordner')]
     const grepDigits = Math.max(2, ...grep.rows.map(h => String(h.line).length))
     const grepName = (path: string) => (inside(t.root, path) ? relative(t.root, path) : shortPath(path))
     const grepNode = (path: string): FileNode => ({ id: path, parent: dirname(path), name: path.slice(path.lastIndexOf('/') + 1), kind: 'file', hidden: false, mtime: 0, size: 0, loaded: true })
@@ -4331,7 +4331,7 @@ export const register: Register = (on, options) => {
             </Box>
           )) : (
             <Box key="jump-none" position="relative" flexDirection="row" alignItems="center">
-              <Text {...mutedText}>nein matching Ordner</Text>
+              <Text {...mutedText}>kein passender Ordner</Text>
               <Box position="absolute" top={0} left={0} right={0} bottom={0}>
                 <Client key="hit:jump-none" module="./hit.tsx" props={{ id: '' } satisfies HitProps} width="100%" height="100%" />
               </Box>
@@ -4362,7 +4362,7 @@ export const register: Register = (on, options) => {
         <Box flexDirection="row" height={desk ? undefined : 1} overflow="hidden" alignItems={desk ? 'center' : undefined}>
           <Box flexDirection="row" flexShrink={0} alignItems={desk ? 'center' : undefined}>
             {desk && Svg
-              ? <Svg key="branch-icon" source={rowSvg(0, null, 'git-branch', isFlash ? (tones[tone]?.solid ?? accentInk) : e.props.isFocused ? accentInk : mutedInk)} alt="git Branch" width={STEP_PX * 2 + GAP_PX} height={ROW_PX} />
+              ? <Svg key="branch-icon" source={rowSvg(0, null, 'git-branch', isFlash ? (tones[tone]?.solid ?? accentInk) : e.props.isFocused ? accentInk : mutedInk)} alt="Git-Branch" width={STEP_PX * 2 + GAP_PX} height={ROW_PX} />
               : <Text color={isFlash ? (tones[tone]?.solid ?? theme.accent) : theme.accent}>{(unicode ? BRANCH_ICON.plain : BRANCH_ICON.nerd) + ' '}</Text>}
             <Text {...(desk && !e.props.isFocused && !isFlash ? mutedText : { bold: true, color: isFlash ? (tones[tone]?.solid ?? (theme.fg || undefined)) : theme.fg || undefined })}>
               {label}
@@ -4388,7 +4388,7 @@ export const register: Register = (on, options) => {
           {b.upstream && showRemote ? (
             <Box flexDirection="row" flexShrink={1} overflow="hidden" marginLeft={2} alignItems={desk ? 'center' : undefined}>
               {desk && Svg
-                ? <Svg key="remote-icon" source={iconSvg('cloud', mutedInk, 14)} alt="remote Branch" width={14} height={14} />
+                ? <Svg key="remote-icon" source={iconSvg('cloud', mutedInk, 14)} alt="entfernter Branch" width={14} height={14} />
                 : <Text {...mutedText}>{unicode ? '☁' : '\u{f0c2}'}</Text>}
               <Text {...mutedText} wrap="truncate-end">{` ${b.upstream}`}</Text>
             </Box>
@@ -4510,7 +4510,7 @@ export const register: Register = (on, options) => {
           return { name: label, size: label, bold: true, bg: top ? theme.accent : 'ansi256(8)', rank: 0 }
         }
         const amount = scan.loc ? formatLoc : formatSize
-        status = pick ? `${pick.name} ${amount(pick.bytes)} ${pct(pick.bytes)}` : `${amount(total)}${scan.loc ? ' lines' : ''}${scan.done ? '' : ' …'}`
+        status = pick ? `${pick.name} ${amount(pick.bytes)} ${pct(pick.bytes)}` : `${amount(total)}${scan.loc ? ' Zeilen' : ''}${scan.done ? '' : ' …'}`
         const sized = (x: Tile) => `${amount(x.bytes)} ${pct(x.bytes)}`
         const pixels = Image && !imageDenied && (treemapSetting === 'image' || (treemapSetting === 'auto' && kittyTerm))
         if (pixels && tiles.length) {
@@ -4557,7 +4557,7 @@ export const register: Register = (on, options) => {
         } else content = tiles.length
           ? <Client key="treemap" module="./rows.tsx" props={{ rows: draw(tiles, cols, peekRows, look, sized), active: '', ...rowColors, pointer } satisfies RowsProps} />
           : <Text {...mutedText}>{scan.done ? 'empty' : 'sizing…'}</Text>
-      } else if (!target) content = <Text {...mutedText}>no file selected</Text>
+      } else if (!target) content = <Text {...mutedText}>keine Datei ausgewählt</Text>
       else if (pic) {
         if (pic.state === 'ready' && Image) {
           const fit = fitCells(pic, Math.max(1, e.props.bodyColumns - 1), peekRows)
@@ -4565,8 +4565,8 @@ export const register: Register = (on, options) => {
           const raw = await pngOf($, pic)
           const big = Math.floor(raw.length * 3 / 4) > IMAGE_BYTES
           const png = big ? '' : raw
-          content = big ? <Text {...mutedText}>{`${name}: too large to preview here`}</Text> : png ? <Image key="peek-image" source={{ png }} columns={fit.columns} rows={fit.rows} alt={name} /> : <Text {...mutedText}>{name}</Text>
-        } else content = <Text {...mutedText}>{pic.state === 'pending' ? 'decoding…' : pic.state === 'failed' ? pic.note : 'Bilder zeigen in the terminal'}</Text>
+          content = big ? <Text {...mutedText}>{`${name}: hier zu groß für die Vorschau`}</Text> : png ? <Image key="peek-image" source={{ png }} columns={fit.columns} rows={fit.rows} alt={name} /> : <Text {...mutedText}>{name}</Text>
+        } else content = <Text {...mutedText}>{pic.state === 'pending' ? 'wird dekodiert…' : pic.state === 'failed' ? pic.note : 'Bilder im Terminal anzeigen'}</Text>
       } else {
         if (isDoc && (peeked?.path !== target || (docKind === 'pdf' && peeked.page !== page))) {
           const want = `${target}\0${page}`
@@ -4640,17 +4640,17 @@ export const register: Register = (on, options) => {
       { key: 'i', label: 'in Ordner', act: () => void navigate($, 'i', false, e.surface) },
       { key: 'a', label: 'auto-collapse', act: () => void navigate($, 'a', false, e.surface).then(park) },
       { key: 'z', label: 'jump', act: () => void navigate($, 'z', false, e.surface) },
-      { key: 'n', label: 'sort Name', act: () => void navigate($, 'n', false, e.surface).then(park) },
-      { key: 'g', label: 'sort git', act: () => void navigate($, 'g', false, e.surface).then(park) },
-      { key: 'm', label: 'sort value', act: () => void navigate($, 'm', false, e.surface).then(park) },
+      { key: 'n', label: 'nach Name sortieren', act: () => void navigate($, 'n', false, e.surface).then(park) },
+      { key: 'g', label: 'nach Git sortieren', act: () => void navigate($, 'g', false, e.surface).then(park) },
+      { key: 'm', label: 'nach Wert sortieren', act: () => void navigate($, 'm', false, e.surface).then(park) },
       ...(e.surface === 'desktop' ? [] : [{ key: 'p', label: 'preview', act: () => void navigate($, 'p', false, e.surface).then(park) }]),
-      { key: 'y', label: 'copy Pfad', act: () => void navigate($, 'y', false, e.surface).then(park) },
-      { key: 'u', label: 'copy Name', act: () => void navigate($, 'u', false, e.surface).then(park) },
+      { key: 'y', label: 'Pfad kopieren', act: () => void navigate($, 'y', false, e.surface).then(park) },
+      { key: 'u', label: 'Name kopieren', act: () => void navigate($, 'u', false, e.surface).then(park) },
       { key: 'v', label: 'mark', act: () => void navigate($, 'v', false, e.surface).then(park) },
       { key: 't', label: 'terminal', act: () => void navigate($, 't', false, e.surface) },
       { key: 'x', label: 'guard', act: () => void navigate($, 'x', false, e.surface).then(park) },
-      ...(outside.length ? [{ key: 'w', label: 'outside schreibt', act: () => void navigate($, 'w', false, e.surface) }] : []),
-      { key: 'c', label: 'match case', act: () => void navigate($, 'c', false, e.surface).then(park) },
+      ...(outside.length ? [{ key: 'w', label: 'außerhalb geschrieben', act: () => void navigate($, 'w', false, e.surface) }] : []),
+      { key: 'c', label: 'Groß/Klein beachten', act: () => void navigate($, 'c', false, e.surface).then(park) },
       { key: 'r', label: 'regex', act: () => void navigate($, 'r', false, e.surface).then(park) },
       { key: 'q', label: 'contents', act: () => void navigate($, 'q', false, e.surface).then(park) },
       ...(paging ? [{ key: '[ ]', label: 'page', act: () => void (turnPage($, 1), park()) }] : []),
@@ -4724,12 +4724,12 @@ export const register: Register = (on, options) => {
         )}
         {splitAt === 'top' ? split : null}
         {branchRow()}
-        {!t.top && showHints && (!hintOn ? (desk && Svg ? <Svg key="git-hint" source={rowSvg(0, null, null, mutedInk)} alt="git Status" width={STEP_PX * 2 + GAP_PX} height={ROW_PX} /> : <Text key="git-hint">{' '}</Text>) : desk && Svg ? (
+        {!t.top && showHints && (!hintOn ? (desk && Svg ? <Svg key="git-hint" source={rowSvg(0, null, null, mutedInk)} alt="Git-Status" width={STEP_PX * 2 + GAP_PX} height={ROW_PX} /> : <Text key="git-hint">{' '}</Text>) : desk && Svg ? (
           <Box key="git-hint" flexDirection="row" alignItems="center">
-            <Svg key="git-hint-icon" source={rowSvg(0, null, 'git-branch', mutedInk)} alt="nein git repo" width={STEP_PX * 2 + GAP_PX} height={ROW_PX} />
-            <Text {...mutedText}>not a Git repo</Text>
+            <Svg key="git-hint-icon" source={rowSvg(0, null, 'git-branch', mutedInk)} alt="kein Git-Repo" width={STEP_PX * 2 + GAP_PX} height={ROW_PX} />
+            <Text {...mutedText}>kein Git-Repo</Text>
           </Box>
-        ) : <Text key="git-hint" {...mutedText}>{unicode ? '± ' : '\u{ea68} '}not a Git repo</Text>)}
+        ) : <Text key="git-hint" {...mutedText}>{unicode ? '± ' : '\u{ea68} '}kein Git-Repo</Text>)}
         {searchGap ? <Text key="gap-above"> </Text> : null}
         {desk && Svg ? (
           <Box key="search-bar" flexDirection="row" alignItems="center" backgroundColor={DESK.field} paddingX={1}>
@@ -4740,11 +4740,11 @@ export const register: Register = (on, options) => {
             <Box flexGrow={1} flexShrink={1} marginLeft={1} flexDirection="column" width={Math.max(10, e.props.bodyColumns - (t.query ? 18 : 16))}>
               {zjump.on ? <>
                 <Box key="jump-up-box" height={0} overflow="hidden"><Button key="jump-up" plain label="up" onPress={() => void jumpKey($, 'up')} /></Box>
-                <Input key="jump" autoFocus placeholder="folder name…" value={zjump.query} onInput={(v: string) => void jumpInput($, v)} onSubmit={() => void jumpKey($, 'return')} />
+                <Input key="jump" autoFocus placeholder="Ordnername…" value={zjump.query} onInput={(v: string) => void jumpInput($, v)} onSubmit={() => void jumpKey($, 'return')} />
                 <Box key="jump-down-box" height={0} overflow="hidden"><Button key="jump-down" plain label="down" onPress={() => void jumpKey($, 'down')} /></Box>
               </> : <Input
                 key="q"
-                placeholder={t.searchContent ? 'Search file contents...' : 'Search files...'}
+                placeholder={t.searchContent ? 'Dateiinhalte durchsuchen…' : 'Dateien durchsuchen…'}
                 value={t.query}
                 onInput={onQuery}
                 onSubmit={(v: string) => void jump($, v, e.surface).then(() => $.clock.after(100, park))}
@@ -4764,12 +4764,12 @@ export const register: Register = (on, options) => {
             <Box flexGrow={1}>
               {zjump.on ? <>
                 <Box key="jump-up-box" height={0} overflow="hidden"><Button key="jump-up" plain label="up" onPress={() => void jumpKey($, 'up')} /></Box>
-                <Input key="jump" autoFocus placeholder="folder name…" value={zjump.query} onInput={(v: string) => void jumpInput($, v)} onSubmit={() => void jumpKey($, 'return')} />
+                <Input key="jump" autoFocus placeholder="Ordnername…" value={zjump.query} onInput={(v: string) => void jumpInput($, v)} onSubmit={() => void jumpKey($, 'return')} />
                 <Box key="jump-down-box" height={0} overflow="hidden"><Button key="jump-down" plain label="down" onPress={() => void jumpKey($, 'down')} /></Box>
               </> : <Input
                 key="q"
-                placeholder={t.searchContent ? 'search contents' : 'search'}
-                submitLabel="go"
+                placeholder={t.searchContent ? 'Inhalte suchen' : 'suchen'}
+                submitLabel="los"
                 value={t.query}
                 onInput={onQuery}
                 onSubmit={(v: string) => void jump($, v, e.surface).then(() => $.clock.after(100, park))}

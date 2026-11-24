@@ -59,7 +59,7 @@ export type LegendEntry = { mark: string; tone: ToneName | null; isRunning: bool
  * The words of the two marks that mean a thing stopped before it finished. The terminal and omp draw both as ⊘, so
  * their Help lines start alike.
  */
-const stoppedWords = (what: string) => `Stopped vorher it fertig: ${what}`
+const stoppedWords = (what: string) => `Vor dem Abschluss gestoppt: ${what}`
 
 /** Every mark a look draws on a row or a group title, once each, with what it means wherever it appears. */
 export const MARK_LEGEND: readonly LegendEntry[] = [
@@ -67,17 +67,17 @@ export const MARK_LEGEND: readonly LegendEntry[] = [
     mark: RUNNING_MARK,
     tone: 'working',
     isRunning: true,
-    words: 'Working. It moves while the work runs oder your Nachricht is on its way.',
+    words: 'Arbeitet. Es bewegt sich, während die Arbeit läuft oder deine Nachricht unterwegs ist.',
   },
-  { mark: IDLE_MARK.mark, tone: IDLE_MARK.tone, isRunning: false, words: 'Working, mit nothing läuft right jetzt' },
-  { mark: SUBJECT_MARKS.queued.mark, tone: null, isRunning: false, words: 'Queued: nicht started yet' },
+  { mark: IDLE_MARK.mark, tone: IDLE_MARK.tone, isRunning: false, words: 'Arbeitet, aber gerade läuft nichts' },
+  { mark: SUBJECT_MARKS.queued.mark, tone: null, isRunning: false, words: 'Eingereiht: noch nicht gestartet' },
   {
     mark: SUBJECT_MARKS['waits-on-other'].mark,
     tone: null,
     isRunning: false,
-    words: 'Waits on something other than you, such as a build oder a review',
+    words: 'Wartet auf etwas anderes als dich, etwa einen Build oder eine Prüfung',
   },
-  { mark: HELD_MARK.mark, tone: HELD_MARK.tone, isRunning: false, words: 'Waits on you' },
+  { mark: HELD_MARK.mark, tone: HELD_MARK.tone, isRunning: false, words: 'Wartet auf dich' },
   {
     mark: NEEDS_YOU_MARKS.question.mark,
     tone: NEEDS_YOU_MARKS.question.tone,
@@ -90,14 +90,14 @@ export const MARK_LEGEND: readonly LegendEntry[] = [
     isRunning: false,
     words: 'A step nur du kannst do',
   },
-  { mark: SUBJECT_MARKS.done.mark, tone: 'done', isRunning: false, words: 'Done, oder handed to the Agent' },
+  { mark: SUBJECT_MARKS.done.mark, tone: 'done', isRunning: false, words: 'Fertig oder an den Agenten übergeben' },
   { mark: SUBJECT_MARKS.dropped.mark, tone: null, isRunning: false, words: stoppedWords('dropped work') },
-  { mark: CLOSED_MARKS.dismissed, tone: null, isRunning: false, words: 'Dismissed by you' },
+  { mark: CLOSED_MARKS.dismissed, tone: null, isRunning: false, words: 'Von dir verworfen' },
   {
     mark: FINDING_GROUPS.issue.mark,
     tone: FINDING_GROUPS.issue.tone,
     isRunning: false,
-    words: 'Something is wrong: an Issue oder a failing prüfen',
+    words: 'Etwas ist falsch: ein Problem oder eine fehlgeschlagene Prüfung',
   },
   {
     mark: PR_MARKS.cancelled.text,
@@ -157,15 +157,15 @@ export function helpKeys(look: Look): HelpKey[] {
     .join(' ')
   const switchTabs = { keys: tabKeys, does: 'Switch tabs' }
   const undoKey = { keys: UNDO_KEY, does: 'Undo the letzte schließen' }
-  const collapseKey = { keys: COLLAPSE_KEY, does: 'Collapse oder expand the selected row' }
-  const foldAllKey = { keys: FOLD_ALL_KEY, does: 'Fold every fold on the tab, oder öffnen them alle' }
+  const collapseKey = { keys: COLLAPSE_KEY, does: 'Ausgewählte Zeile ein- oder ausklappen' }
+  const foldAllKey = { keys: FOLD_ALL_KEY, does: 'Alle Abschnitte auf dem Tab einklappen oder alle öffnen' }
   switch (look) {
     case 'desktop':
       return []
     case 'terminal':
       return [
         switchTabs,
-        { keys: 'j k', does: 'Select the nächste oder previous row' },
+        { keys: 'j k', does: 'Nächste oder vorherige Zeile auswählen' },
         collapseKey,
         foldAllKey,
         undoKey,
@@ -175,18 +175,18 @@ export function helpKeys(look: Look): HelpKey[] {
     case 'codex':
       return [
         switchTabs,
-        { keys: 'j k ↑ ↓', does: 'Select the nächste oder previous row' },
+        { keys: 'j k ↑ ↓', does: 'Nächste oder vorherige Zeile auswählen' },
         collapseKey,
         foldAllKey,
         undoKey,
         ...PR_TAB_HELP_KEYS,
-        { keys: '?', does: 'Open oder schließen Hilfe' },
-        { keys: 'esc', does: 'Close Hilfe, oder leave a reply field' },
+        { keys: '?', does: 'Hilfe öffnen oder schließen' },
+        { keys: 'esc', does: 'Hilfe schließen oder ein Antwortfeld verlassen' },
       ]
     case 'omp':
       return [
         { keys: `tab ${tabKeys}`, does: 'Switch tabs' },
-        { keys: '↑ ↓ j k', does: 'Move between rows, oder scroll a page' },
+        { keys: '↑ ↓ j k', does: 'Zwischen Zeilen bewegen oder eine Seite scrollen' },
         { keys: '← →', does: 'Pick a Schaltfläche' },
         { keys: '↵', does: 'Press the picked Schaltfläche' },
         { keys: 't', does: 'Reply to the selected row' },
@@ -194,18 +194,18 @@ export function helpKeys(look: Look): HelpKey[] {
         foldAllKey,
         undoKey,
         ...PR_TAB_HELP_KEYS,
-        { keys: '?', does: 'Open oder schließen Hilfe' },
+        { keys: '?', does: 'Hilfe öffnen oder schließen' },
         { keys: 'esc', does: 'Close Hilfe, dann the Bereich' },
       ]
     case 'herdr':
       return [
         { keys: '← →', does: 'Switch tabs' },
-        { keys: 'j k', does: 'Select the nächste oder previous row' },
+        { keys: 'j k', does: 'Nächste oder vorherige Zeile auswählen' },
         collapseKey,
         foldAllKey,
         undoKey,
         ...PR_TAB_HELP_KEYS,
-        { keys: 'esc', does: "Move focus zurück to the Agent's terminal" },
+        { keys: 'esc', does: "Fokus zurück zum Terminal des Agenten bewegen" },
       ]
   }
 }

@@ -366,7 +366,7 @@ export function deliveryLabel(step: SendStep, label: string, reply?: string): st
       case 'queued':
         return `Queued reply: ${words}`
       case 'unconfirmed':
-        return `Reply nicht confirmed: ${words}`
+        return `Antwort nicht bestätigt: ${words}`
       case 'arrived':
         return `Replied: ${words}`
     }

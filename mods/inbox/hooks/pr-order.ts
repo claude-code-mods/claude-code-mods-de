@@ -12,10 +12,10 @@ import type { DrawnPr } from './pr-views'
 import { lastPressOf, withOut } from './pr-press'
 import type { LastPress, PrAction } from './pr-press'
 
-export const RANK_AGAIN_LABEL = 'Rank erneut'
+export const RANK_AGAIN_LABEL = 'Neu ordnen'
 
 /** The muted line that starts the PRs the agent's order does not rank. */
-export const OTHER_PRS_TEXT = 'Other PRs'
+export const OTHER_PRS_TEXT = 'Andere PRs'
 
 /**
  * The block a look draws the "Other PRs" line above: the first block the order does not rank, when a ranked block,

@@ -193,7 +193,7 @@ export async function rerunRun<S extends Session>(
   e: Extract<Effect, { kind: 'rerun' }>,
 ): Promise<string | null> {
   const bin = await host.gh.find()
-  if (bin === null) return 'the inbox could not find gh'
+  if (bin === null) return 'der Posteingang konnte gh nicht finden'
   const r = await host.gh.run(await host.read(), bin, () => host.gh.forget())(rerunArgs(e))
   if (r.exitCode === 0 || ALREADY_RUNNING.test(r.stderr)) return null
 

@@ -477,7 +477,7 @@ export const afterCall = (t: Turn, c: { inSubagent: boolean; hasFailed: boolean;
 
 /** Which of the architect's three moments a consult falls at: an inference over this turn so far. */
 export const momentOf = (t: Pick<Turn, 'edits' | 'errorStreak'>): Moment =>
-  t.errorStreak >= 2 ? 'error repeats' : t.edits === 0 ? 'before a plan' : 'before done'
+  t.errorStreak >= 2 ? 'Fehler wiederholen sich' : t.edits === 0 ? 'vor einem Plan' : 'vor der Fertigstellung'
 
 export const startConsult = (a: Architect, c: { id: string; at: number; moment: Moment; via: string }): Architect =>
   a.consults.some(x => x.id === c.id) ? a : { ...a, consults: [...a.consults, { ...c, endAt: null }].slice(-40) }
@@ -657,9 +657,9 @@ export const titleLines = (title: string, first: number, rest: number): [string,
  */
 export const promptLine = (text: string): { who: string; text: string } => {
   const tag = /^\s*<([a-z][\w-]*)/i.exec(text)?.[1]
-  if (!tag) return { who: 'you', text: shorten(text, 70) }
+  if (!tag) return { who: 'du', text: shorten(text, 70) }
   const from = /\bfrom="([^"]+)"/.exec(text)?.[1]
-  return { who: 'engine', text: shorten(`${tag.replace(/[-_]/g, ' ')}${from ? ` from ${from.slice(0, 8)}` : ''}`, 70) }
+  return { who: 'engine', text: shorten(`${tag.replace(/[-_]/g, ' ')}${from ? ` von ${from.slice(0, 8)}` : ''}`, 70) }
 }
 
 /**

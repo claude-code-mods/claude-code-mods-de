@@ -229,7 +229,7 @@ async function checkPrFirst<S extends Session>(
     isRead = pr?.fetchedAt !== undefined && pr.fetchedAt >= check.pendingAt
     const pending = s.lastActions[rowId]?.result
     if (isRead || !pending) return s
-    const failed = finishedResult(pending, [pr?.error ?? 'gh could not read it'], await host.now())
+    const failed = finishedResult(pending, [pr?.error ?? 'gh konnte es nicht lesen'], await host.now())
 
     return { ...s, lastActions: withResult(s.lastActions, rowId, check.pendingAt, failed) }
   })

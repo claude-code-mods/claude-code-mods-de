@@ -407,12 +407,12 @@ export function footerError(
  */
 export type UpdateRecovery = 'none' | 'waiting' | 'retrying' | 'failed-again' | 'unreadable'
 
-const NEXT_TRY = ' It tries erneut danach the nächste reply.'
+const NEXT_TRY = ' Es versucht es nach der nächsten Antwort erneut.'
 
 const FAILED_UPDATE_TEXT: Record<Exclude<UpdateRecovery, 'none' | 'retrying'>, string> = {
-  waiting: `The inbox couldn't aktualisieren von the Agent's letzte reply. Questions, Aufgaben und findings von it may be missing.${NEXT_TRY}`,
-  'failed-again': `The inbox couldn't aktualisieren von the Agent's recent replies, even on a erneut versuchen. Questions, Aufgaben und findings von them may be missing.${NEXT_TRY}`,
-  unreadable: `The inbox couldn't lesen this Gespräch. Questions, Aufgaben und findings von the Agent's letzte reply may be missing.${NEXT_TRY}`,
+  waiting: `Der Posteingang konnte von der letzten Antwort des Agenten nichts aktualisieren. Fragen, Aufgaben und Befunde daraus fehlen möglicherweise.${NEXT_TRY}`,
+  'failed-again': `Der Posteingang konnte auch bei einem erneuten Versuch nichts von den letzten Antworten des Agenten aktualisieren. Fragen, Aufgaben und Befunde daraus fehlen möglicherweise.${NEXT_TRY}`,
+  unreadable: `Der Posteingang konnte dieses Gespräch nicht lesen. Fragen, Aufgaben und Befunde aus der letzten Antwort des Agenten fehlen möglicherweise.${NEXT_TRY}`,
 }
 
 export function perTurnStatus(recovery: UpdateRecovery): ItemStatus {

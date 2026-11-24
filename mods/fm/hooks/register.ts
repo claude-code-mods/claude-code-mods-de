@@ -376,7 +376,7 @@ export const register: Register = (on) => {
     await startNotes($).catch(() => undefined);
     await $.command.register({
       name: CALM_COMMAND,
-      description: "Toggle Firstmate's Calm transcript presentation und working ship.",
+      description: "Firstmates ruhige Transkriptansicht und Arbeitsschiff umschalten.",
     });
     return next(e);
   });
@@ -391,7 +391,7 @@ export const register: Register = (on) => {
       await $.fs.write(preferencePath ?? "", serializeCalmPreference(active));
     } catch (error) {
       const reason = error instanceof Error ? error.message : String(error);
-      $.ui.toast(`Calm unchanged: could nicht speichern ${preferencePath ?? "the preference"} (${reason})`);
+      $.ui.toast(`Calm unverändert: Einstellung ${preferencePath ?? "die Einstellung"} konnte nicht gespeichert werden (${reason})`);
       return {};
     }
     calm = active;

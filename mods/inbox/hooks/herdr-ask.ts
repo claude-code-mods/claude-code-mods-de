@@ -17,9 +17,9 @@ export type HerdrAsk =
 export type OpenHerdrAsk = Extract<HerdrAsk, { is: 'asking' }>
 
 const LEAD = "Install the inbox's Herdr mod?"
-const INSTALLING_TEXT = 'Installing the inbox mod in Herdr…'
-const SAVING_TEXT = 'Saving the Antwort…'
-const INSTALLED_TEXT = '✓ Installed the inbox mod in Herdr.'
+const INSTALLING_TEXT = 'Inbox-Mod in Herdr wird installiert…'
+const SAVING_TEXT = 'Antwort wird gespeichert…'
+const INSTALLED_TEXT = '✓ Inbox-Mod in Herdr installiert.'
 
 /** The question's buttons, in the order every look draws them. Install is the answer the inbox recommends. */
 export const HERDR_ASK_BUTTONS = [
@@ -108,7 +108,7 @@ export async function askHerdrAgain(
   const state = await herdrModNow(files, appHome).catch((err: unknown) =>
     err instanceof Error ? err : new Error(String(err)),
   )
-  if (state instanceof Error) return `Could nicht lesen the Herdr app's mods Ordner. ${state.message}`
+  if (state instanceof Error) return `Mods-Ordner der Herdr-App konnte nicht gelesen werden. ${state.message}`
   const ask = herdrAskOf(appHome, home, state.answeredAt)
   if (state.installed === 'inbox') return 'The inbox mod is already installed in Herdr.'
   if (state.installed === 'own') return `${ask.folder} holds another mod, so the inbox leaves it alone.`

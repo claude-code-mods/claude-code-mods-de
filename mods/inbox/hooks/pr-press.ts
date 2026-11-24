@@ -47,7 +47,7 @@ export function logEffect(pr: PrView, check: PrCheck): Effect {
   return { kind: 'open', target: check.url ?? pr.url, name: check.url ? 'the log' : `PR #${pr.number}` }
 }
 
-export const RERUN_LABEL = 'Re-run'
+export const RERUN_LABEL = 'Erneut ausführen'
 
 /**
  * The re-run a cancelled check offers, or null when it offers none: it is not cancelled, another app ran it, or a

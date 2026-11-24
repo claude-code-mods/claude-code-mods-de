@@ -212,12 +212,12 @@ export async function keepHerdrModCurrent(
   now: number,
 ): Promise<HerdrModResult> {
   const bundled = await bundledMod(files.read, bundledFolder)
-  if (!bundled) return { is: 'failed', text: `Could nicht lesen the inbox mod for Herdr in ${bundledFolder}.` }
+  if (!bundled) return { is: 'failed', text: `Inbox-Mod für Herdr in ${bundledFolder} konnte nicht gelesen werden.` }
   const step = await Promise.all([installedMod(files, appHome), savedAnswer(files, appHome)])
     .then(([installed, answer]) => modStep(installed, answer, bundled, now))
     .catch((err: unknown) => new Error(message(err)))
   if (step instanceof Error)
-    return { is: 'failed', text: `Could nicht lesen the Herdr app's mods Ordner. ${step.message}` }
+    return { is: 'failed', text: `Mods-Ordner der Herdr-App konnte nicht gelesen werden. ${step.message}` }
   if (step === null) return { is: 'current' }
   if (step === 'ask') return { is: 'ask' }
   try {
@@ -226,7 +226,7 @@ export async function keepHerdrModCurrent(
 
     return { is: step === 'install' ? 'installed' : 'updated' }
   } catch (err) {
-    return { is: 'failed', text: `Could nicht ${step} the inbox mod in Herdr. ${message(err)}` }
+    return { is: 'failed', text: `Inbox-Mod in Herdr konnte nicht ${step} werden. ${message(err)}` }
   }
 }
 
@@ -248,7 +248,7 @@ export async function answerHerdrMod(
   try {
     await saveAnswer(files, appHome, isYes ? 'yes' : 'no', now)
   } catch (err) {
-    return { is: 'failed', text: `Could nicht speichern the Antwort about the inbox mod in Herdr. ${message(err)}` }
+    return { is: 'failed', text: `Antwort zum Inbox-Mod in Herdr konnte nicht gespeichert werden. ${message(err)}` }
   }
 
   return isYes ? keepHerdrModCurrent(files, appHome, bundledFolder, now) : { is: 'current' }

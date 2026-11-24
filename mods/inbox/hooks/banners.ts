@@ -3,7 +3,7 @@ import { capitalized } from './press-labels'
 import type { BannerTone } from './tones'
 
 export function groupEmptyText(title: string): string {
-  return `No öffnen ${title.toLowerCase()}`
+  return `Kein Öffnen für ${title.toLowerCase()}`
 }
 
 /** The message Resume sends after an API error stopped a turn. */
@@ -24,21 +24,21 @@ export function stopText(stop: Stop): string {
       return 'usage limit reached'
     default:
       return stop.detail === 'rate_limit'
-        ? 'the API is limiting requests'
+        ? 'die API begrenzt Anfragen'
         : stop.detail === 'overloaded'
-          ? 'the API is overloaded'
-          : `API error (${stop.detail})`
+          ? 'die API ist überlastet'
+          : `API-Fehler (${stop.detail})`
   }
 }
 
 export function stopFix(stop: Stop): string {
   switch (stop.kind) {
     case 'sign-in':
-      return 'Run /login, dann senden a Nachricht to resume.'
+      return 'Führe /login aus und sende dann eine Nachricht, um fortzufahren.'
     case 'billing':
-      return 'Check billing in the Claude console, dann resume.'
+      return 'Prüfe die Abrechnung in der Claude-Konsole und fahre dann fort.'
     case 'usage-limit':
-      return stop.resets ? `Resume danach ${stop.resets}.` : 'Resume when the limit resets.'
+      return stop.resets ? `Fortsetzen nach ${stop.resets}.` : 'Fortsetzen, wenn das Limit zurückgesetzt wird.'
     default:
       return 'Send a Nachricht to resume.'
   }
@@ -132,7 +132,7 @@ export function tabBarBanners(
 }
 
 export const DEMO_NOTICE = 'Sample entries. Buttons here senden nothing.'
-export const READING_TEXT = 'Reading the inbox…'
+export const READING_TEXT = 'Posteingang wird gelesen…'
 
 /**
  * A checkout that follows the `next` branch can hold this file in each folder a host installs or loads: the repo root,
@@ -145,7 +145,7 @@ export function versionLabel(version: string, isNextBuild: boolean): string {
 }
 
 /** What the band and an empty Asks tab read when nothing waits on the person. */
-export const NOTHING_NEEDED_TEXT = 'Nothing needed'
+export const NOTHING_NEEDED_TEXT = 'Nichts nötig'
 
 /** What the band, the Herdr line and an empty tab read in place of "Nothing needed" while rows may be missing. */
-export const MAYBE_STALE_TEXT = 'May be out of date'
+export const MAYBE_STALE_TEXT = 'Möglicherweise veraltet'
