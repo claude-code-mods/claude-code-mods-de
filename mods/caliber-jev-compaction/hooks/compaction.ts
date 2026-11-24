@@ -231,13 +231,13 @@ function percent(ratio: number): string {
 export function summarize(result: CompactResult): string {
   const { stats } = result;
   const parts = [
-    stats.kept > 0 ? `${stats.kept} kept` : '',
-    stats.resultsDropped > 0 ? `${stats.resultsDropped} results truncated` : '',
+    stats.kept > 0 ? `${stats.kept} behalten` : '',
+    stats.resultsDropped > 0 ? `${stats.resultsDropped} Ergebnisse gekürzt` : '',
     stats.callsDropped > 0 ? `${stats.callsDropped} call_dropped` : '',
-    stats.pinned > 0 ? `${stats.pinned} pinned` : '',
+    stats.pinned > 0 ? `${stats.pinned} angeheftet` : '',
   ].filter(Boolean);
-  return `${percent(reductionRatio(result))} reduction; ${
-    parts.join(', ') || 'nein Werkzeug calls'
+  return `${percent(reductionRatio(result))} Reduktion; ${
+    parts.join(', ') || 'keine Werkzeugaufrufe'
   }; state ~${stats.stateTokens} tokens (${stats.stateStage}) in ${stats.requests} request(s)`;
 }
 
@@ -258,7 +258,7 @@ export function decisionLogLines(
   maxChars: number = UI_LOG_MAX_CHARS,
 ): string[] {
   const entries = decisionLog(result).split(' ').filter(Boolean);
-  if (entries.length === 0) return ['decisions: (keine)'];
+  if (entries.length === 0) return ['Entscheidungen: (keine)'];
   const chunks: string[] = [];
   let current = '';
   for (const entry of entries) {
@@ -271,8 +271,8 @@ export function decisionLogLines(
   chunks.push(current);
   return chunks.map((chunk, index) =>
     chunks.length === 1
-      ? `decisions: ${chunk}`
-      : `decisions (${index + 1}/${chunks.length}): ${chunk}`,
+      ? `Entscheidungen: ${chunk}`
+      : `Entscheidungen (${index + 1}/${chunks.length}): ${chunk}`,
   );
 }
 
@@ -345,19 +345,19 @@ export const register: Register = (on: On, options: PluginOptions) => {
       if (reductionRatio(result) < config.minReductionRatio) {
         notify(
           $,
-          `fallback to built-in summary (below ${percent(config.minReductionRatio)} minimum: ${summarize(result)})`,
+          `Rückfall auf die integrierte Zusammenfassung (unter dem Minimum von ${percent(config.minReductionRatio)}: ${summarize(result)})`,
         );
         return next(event);
       }
       notify(
         $,
-        `kept ${messages.length}/${event.messages.length} Nachrichten, nein summary (${summarize(result)})`,
+        `${messages.length}/${event.messages.length} Nachrichten behalten, keine Zusammenfassung (${summarize(result)})`,
       );
       return { messages };
     } catch (error) {
       notify(
         $,
-        `fallback to built-in summary (${error instanceof Error ? error.message : String(error)})`,
+        `Rückfall auf die integrierte Zusammenfassung (${error instanceof Error ? error.message : String(error)})`,
       );
       return next(event);
     }
@@ -372,7 +372,7 @@ export const register: Register = (on: On, options: PluginOptions) => {
       await $.session.compact();
     } catch (error) {
       $.ui.log(
-        `automatisch-compact skipped (${error instanceof Error ? error.message : String(error)})`,
+        `Automatische Verdichtung übersprungen (${error instanceof Error ? error.message : String(error)})`,
       );
     } finally {
       compacting = false;

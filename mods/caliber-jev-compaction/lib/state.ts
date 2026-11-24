@@ -44,7 +44,7 @@ export function truncate(text: string, limit: number): string {
 function abridge(text: string, head: number, tail: number): string {
   if (text.length <= head + tail + 40) return text;
   const omitted = text.length - head - tail;
-  return `${text.slice(0, head)}\n[… ${omitted} chars omitted …]\n${text.slice(-tail)}`;
+  return `${text.slice(0, head)}\n[… ${omitted} Zeichen ausgelassen …]\n${text.slice(-tail)}`;
 }
 
 export function isPinned(
@@ -97,13 +97,13 @@ function inputText(input: Record<string, unknown>, limit: number): string {
   try {
     json = JSON.stringify(input);
   } catch {
-    json = '[unserializable input]';
+    json = '[nicht serialisierbare Eingabe]';
   }
   return truncate(json, limit);
 }
 
 function resultNote(call: ToolCall): string {
-  return `${call.isError ? 'error' : 'ok'}, ${call.resultChars} chars (omitted)`;
+  return `${call.isError ? 'Fehler' : 'ok'}, ${call.resultChars} Zeichen (ausgelassen)`;
 }
 
 /** One call as a single line, for when the structured form is too costly. */
@@ -115,7 +115,7 @@ function compactCall(call: ToolCall): string {
     })
     .join(' ');
   return `${call.id} ${call.tool} ${truncate(input, INPUT_CHARS[2])} → ${
-    call.isError ? 'error' : 'ok'
+    call.isError ? 'Fehler' : 'ok'
   } ${call.resultChars}ch`;
 }
 
@@ -230,11 +230,11 @@ export function fitState(
   };
 
   rebuild(INPUT_CHARS[0]);
-  if (fits()) return fitted(history, tokens, 'full');
+  if (fits()) return fitted(history, tokens, 'vollständig');
 
   for (const limit of INPUT_CHARS.slice(1)) {
     rebuild(limit);
-    if (fits()) return fitted(history, tokens, `inputs<=${limit}`);
+    if (fits()) return fitted(history, tokens, `Eingaben<=${limit}`);
   }
 
   const pinned = (entry: HistoryEntry): boolean =>
@@ -251,7 +251,7 @@ export function fitState(
     shrink(index, (e) => {
       e.text = abridge(e.text, TEXT_HEAD, TEXT_TAIL);
     });
-    if (fits()) return fitted(history, tokens, 'texts abridged');
+    if (fits()) return fitted(history, tokens, 'Texte gekürzt');
   }
 
   for (const index of order) {
@@ -259,9 +259,9 @@ export function fitState(
     if (pinned(entry) || entry.text.length === 0) continue;
     const original = messages[entry.i]?.text.length ?? entry.text.length;
     shrink(index, (e) => {
-      e.text = `[… ${original} chars omitted …]`;
+      e.text = `[… ${original} Zeichen ausgelassen …]`;
     });
-    if (fits()) return fitted(history, tokens, 'old messages collapsed');
+    if (fits()) return fitted(history, tokens, 'alte Nachrichten zusammengefasst');
   }
 
   const byMessage = callsByMessage(calls);
@@ -272,7 +272,7 @@ export function fitState(
     shrink(index, (e) => {
       e.tool_calls = own.map(compactCall);
     });
-    if (fits()) return fitted(history, tokens, 'old calls compacted');
+    if (fits()) return fitted(history, tokens, 'alte Aufrufe verdichtet');
   }
 
   const left = new Set<number>();
@@ -285,7 +285,7 @@ export function fitState(
       return fitted(
         history.filter((_, i) => !left.has(i)),
         tokens,
-        'old messages left out',
+        'alte Nachrichten weggelassen',
       );
     }
   }
@@ -296,9 +296,9 @@ export function fitState(
   );
   perEntry = history.map(entryTokens);
   tokens = baseTokens + perEntry.reduce((sum, n) => sum + n, 0);
-  if (fits()) return fitted(history, tokens, 'old calls merged');
+  if (fits()) return fitted(history, tokens, 'alte Aufrufe zusammengeführt');
 
   throw new Error(
-    `history too large for Jev (~${tokens} Tokens danach truncation, limit ${options.maxStateTokens})`,
+    `Verlauf zu groß für Jev (~${tokens} Tokens nach der Kürzung, Limit ${options.maxStateTokens})`,
   );
 }

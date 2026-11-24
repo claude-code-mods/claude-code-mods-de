@@ -37,12 +37,12 @@ function flagAllowed(arg, allowed) {
 function checkGit(argv) {
   let i = 1
   while (i < argv.length && argv[i].startsWith('-')) {
-    if (!GIT_GLOBAL_OK.has(argv[i])) return { ok: false, why: `git option ${argv[i]} not allowed` }
+    if (!GIT_GLOBAL_OK.has(argv[i])) return { ok: false, why: `git-Option ${argv[i]} nicht erlaubt` }
     i++
   }
   const sub = argv[i]
   const spec = GIT[sub]
-  if (!spec) return { ok: false, why: `git ${sub ?? ''} is not an observational form` }
+  if (!spec) return { ok: false, why: `git ${sub ?? ''} ist keine rein beobachtende Form` }
   const rest = argv.slice(i + 1)
   const positionals = []
   let afterDashDash = false
@@ -51,17 +51,17 @@ function checkGit(argv) {
     if (afterDashDash) { positionals.push(a); continue }
     if (a === '--') { afterDashDash = true; continue }
     if (a.startsWith('-')) {
-      if (!flagAllowed(a, spec.flags)) return { ok: false, why: `git ${sub} option ${a} not allowed` }
+      if (!flagAllowed(a, spec.flags)) return { ok: false, why: `git-${sub}-Option ${a} nicht erlaubt` }
       if (a === '-n' || a === '--contains') j++ // takes a value
       continue
     }
     positionals.push(a)
   }
   if (spec.positional === 'none-or-list-pattern' && positionals.length > 0 && !rest.includes('--list')) {
-    return { ok: false, why: 'git branch with a name would create, rename or delete a branch' }
+    return { ok: false, why: 'git branch mit einem Namen würde einen Branch erstellen, umbenennen oder löschen' }
   }
   if (spec.mustHave) {
-    for (const m of spec.mustHave) if (!rest.includes(m)) return { ok: false, why: `git ${sub} needs ${spec.mustHave.join(' ')} so no external diff or textconv program runs` }
+    for (const m of spec.mustHave) if (!rest.includes(m)) return { ok: false, why: `git ${sub} benötigt ${spec.mustHave.join(' ')}, damit kein externes Diff- oder textconv-Programm läuft` }
   }
   return { ok: true }
 }
@@ -80,7 +80,7 @@ function checkSimple(argv) {
     if (a.startsWith('-') && a !== '-') {
       if (spec.flags.includes(a)) { if (spec.valued?.includes(a)) j++; continue }
       const parts = expandBundle(a)
-      if (parts.length < 2 || !parts.every((f) => spec.flags.includes(f))) return { ok: false, why: `${argv[0]} option ${a} not allowed` }
+      if (parts.length < 2 || !parts.every((f) => spec.flags.includes(f))) return { ok: false, why: `${argv[0]}-Option ${a} nicht erlaubt` }
       if (spec.valued?.includes(parts[parts.length - 1])) j++
     }
   }
@@ -89,8 +89,8 @@ function checkSimple(argv) {
 
 function checkSearch(argv, env) {
   if (argv[0] === 'rg') {
-    if (!argv.includes('--no-config')) return { ok: false, why: 'rg needs --no-config so RIPGREP_CONFIG_PATH cannot add options' }
-    if (env && Object.prototype.hasOwnProperty.call(env, 'RIPGREP_CONFIG_PATH')) return { ok: false, why: 'rg with RIPGREP_CONFIG_PATH set' }
+    if (!argv.includes('--no-config')) return { ok: false, why: 'rg benötigt --no-config, damit RIPGREP_CONFIG_PATH keine Optionen hinzufügen kann' }
+    if (env && Object.prototype.hasOwnProperty.call(env, 'RIPGREP_CONFIG_PATH')) return { ok: false, why: 'rg mit gesetztem RIPGREP_CONFIG_PATH' }
   }
   for (let j = 1; j < argv.length; j++) {
     const a = argv[j]
@@ -99,7 +99,7 @@ function checkSearch(argv, env) {
     const name = a.includes('=') ? a.slice(0, a.indexOf('=')) : a
     if (SEARCH_OK.has(name)) { if (SEARCH_VALUED.has(name) && !a.includes('=')) j++; continue }
     const parts = expandBundle(a)
-    if (parts.length < 2 || !parts.every((f) => SEARCH_OK.has(f))) return { ok: false, why: `${argv[0]} option ${a} not allowed` }
+    if (parts.length < 2 || !parts.every((f) => SEARCH_OK.has(f))) return { ok: false, why: `${argv[0]}-Option ${a} nicht erlaubt` }
     if (SEARCH_VALUED.has(parts[parts.length - 1])) j++
   }
   return { ok: true }
@@ -110,9 +110,9 @@ export const ADAPTER_COMMANDS = ['git', 'ls', 'cat', 'head', 'tail', 'wc', 'rg',
 // argv: string[] already tokenized. env: inline assignments that preceded the command.
 export function checkAdapter(argv, env = {}) {
   const cmd = argv[0]
-  if (Object.keys(env).length > 0) return { ok: false, why: 'inline environment assignments are not classified' }
+  if (Object.keys(env).length > 0) return { ok: false, why: 'Inline-Umgebungszuweisungen werden nicht klassifiziert' }
   if (cmd === 'git') return checkGit(argv)
   if (cmd in SIMPLE) return checkSimple(argv)
   if (cmd === 'rg' || cmd === 'grep') return checkSearch(argv, env)
-  return { ok: false, why: `${cmd} has no adapter` }
+  return { ok: false, why: `${cmd} hat keinen Adapter` }
 }

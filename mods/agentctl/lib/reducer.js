@@ -7,17 +7,17 @@ const OPS_CAP = 200
 
 export function initialState(at = 0) {
   return {
-    phase: { value: 'unknown', since: at },
-    runtime: { value: 'idle', since: at, turnId: null, tool: null },
+    phase: { value: 'unbekannt', since: at },
+    runtime: { value: 'inaktiv', since: at, turnId: null, tool: null },
     interventions: {},
-    result: { value: 'in-progress', since: at },
+    result: { value: 'in Arbeit', since: at },
     ops: {},
     background: {},
     lastEventAt: at,
   }
 }
 
-const PHASE_BY_KIND = { edit: 'editing', check: 'testing', read: 'reviewing', plan: 'planning' }
+const PHASE_BY_KIND = { edit: 'bearbeiten', check: 'prüfen', read: 'durchsehen', plan: 'planen' }
 
 function setIntervention(s, reason, at, detail, severity = 'warn') {
   const prev = s.interventions[reason]
@@ -54,16 +54,16 @@ export function reduce(state, o) {
   let s = o.type === 'tick' ? { ...state } : { ...state, lastEventAt: Math.max(state.lastEventAt, o.at ?? state.lastEventAt) }
   switch (o.type) {
     case 'turn.start':
-      s = { ...s, runtime: { value: 'model-active', since: o.at, turnId: o.turnId, tool: null } }
+      s = { ...s, runtime: { value: 'Modell aktiv', since: o.at, turnId: o.turnId, tool: null } }
       // A refusal is attention for the turn it happened in; the next turn means it was seen. Its
       // record stays in the operations and in /agentctl events.
       return clearIntervention(clearIntervention(clearIntervention(s, 'input'), 'suspected-stall'), 'policy-denied')
     case 'turn.complete':
-      s = { ...s, runtime: { value: 'idle', since: o.at, turnId: null, tool: null } }
+      s = { ...s, runtime: { value: 'inaktiv', since: o.at, turnId: null, tool: null } }
       return o.awaitsInput ? setIntervention(s, 'input', o.at, o.detail ?? 'turn ended with a question', 'info') : s
     case 'tool.start': {
-      const op = { requested: o.requested, tool: o.tool, startedAt: o.at, outcome: 'running' }
-      s = { ...s, ops: capOps({ ...s.ops, [o.id]: op }), runtime: { ...s.runtime, value: 'tool-running', since: o.at, tool: o.tool } }
+      const op = { requested: o.requested, tool: o.tool, startedAt: o.at, outcome: 'läuft' }
+      s = { ...s, ops: capOps({ ...s.ops, [o.id]: op }), runtime: { ...s.runtime, value: 'Werkzeug läuft', since: o.at, tool: o.tool } }
       if (o.kind && PHASE_BY_KIND[o.kind] && s.phase.value !== PHASE_BY_KIND[o.kind]) s = { ...s, phase: { value: PHASE_BY_KIND[o.kind], since: o.at } }
       return clearIntervention(s, 'suspected-stall')
     }
@@ -73,7 +73,7 @@ export function reduce(state, o) {
       if (o.backgroundId) op.backgroundId = o.backgroundId
       s = { ...s, ops: { ...s.ops, [o.id]: op } }
       if (o.backgroundId) s = { ...s, background: { ...s.background, [o.backgroundId]: { status: 'started', since: o.at, opId: o.id } } }
-      if (!anyToolRunning(s) && s.runtime.value === 'tool-running') s = { ...s, runtime: { ...s.runtime, value: s.runtime.turnId ? 'model-active' : 'idle', since: o.at, tool: null } }
+      if (!anyToolRunning(s) && s.runtime.value === 'tool-running') s = { ...s, runtime: { ...s.runtime, value: s.runtime.turnId ? 'Modell aktiv' : 'inaktiv', since: o.at, tool: null } }
       return s
     }
     case 'refused': {
@@ -100,7 +100,7 @@ export function reduce(state, o) {
         const outcome = { completed: 'ok', failed: 'error', cancelled: 'cancelled', killed: 'cancelled' }[o.status] ?? o.status
         s = { ...s, ops: { ...s.ops, [rec.opId]: { ...s.ops[rec.opId], endedAt: o.at, outcome } } }
       }
-      if (!anyToolRunning(s) && s.runtime.value === 'tool-running') s = { ...s, runtime: { ...s.runtime, value: s.runtime.turnId ? 'model-active' : 'idle', since: o.at, tool: null } }
+      if (!anyToolRunning(s) && s.runtime.value === 'tool-running') s = { ...s, runtime: { ...s.runtime, value: s.runtime.turnId ? 'Modell aktiv' : 'inaktiv', since: o.at, tool: null } }
       return s
     }
     case 'rate-limit':
@@ -112,7 +112,7 @@ export function reduce(state, o) {
     case 'tick':
       return evaluateStall(s, o.at, o.idleMs ?? IDLE_STALL_MS)
     case 'session.end':
-      return { ...s, runtime: { value: 'ended', since: o.at, turnId: null, tool: null } }
+      return { ...s, runtime: { value: 'beendet', since: o.at, turnId: null, tool: null } }
     default:
       return s
   }

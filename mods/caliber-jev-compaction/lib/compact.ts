@@ -88,7 +88,7 @@ export function batchCalls(
     }
     if (current.length === 0 && tokens > budget) {
       throw new Error(
-        `state leaves nein room for Fragen (~${stateTokens} of ${options.maxRequestTokens} Tokens)`,
+        `Der Zustand lässt keinen Platz für Fragen (~${stateTokens} von ${options.maxRequestTokens} Tokens)`,
       );
     }
     current.push(call);
@@ -135,8 +135,8 @@ async function askBatch(
 function truncatedResultText(text: string, isError: boolean, headChars: number): string {
   if (text.length <= headChars + 120) return text;
   const head = headChars > 0 ? `${text.slice(0, headChars)}\n` : '';
-  return `${head}[caliber-jev-compaction truncated ${text.length - headChars} chars of this tool result${
-    isError ? ' (error)' : ''
+  return `${head}[caliber-jev-compaction hat ${text.length - headChars} Zeichen dieses Tool-Ergebnisses gekürzt${
+    isError ? ' (Fehler)' : ''
   }; re-run the tool if needed]`;
 }
 

@@ -65,7 +65,7 @@ export function parseFlags(out) {
   for (const r of String(out ?? '').split('\0')) {
     if (!r) continue
     const tag = r[0]
-    if (tag === 'S') reasons.add('skip-worktree entries')
+    if (tag === 'S') reasons.add('skip-worktree-Einträge')
     else if (tag >= 'a' && tag <= 'z') reasons.add('assume-unchanged entries')
   }
   return [...reasons]
@@ -77,29 +77,29 @@ export function fold(results, changed = []) {
   const reasons = []
   const part = (name) => {
     const r = results[name]
-    if (!r) { reasons.push(`${name}: not read`); return '' }
+    if (!r) { reasons.push(`${name}: nicht gelesen`); return '' }
     if (r.error) { reasons.push(`${name}: ${r.error}`); return '' }
-    if (name !== 'head' && r.exitCode !== 0) { reasons.push(`${name}: exit ${r.exitCode}`); return '' }
+    if (name !== 'head' && r.exitCode !== 0) { reasons.push(`${name}: Exit ${r.exitCode}`); return '' }
     return r.stdout ?? ''
   }
   // `rev-parse --verify -q HEAD` exits 1 with no output on an unborn branch — the one failure that is
   // a reading. A missing read, a thrown read or any other exit is a failed observation, never "unborn".
   const h = results.head
   let head
-  if (!h) { head = 'unknown'; reasons.push('head: not read') }
+  if (!h) { head = 'unknown'; reasons.push('head: nicht gelesen') }
   else if (h.error) { head = 'unknown'; reasons.push(`head: ${h.error}`) }
   else if (h.exitCode === 0) head = String(h.stdout ?? '').trim()
   else if (h.exitCode === 1 && !String(h.stdout ?? '').trim() && !String(h.stderr ?? '').trim()) head = 'unborn'
-  else { head = 'unknown'; reasons.push(`head: exit ${h.exitCode}`) }
+  else { head = 'unknown'; reasons.push(`head: Exit ${h.exitCode}`) }
   const index = part('index')
   const statusOut = part('status')
   const flagsOut = part('flags')
   const hashOut = changed.length ? part('hash') : ''
   const status = parseStatus(statusOut)
   reasons.push(...status.reasons, ...parseFlags(flagsOut))
-  if (changed.length > MAX_HASHED_PATHS) reasons.push(`more than ${MAX_HASHED_PATHS} changed paths`)
+  if (changed.length > MAX_HASHED_PATHS) reasons.push(`mehr als ${MAX_HASHED_PATHS} geänderte Pfade`)
   if (changed.length && hashOut.trim().split('\n').filter(Boolean).length !== Math.min(changed.length, MAX_HASHED_PATHS)) {
-    reasons.push('hash-object did not answer for every path')
+    reasons.push('hash-object hat nicht für jeden Pfad geantwortet')
   }
   const value = digest([head, index, statusOut, hashOut].join('\u0001'))
   return {
@@ -112,4 +112,4 @@ export function fold(results, changed = []) {
 }
 
 export const COVERAGE_NOTE =
-  'HEAD, index entries, Git-reported changes, raw bytes of changed and untracked files; clean files rely on Git\'s cleanliness check; ignored files, submodule contents and the environment are not covered'
+  'HEAD, Indexeinträge, von Git gemeldete Änderungen, Rohbytes geänderter und nicht verfolgter Dateien; bei sauberen Dateien wird Gits Sauberkeitsprüfung vertraut; ignorierte Dateien, Submodulinhalte und die Umgebung sind nicht abgedeckt'
