@@ -30,9 +30,9 @@ Nach Abschluss der Installation führt dich eine kurze Einführung durch das Plu
 
 Claude zeigt dir seine Arbeit im Chat, sobald es etwas Visuelles erstellt oder verändert. Du kannst auch ausdrücklich danach fragen:
 
-- „Gib mir vier Richtungen für den Hero-Bereich der Startseite und zeige sie nebeneinander."
-- „Baue das Anmeldeformular, teste es und zeig mir die Aufzeichnung."
-- „Behebe den Umschalter für die Abrechnung und zeig mir den Zustand vorher und nachher."
+- „Gib mir vier Richtungen für den Hero-Bereich der Startseite und zeige sie nebeneinander.“
+- „Baue das Anmeldeformular, teste es und zeig mir die Aufzeichnung.“
+- „Behebe den Umschalter für die Abrechnung und zeig mir den Zustand vorher und nachher.“
 
 ### Visuelles QA mit Vorher-nachher-Aufzeichnungen
 
@@ -78,12 +78,12 @@ Du drehst einen Werbespot, eine Animation oder ein Launch-Video? Jeder Schnitt l
 
 show-your-work unterstützt Ghostty und kitty unter macOS und Linux. Dort funktionieren Bilder sofort.
 
-- **Rex und die Herdr-App:** Bilder und Videos werden gezeichnet, aber Claude Code aktiviert sie dort nur, wenn es mit `CLAUDE_CODE_FORCE_TERMINAL_IMAGES=1` startet. Die Schaltfläche „Turn on pictures" in der Meldung fügt deiner Shell-Profil-Datei eine Zeile hinzu, die dies nur in diesem Terminal setzt, und kopiert einen Befehl zum erneuten Öffnen des Chats.
+- **Rex und die Herdr-App:** Bilder und Videos werden gezeichnet, aber Claude Code aktiviert sie dort nur, wenn es mit `CLAUDE_CODE_FORCE_TERMINAL_IMAGES=1` startet. Die Schaltfläche „Turn on pictures“ in der Meldung fügt deiner Shell-Profil-Datei eine Zeile hinzu, die dies nur in diesem Terminal setzt, und kopiert einen Befehl zum erneuten Öffnen des Chats.
 - **Warp, WezTerm und Konsole:** Diese unterstützen das kitty-Grafikprotokoll, aber nicht die Unicode-Platzhalter, mit denen Claude Code Bilder zeichnet, daher können Bilder dort noch nicht angezeigt werden.
 - **Andere Terminals auf Basis von Ghostty oder kitty:** Claude Code erkennt sie nicht und lässt Bilder aus. Starte es mit `CLAUDE_CODE_FORCE_TERMINAL_IMAGES=1` (die Meldung kopiert einen entsprechenden Befehl) oder füge `export CLAUDE_CODE_FORCE_TERMINAL_IMAGES=1` zu deinem Shell-Profil hinzu.
 - **tmux:** Funktioniert innerhalb von Ghostty oder kitty. Claude Code lässt Bilder in tmux aus, sofern es nicht mit `CLAUDE_CODE_FORCE_TERMINAL_IMAGES=1` startet; beim ersten Mal aktiviert das Plugin das für neue tmux-Fenster und die Meldung kopiert einen Befehl, der den Chat damit erneut öffnet. Das Plugin aktiviert außerdem `allow-passthrough` für sein eigenes Fenster und leitet die Bilder weiter. An deiner tmux-Konfiguration wird nichts geändert.
 
-Die Versionen 0.6.7 bis 0.6.9 boten in Warp, WezTerm und Konsole eine Schaltfläche „Turn on pictures", die eine Zeile zum Shell-Profil hinzufügte. Dadurch wurden Bilder als Raster aus Kästchen gezeichnet, deshalb entfernt das Plugin diese Zeile inzwischen selbst.
+Die Versionen 0.6.7 bis 0.6.9 boten in Warp, WezTerm und Konsole eine Schaltfläche „Turn on pictures“, die eine Zeile zum Shell-Profil hinzufügte. Dadurch wurden Bilder als Raster aus Kästchen gezeichnet, deshalb entfernt das Plugin diese Zeile inzwischen selbst.
 
 ## FAQ
 
@@ -206,7 +206,7 @@ Es speichert diese Dateien:
 - Video-Einzelbilder und konvertierte Bilder liegen in einem temporären Ordner (`$TMPDIR/claude-show-your-work-<your user id>`); alles älter als eine Woche wird aufgeräumt.
 - Eine Kopie jeder Datei, die Claude dir zeigt, liegt in `.show-your-work/` in deinem Projekt, damit du Versionen zurückverfolgen kannst.
 - Save to Downloads legt eine Kopie in `~/Downloads` ab.
-- Falls dein Shell-Profil die Zeile eines älteren „Turn on pictures" enthält (siehe [Terminals](#terminals)), entfernt es genau diese Zeile.
+- Falls dein Shell-Profil die Zeile eines älteren „Turn on pictures“ enthält (siehe [Terminals](#terminals)), entfernt es genau diese Zeile.
 - Mit `SHOW_YOUR_WORK_DEBUG=1` schreibt es eine `debug.log` in den temporären Ordner.
 
 Einmal täglich liest es die neueste Versionsnummer des Plugins von `raw.githubusercontent.com`.
