@@ -89,6 +89,22 @@ const WORDS = {
       failed: '接続先の切り替えに失敗したため、直接接続しています。画像の選択は反映されません',
     },
   },
+  de: {
+    title: 'Kontext-Assets',
+    open: 'Asset-Bereich öffnen', copy: 'Link kopieren', copied: 'Link kopiert',
+    opened: 'Der Bereich ist im eigenen Browser von Claude geöffnet.',
+    hint: 'Der Bereich ist eine Seite des lokalen Engines, genau wie in Codex: Auswahl, Vorschau, Filter und automatische Auswahl befinden sich dort. Öffnen Sie ihn über den obigen Link in einem Browser oder kopieren Sie den Link und fügen Sie ihn in einen Browser ein.',
+    summary: (images, off) => `${images} Bilder in dieser Sitzung${off ? `, ${off} nicht gesendet` : ''}`,
+    routing: {
+      on: (port) => `Die Anfragen dieser Sitzung laufen über den lokalen Engine (Port ${port})`,
+      waiting: 'Warten auf den Start des lokalen Engines…',
+      'other-endpoint': 'Diese Sitzung verwendet einen anderen Endpunkt und bleibt unverändert: die Auswahl hat keine Wirkung',
+      provider: 'Diese Sitzung verwendet einen Drittanbieter-Dienst und bleibt unverändert: die Auswahl hat keine Wirkung',
+      'engine-old': 'Die laufende Engine ist zu alt für getrennte Routen: schließen Sie Codex, führen Sie cam install aus und starten Sie eine neue Sitzung',
+      'no-engine': 'Der lokale Engine läuft nicht; diese Sitzung verbindet sich direkt: die Auswahl hat keine Wirkung',
+      failed: 'Das Umstellen des Endpunkts ist fehlgeschlagen; diese Sitzung verbindet sich direkt: die Auswahl hat keine Wirkung',
+    },
+  },
 }
 
 // What the pane shows, kept between redraws: the routing state, whether /cam opened the page in Claude's browser, and
