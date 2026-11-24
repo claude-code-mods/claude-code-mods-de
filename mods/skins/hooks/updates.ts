@@ -46,7 +46,7 @@ export const isDue = (raw: unknown, now: number): boolean => {
 // kept the skin rather than someone still trying it out.
 const STAR_AFTER_MS = 3 * DAY_MS
 
-export const STAR_NOTICE = 'Enjoying skins? A ★ on GitHub helps others find it: https://github.com/hellosverre/claude-skins'
+export const STAR_NOTICE = 'Gefallen dir skins? Ein ★ auf GitHub hilft anderen, es zu finden: https://github.com/hellosverre/claude-skins'
 
 export type Star = { since: number; asked: boolean }
 

@@ -155,21 +155,21 @@ const isBuiltIn = (name: string): boolean => SKINS.some(skin => skin.name === na
 // /skin list: the skins, then every setting, laid out as skin-code lays out its list.
 // `extra` adds rows to the settings that the command reads from elsewhere.
 export function listing(current: Prefs, names: readonly string[], extra: readonly (readonly [string, string])[] = []): string {
-  const mark = (name: string) => (name === current.skin ? `${name} (current)` : name)
+  const mark = (name: string) => (name === current.skin ? `${name} (aktuell)` : name)
 
   return [
-    `Skins · jetzt: ${current.skin}`,
+    `Skins · aktuell: ${current.skin}`,
     '',
     markdownTable(
-      ['Skin', 'Kind'],
+      ['Skin', 'Art'],
       [
-        ...names.map(name => [mark(name), isBuiltIn(name) ? 'built in' : 'yours']),
-        [mark('off'), 'Claude Code\'s own look'],
+        ...names.map(name => [mark(name), isBuiltIn(name) ? 'integriert' : 'eigen']),
+        [mark('off'), 'Claude Codes eigenes Aussehen'],
       ],
     ),
     '',
     markdownTable(
-      ['Setting', 'Value'],
+      ['Einstellung', 'Wert'],
       [
         ['icons', current.icons],
         ['prompt', current.prompt],
@@ -197,58 +197,58 @@ export function listing(current: Prefs, names: readonly string[], extra: readonl
       ],
     ),
     '',
-    '`/skin <name>` picks a skin.',
+    '`skin <name>` wählt einen Skin.',
     '',
-    '`/skin help` zeigt the commands.',
+    '`skin help` zeigt die Befehle.',
   ].join('\n')
 }
 
 // /skin help: every argument, laid out as skin-code lays out its help.
 export const helpText = (): string =>
   [
-    'skins commands',
+    'skins-Befehle',
     '',
     markdownTable(
-      ['Command', 'What it does'],
+      ['Befehl', 'Funktion'],
       [
-        ['`/skin`', 'öffnen the settings'],
-        ['`/skin <name>`', 'switch to that skin'],
-        ['`/skin list`', 'every skin und setting'],
-        ['`/skin help`', 'these commands'],
-        ['`/skin off`', 'zurück to Claude Code\'s own look'],
-        ['`/skin on`', 'skins zurück on'],
-        ['`/skin gallery`', 'every element the skin draws, numbered'],
-        ['`/skin calm [on/off]`', 'nein motion, one Zeile per Werkzeug row, lesen-only Ausgabe folded'],
-        ['`/skin copy` · `copy code`', 'copy the letzte reply, oder its letzte code block'],
-        ['`/skin pin` · `unpin` · `share`', 'give this Ordner its own look, drop it, oder make it the default'],
-        ['`/skin tables on/text/off`', 'tables as cards, as selectable Text, oder Claude Code\'s own'],
-        ['`/skin prompt left/right/plain`', 'which side your Prompt\'s outline sits on, oder a plain marker'],
-        ['`/skin words claude/skin`', 'whose words the spinner und the Zug footer zeigen'],
-        ['`/skin icons unicode/ascii`', 'the icon set'],
-        ['`/skin rail on/off`', 'the coloured rail beside Werkzeug rows'],
-        ['`/skin shimmer on/off`', 'the Leiste of light across the spinner word'],
-        ['`/skin band on/off`', 'the Nutzung meters above the Prompt'],
-        ['`/skin countdown on/off`', 'Zeit left on jede limit in the Leiste'],
-        ['`/skin clip on/off`', 'trim Claude Code\'s own shell Ausgabe to its head und tail'],
-        ['`/skin markdown on/off`', 'alerts und Aufgabe lists drawn'],
-        ['`/skin quiet on/off`', 'fold liest, searches und lesen-only commands to one row'],
-        ['`/skin charts on/off`', 'Mermaid fences as charts'],
-        ['`/skin math on/off`', 'math typeset'],
-        ['`/skin commands on/off`', 'slash-command Ausgabe as tables und cards'],
-        ['`/skin shell on/off`', 'shell Ausgabe as a card'],
-        ['`/skin highlight on/off`', 'code blocks highlighted in the skin\'s colours'],
-        ['`/skin hints on/off`', 'tell Claude that charts draw here'],
-        ['`/skin links on/off`', 'URLs und paths as links'],
-        ['`/skin copy on/off`', 'Copy buttons on cards'],
-        ['`/skin fold on/off`', 'long blocks fold behind `▾ N more`'],
-        ['`/skin expand on/off`', 'öffnen every group of liest und searches'],
-        ['`/skin compact on/off`', 'the Compact Schaltfläche in the Leiste'],
+        ['`/skin`', 'Einstellungen öffnen'],
+        ['`/skin <name>`', 'zu diesem Skin wechseln'],
+        ['`/skin list`', 'alle Skins und Einstellungen'],
+        ['`/skin help`', 'diese Befehle'],
+        ['`/skin off`', 'zurück zu Claude Codes eigenem Aussehen'],
+        ['`/skin on`', 'skins wieder einschalten'],
+        ['`/skin gallery`', 'alle vom Skin gezeichneten Elemente, nummeriert'],
+        ['`/skin calm [on/off]`', 'keine Bewegung, eine Zeile pro Werkzeug, schreibgeschützte Ausgabe eingeklappt'],
+        ['`/skin copy` · `copy code`', 'letzte Antwort oder letzten Codeblock kopieren'],
+        ['`/skin pin` · `unpin` · `share`', 'diesem Ordner ein eigenes Aussehen geben, entfernen oder als Standard festlegen'],
+        ['`/skin tables on/text/off`', 'Tabellen als Karten, als auswählbaren Text oder wie Claude Code selbst'],
+        ['`/skin prompt left/right/plain`', 'auf welcher Seite die Umrandung des Prompts sitzt, oder ein einfacher Marker'],
+        ['`/skin words claude/skin`', 'welche Wörter Spinner und Zug-Fußzeile anzeigen'],
+        ['`/skin icons unicode/ascii`', 'das Icons-Set'],
+        ['`/skin rail on/off`', 'die farbige Leiste neben Werkzeugzeilen'],
+        ['`/skin shimmer on/off`', 'der Lichtstreifen über dem Spinner-Wort'],
+        ['`/skin band on/off`', 'die Nutzungsanzeigen über dem Prompt'],
+        ['`/skin countdown on/off`', 'verbleibende Zeit für jedes Limit in der Leiste'],
+        ['`/skin clip on/off`', 'Claude Codes eigene Shell-Ausgabe auf Anfang und Ende kürzen'],
+        ['`/skin markdown on/off`', 'Hinweise und Aufgabenlisten zeichnen'],
+        ['`/skin quiet on/off`', 'Lese-, Such- und schreibgeschützte Befehle auf eine Zeile falten'],
+        ['`/skin charts on/off`', 'Mermaid-Blöcke als Diagramme'],
+        ['`/skin math on/off`', 'Mathematik formatsatz'],
+        ['`/skin commands on/off`', 'Slash-Befehlsausgabe als Tabellen und Karten'],
+        ['`/skin shell on/off`', 'Shell-Ausgabe als Karte'],
+        ['`/skin highlight on/off`', 'Codeblöcke in den Farben des Skins hervorheben'],
+        ['`/skin hints on/off`', 'Claude mitteilen, dass hier Diagramme gezeichnet werden'],
+        ['`/skin links on/off`', 'URLs und Pfade als Links'],
+        ['`/skin copy on/off`', 'Kopier-Schaltflächen auf Karten'],
+        ['`/skin fold on/off`', 'lange Blöcke hinter `▾ N weitere` falten'],
+        ['`/skin expand on/off`', 'alle Gruppen aus Lese- und Suchvorgängen öffnen'],
+        ['`/skin compact on/off`', 'die Schaltfläche „Kompakt“ in der Leiste'],
       ],
     ),
     '',
-    '`/skin list` zeigt every skin und setting.',
+    '`skin list` zeigt alle Skins und Einstellungen.',
     '',
-    '`/skin` öffnet the settings.',
+    '`skin` öffnet die Einstellungen.',
   ].join('\n')
 
 const isToggle = (word: string): word is ToggleWord => Object.hasOwn(TOGGLES, word)
@@ -262,7 +262,7 @@ export function runSkinCommand(args: string, current: Prefs, names: readonly str
 
     return value === 'on' || value === 'off'
       ? changed({ ...current, [field]: value === 'on' }, `${head} ${value}`)
-      : refused(current, `usage: /skin ${head} on|off`)
+      : refused(current, `Verwendung: /skin ${head} on|off`)
   }
 
   switch (head) {
@@ -281,29 +281,29 @@ export function runSkinCommand(args: string, current: Prefs, names: readonly str
         : changed(current, `skin: ${current.skin}`)
     case 'calm':
       return value === 'on' || value === undefined
-        ? changed(withCalm(current, true), current.calm === null ? 'calm on' : 'calm is already on')
+        ? changed(withCalm(current, true), current.calm === null ? 'calm on' : 'calm ist bereits aktiviert')
         : value === 'off'
-          ? changed(withCalm(current, false), current.calm === null ? 'calm is already off' : 'calm off: your settings are zurück')
-          : refused(current, 'usage: /skin calm [on|off]')
+          ? changed(withCalm(current, false), current.calm === null ? 'calm ist bereits deaktiviert' : 'calm aus: deine Einstellungen sind zurückgesetzt')
+          : refused(current, 'Verwendung: /skin calm [on|off]')
     case 'tables':
       return value === 'on' || value === 'text' || value === 'off'
         ? changed({ ...current, tables: value }, `tables ${value}`)
-        : refused(current, 'usage: /skin tables on|text|off')
+        : refused(current, 'Verwendung: /skin tables on|text|off')
     case 'prompt':
       return value === 'left' || value === 'right' || value === 'plain'
         ? changed({ ...current, prompt: value }, `prompt ${value}`)
-        : refused(current, 'usage: /skin prompt left|right|plain')
+        : refused(current, 'Verwendung: /skin prompt left|right|plain')
     case 'words':
       return value === 'claude' || value === 'skin'
         ? changed({ ...current, words: value }, `words: ${value}`)
-        : refused(current, 'usage: /skin words claude|skin')
+        : refused(current, 'Verwendung: /skin words claude|skin')
     case 'icons':
       return value === 'unicode' || value === 'ascii'
         ? changed({ ...current, icons: value }, `icons: ${value}`)
-        : refused(current, 'usage: /skin icons unicode|ascii')
+        : refused(current, 'Verwendung: /skin icons unicode|ascii')
     default:
       return names.includes(head)
         ? changed({ ...current, skin: head }, `skin: ${head}`)
-        : refused(current, `unknown skin "${head}". /skin list shows them, /skin help the commands`)
+        : refused(current, `Unbekannter Skin „${head}“. /skin list zeigt sie, /skin help die Befehle`)
   }
 }

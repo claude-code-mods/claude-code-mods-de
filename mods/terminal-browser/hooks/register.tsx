@@ -79,8 +79,8 @@ async function startBridge($: EngineInterface): Promise<{ ok: true } | { ok: fal
     return {
       ok: false,
       error: check.installed
-        ? 'Newer terminal-browser version required, ausführen terminal-browser upgrade'
-        : `Please installieren terminal-browser erste - ${INSTALL_URL}`,
+        ? 'Neuere terminal-browser-Version erforderlich. Führe terminal-browser upgrade aus'
+        : `Bitte installiere zuerst terminal-browser - ${INSTALL_URL}`,
     }
   }
   let report: unknown = null
@@ -92,7 +92,7 @@ async function startBridge($: EngineInterface): Promise<{ ok: true } | { ok: fal
     report = { error: String(err), code: 'start' }
   }
   if (!isLaunchReport(report) || !('port' in report)) {
-    const detail = isLaunchReport(report) && 'error' in report ? report.error : 'terminal-browser could nicht starten'
+    const detail = isLaunchReport(report) && 'error' in report ? report.error : 'terminal-browser konnte nicht gestartet werden'
     return { ok: false, error: `${detail}` }
   }
   state.port = report.port
@@ -188,7 +188,7 @@ async function watchBridge($: EngineInterface): Promise<void> {
       continue
     }
     denials += 1
-    if (denials === DENIALS_BEFORE_LOGGING) $.ui.log(`terminal-browser: frame blit refused: ${result.deny}`)
+    if (denials === DENIALS_BEFORE_LOGGING) $.ui.log(`terminal-browser: Frame-Blit abgelehnt: ${result.deny}`)
     const now = Date.now()
     if (now - lastDeniedRedraw >= DENIED_REDRAW_MS) {
       lastDeniedRedraw = now
@@ -276,17 +276,17 @@ export const register: Register = (on, options) => {
     if (!surfaces.includes('terminal')) return r
     await $.command.register({
       name: 'browser',
-      description: 'Open a Browser to the right',
+      description: 'Browser rechts öffnen',
       argumentHint: '[url]',
       immediate: true,
-    }).catch(err => $.ui.log(`terminal-browser: /Browser nicht registered: ${err}`))
+    }).catch(err => $.ui.log(`terminal-browser: /browser nicht registriert: ${err}`))
     if (agentToolEnabled) {
       await $.tool.register({
         name: 'open',
         description: 'Open terminal-browser directly inside claude code. Control the open page with the terminal-browser action CLI.',
         inputSchema: { type: 'object', properties: { url: { type: 'string', description: 'The page to open, as a full url or a host name' } } },
-      }).catch(err => $.ui.log(`terminal-browser: open tool not registered: ${err}`))
-      await $.tool.register({ name: 'close', description: 'Close the terminal-browser pane.' }).catch(err => $.ui.log(`terminal-browser: close tool not registered: ${err}`))
+      }).catch(err => $.ui.log(`terminal-browser: open-Werkzeug nicht registriert: ${err}`))
+      await $.tool.register({ name: 'close', description: 'Close the terminal-browser pane.' }).catch(err => $.ui.log(`terminal-browser: close-Werkzeug nicht registriert: ${err}`))
     }
     return r
   })
@@ -295,22 +295,22 @@ export const register: Register = (on, options) => {
     const arg = e.args.trim()
     if (arg === 'close' || (!arg && state.open)) {
       await closeBrowser($)
-      return { text: 'Closed terminal-browser' }
+      return { text: 'terminal-browser geschlossen' }
     }
     const opened = await openBrowser($, arg || null)
-    return { text: opened.ok ? 'Opened terminal-browser' : opened.error }
+    return { text: opened.ok ? 'terminal-browser geöffnet' : opened.error }
   })
 
   on('tool.call', { tool: new RegExp(`^${OPEN_TOOL}$`) }, async ($, e) => {
     const url = (e as { url?: unknown }).url
     const opened = await openBrowser($, typeof url === 'string' ? url : null)
-    if (!opened.ok) return { deny: `could not open the browser: ${opened.error}` }
+    if (!opened.ok) return { deny: `Browser konnte nicht geöffnet werden: ${opened.error}` }
     return { result: [{ type: 'text', text: `opened ${opened.url} ` }] }
   })
 
   on('tool.call', { tool: new RegExp(`^${CLOSE_TOOL}$`) }, async ($) => {
     const closed = await closeBrowser($)
-    return { result: [{ type: 'text', text: closed ? 'Browser pane closed' : 'nein Browser pane was öffnen (maybe the user closed it?)' }] }
+    return { result: [{ type: 'text', text: closed ? 'Browser-Bereich geschlossen' : 'Es war kein Browser-Bereich geöffnet (vielleicht wurde er geschlossen?)' }] }
   })
 
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {

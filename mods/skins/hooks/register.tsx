@@ -129,7 +129,7 @@ async function drawnBySkinCode($: EngineInterface, text: unknown): Promise<boole
   try {
     return (await answer) === true
   } catch (error) {
-    $.ui.log(`skin-code did nicht Antwort, so skins draws the reply: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
+    $.ui.log(`skin-code hat nicht geantwortet, daher zeichnet skins die Antwort: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
 
     return false
   }
@@ -365,7 +365,7 @@ async function settleEntrances($: EngineInterface, isForced = false): Promise<bo
         }
       }
 
-      $.ui.log(`settle: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
+      $.ui.log(`Settling: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
 
       return false
     },
@@ -397,7 +397,7 @@ async function load($: EngineInterface): Promise<void> {
   await update($, pinnedAtom, () => Object.hasOwn(folders, folder))
   // Links stay text if the environment cannot be read; the look loads either way.
   await readHyperlinks($).catch((error: unknown) => {
-    $.ui.log(`hyperlink prüfen: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
+    $.ui.log(`Hyperlinks prüfen: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
   })
 }
 
@@ -424,7 +424,7 @@ async function retryTheme($: EngineInterface): Promise<void> {
 
   await followTheme($).catch((error: unknown) => {
     themePending = true
-    $.ui.log(`theme nicht lesen yet: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
+    $.ui.log(`Theme noch nicht gelesen: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
   })
 }
 
@@ -446,7 +446,7 @@ async function reloadIfNewSession($: EngineInterface, known?: string): Promise<v
     if (loadedFor === id) {
       loadedFor = undefined
     }
-    $.ui.log(`nicht loaded yet: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
+    $.ui.log(`Noch nicht geladen: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
 
     return
   }
@@ -482,19 +482,19 @@ async function runFolderCommand($: EngineInterface, word: string): Promise<strin
       await $.store.set('folders', withFolder(folders, folder, prefs))
       await update($, pinnedAtom, () => true)
 
-      return 'this Ordner keeps its own look'
+      return 'Dieser Ordner behält sein eigenes Aussehen'
     case 'unpin': {
       const fallback = parsePrefs(await $.store.get('prefs'), names)
       await $.store.set('folders', withoutFolder(folders, folder))
       await update($, pinnedAtom, () => false)
       await update($, prefsAtom, () => fallback)
 
-      return `this Ordner follows the default: ${fallback.skin}`
+      return `Dieser Ordner folgt der Standardeinstellung: ${fallback.skin}`
     }
     default:
       await $.store.set('prefs', prefs)
 
-      return `default look: ${prefs.skin}`
+      return `Standardaussehen: ${prefs.skin}`
   }
 }
 
@@ -568,7 +568,7 @@ async function checkForUpdate($: EngineInterface): Promise<boolean> {
   const response = await $.http.fetch(LATEST_URL)
 
   if (!response.ok) {
-    throw new Error(`update check: ${LATEST_URL} answered ${response.status}`)
+    throw new Error(`Aktualisierungsprüfung: ${LATEST_URL} antwortete mit ${response.status}`)
   }
 
   const latest = versionOf(response.text)
@@ -611,7 +611,7 @@ const SURFACES: readonly RenderSurface[] = ['terminal', 'desktop', 'vscode', 'mo
 // fold controls: a press cannot cross from one mod's tree to another's.
 async function drawMarkdown($: EngineInterface, args: SkinsMarkdownArgs): Promise<RenderElement | undefined> {
   if (!SURFACES.includes(args.surface) || typeof args.text !== 'string' || !Number.isFinite(args.columns)) {
-    throw new Error('skins.markdown takes { surface, text, columns }: a surface name, a string and a number')
+    throw new Error('skins.markdown erwartet { surface, text, columns }: einen Oberflächennamen, eine Zeichenkette und eine Zahl')
   }
 
   const active = await activeSkin($)
@@ -650,7 +650,7 @@ export const register: Register = on => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'skin',
-      description: 'Open the skin settings, oder /skin <name | list | help | off>',
+      description: 'Skin-Einstellungen öffnen oder /skin <name | list | help | off>',
       argumentHint: '[help | gallery | copy | copy code | name | list | off | calm | pin | unpin | share | rail | tables | shimmer | band | countdown | clip | markdown | quiet | charts | math | commands | shell | highlight | hints | links | fold | expand | compact | icons | prompt | words]',
       immediate: true,
     })
@@ -661,7 +661,7 @@ export const register: Register = on => {
         inputSchema: DESIGN_TOOL.inputSchema,
       })
       .catch((error: unknown) => {
-        $.ui.log(`design Werkzeug: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
+        $.ui.log(`Design-Werkzeug: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
       })
     await new Promise<void>(resolve => {
       const cap = $.clock.after(DESIGN_TOOL_WAIT_MS, resolve)
@@ -700,7 +700,7 @@ export const register: Register = on => {
     countdownTicker?.cancel()
     countdownTicker = $.clock.every(COUNTDOWN_MS, () => {
       void tickCountdowns($).catch((error: unknown) => {
-        $.ui.log(`countdown tick: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
+        $.ui.log(`Countdown-Tick: ${error instanceof Error ? error.message : String(error)}`, { to: 'debug' })
       })
     })
 
@@ -848,7 +848,7 @@ export const register: Register = on => {
     }
 
     if (e.args.trim().toLowerCase() === 'gallery') {
-      await $.ui.open({ id: GALLERY, title: 'Skin gallery', focus: true, closeOnEscape: true })
+      await $.ui.open({ id: GALLERY, title: 'Skin-Galerie', focus: true, closeOnEscape: true })
 
       return {}
     }
@@ -862,7 +862,7 @@ export const register: Register = on => {
         $.ui.toast(copied.message)
       } else {
         const result = await $.ui.copy({ text: copied.text })
-        $.ui.toast(result.isCopied ? (word === 'copy' ? 'Copied the reply' : 'Copied the code') : 'Could nicht copy here')
+        $.ui.toast(result.isCopied ? (word === 'copy' ? 'Antwort kopiert' : 'Code kopiert') : 'Hier konnte nicht kopiert werden')
       }
 
       return {}
@@ -879,12 +879,12 @@ export const register: Register = on => {
     const names = skinNames(custom)
 
     if (word === 'list') {
-      const folder = (await read($, pinnedAtom)) ? 'pinned' : 'follows the default'
+      const folder = (await read($, pinnedAtom)) ? 'angeheftet' : 'folgt der Standardeinstellung'
 
       return {
         text: listing(current, names, [
-          ['this Ordner', folder],
-          ...(lastColumns === undefined ? [] : [['reply width', `${lastColumns} columns`] as const]),
+          ['Dieser Ordner', folder],
+          ...(lastColumns === undefined ? [] : [['Antwortbreite', `${lastColumns} Spalten`] as const]),
         ]),
       }
     }
@@ -912,7 +912,7 @@ export const register: Register = on => {
     const ui = $.ui.resolve(e)
 
     if (skin === undefined || e.surface === 'mobile' || !('Input' in ui)) {
-      return <ui.Text>Open the skin settings in the terminal or the desktop app.</ui.Text>
+      return <ui.Text>Öffne die Skin-Einstellungen im Terminal oder in der Desktop-App.</ui.Text>
     }
 
     const look = lookOf(ui, { prefs, custom, skin }, e.surface)
@@ -974,7 +974,7 @@ export const register: Register = on => {
       ...(diff === null ? {} : diff),
     }
     const copy = (text: string) => {
-      void $.ui.copy({ text, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Copied' : 'Could nicht copy here'))
+      void $.ui.copy({ text, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Kopiert' : 'Hier konnte nicht kopiert werden'))
     }
     const fields = (e.props.input ?? {}) as { file_path?: unknown; notebook_path?: unknown }
     const path = fields.file_path ?? fields.notebook_path
@@ -1048,7 +1048,7 @@ export const register: Register = on => {
     const active = await activeSkin($)
     const output = e.props.output as { stdout?: unknown } | null
     const copy = (text: string) => {
-      void $.ui.copy({ text, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Copied' : 'Could nicht copy here'))
+      void $.ui.copy({ text, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Kopiert' : 'Hier konnte nicht kopiert werden'))
     }
     // Only the terminal's shell card has a fold control here.
     const needs = { folds: e.surface === 'terminal' && SHELLS.has(e.props.tool) }
@@ -1179,7 +1179,7 @@ export const register: Register = on => {
     const svg = e.surface !== 'terminal' && active.prefs.tables === 'on' && 'Svg' in ui ? ui.Svg : undefined
     lastColumns = e.viewport?.columns
     const copy = (copied: string) => {
-      void $.ui.copy({ text: copied, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Copied' : 'Could nicht copy here'))
+      void $.ui.copy({ text: copied, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Kopiert' : 'Hier konnte nicht kopiert werden'))
     }
 
     const base = await sessionLook($, e, lookOf(ui, active, e.surface, copy), replyNeeds(text, segments))
@@ -1208,7 +1208,7 @@ export const register: Register = on => {
     const ui = $.ui.resolve(e)
     const svg = e.surface !== 'terminal' && active.prefs.tables === 'on' && 'Svg' in ui ? ui.Svg : undefined
     const copy = (copied: string) => {
-      void $.ui.copy({ text: copied, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Copied' : 'Could nicht copy here'))
+      void $.ui.copy({ text: copied, surface: e.surface }).then(result => $.ui.toast(result.isCopied ? 'Kopiert' : 'Hier konnte nicht kopiert werden'))
     }
 
     const base = await sessionLook($, e, lookOf(ui, active, e.surface, copy), replyNeeds(e.props.text, segments))
@@ -1291,7 +1291,7 @@ export const register: Register = on => {
       $.clock.after(1, () =>
         $.command
           .run({ command: 'compact' })
-          .catch((error: unknown) => $.ui.toast(`Compacting failed: ${error instanceof Error ? error.message : String(error)}`))
+          .catch((error: unknown) => $.ui.toast(`Komprimieren fehlgeschlagen: ${error instanceof Error ? error.message : String(error)}`))
           .finally(() => update($, compactingAtom, () => false)),
       )
     }
