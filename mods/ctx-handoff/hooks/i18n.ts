@@ -2,7 +2,7 @@
 // 不放這裡：給模型的提示、經驗檔的格式與標記（NOTE_TAG、標題、做法／理由／根據、規則行）、store 的鍵——那些是資料，改了會讀不了舊檔。
 // 有參數的訊息寫成函式；zh-TW 是原文，en 的型別跟著它，少一條就編譯不過。
 
-export type Lang = 'en' | 'zh-TW'
+export type Lang = 'en' | 'zh-TW' | 'de'
 
 let current: Lang = 'en'
 export const setLang = (lang: Lang) => { current = lang }
@@ -15,8 +15,16 @@ export const isChinese = (s: string) => /^zh|chinese|中文|繁體|繁体|台灣
 // 選介面語言：Claude Code 的 language 設定（使用者明確選的）優先，沒設就看系統語系。
 // 系統語系在 Linux／macOS 跟著 LANG，在 Windows 是作業系統的顯示語言；Git Bash 的 LANG 常是 en_US，不能拿來判斷
 export const pickLang = (setting: unknown, systemLocale: string | undefined): Lang => {
-  if (typeof setting === 'string' && setting.trim()) return isChinese(setting) ? 'zh-TW' : 'en'
-  return systemLocale && isChinese(systemLocale) ? 'zh-TW' : 'en'
+  const norm = (x: unknown) => (typeof x === 'string' ? x.trim().toLowerCase() : '')
+  const isTarget = (x: unknown) => /^de|deutsch|german/i.test(norm(x))
+  if (typeof setting === 'string' && setting.trim()) {
+    if (isChinese(setting)) return 'zh-TW'
+    if (isTarget(setting)) return 'de' as Lang
+    return 'en'
+  }
+  if (systemLocale && isChinese(systemLocale)) return 'zh-TW'
+  if (systemLocale && isTarget(systemLocale)) return 'de' as Lang
+  return 'en'
 }
 
 const s = (n: number) => (n === 1 ? '' : 's')
@@ -829,4 +837,396 @@ const en: Messages = {
   },
 }
 
-const MSG: Record<Lang, Messages> = { 'zh-TW': zh, en }
+const de: Messages = {
+  ind: '  ',
+  bullet: '- ',
+  list: ', ',
+  slashList: ' / ',
+  // 面板展開時，經驗檔裡的欄位標籤（做法／理由／根據）顯示成英文；檔案本身不變
+  fieldLabel: line => line.replace(/^做法：/, 'Wie: ').replace(/^理由：/, 'Warum: ').replace(/^根據：/, 'Beleg: '),
+  guardMatch: (tool, match, unless) => `${tool} matches /${match}/${unless ? ` and not /${unless}/` : ''}`,
+
+  usage: (input, read, ratio, write, plain, output, sec) =>
+    `input ${input} (Cache read ${read} = ${ratio}%, written ${write}, uncached ${plain}) · output ${output} · ${sec}s`,
+
+  fork: {
+    timeout: 'timeout: the fork did not answer in Zeit, gave up waiting',
+    nothingToFork: 'nothing-to-fork: this Sitzung was just restarted or cleared, so there is nothing to build on yet. Send a Nachricht, wait for the Antwort, then try again',
+  },
+
+  handoff: {
+    failedLog: why => `Handoff fehlgeschlagen: ${why}`,
+    failedToast: 'Handoff fehlgeschlagen',
+    failGenerate: why => `generation fehlgeschlagen: ${why}`,
+    savedLog: (kind, usage) => `Handoff (${kind}) ${usage}`,
+    dropped: reason => `dropped: ${reason}`,
+    reasonClear: r => `clear fehlgeschlagen: ${r}`,
+    reasonSubmit: r => `submit fehlgeschlagen: ${r}`,
+    reasonException: r => `exception: ${r}`,
+    reasonStage: (stage, r) => `${stage} fehlgeschlagen: ${r}`,
+    resubmitFailed: r => `could not resend the Nachrichten received during Handoff: ${r}`,
+    clearFailedLog: r => `/clear fehlgeschlagen: ${r}`,
+    submitFailedLog: r => `submit fehlgeschlagen: ${r}`,
+    submitFailedToast: 'Handoff created but not sent. Run /Handoff resend to send it again',
+    failedAll: r => `Handoff fehlgeschlagen: ${r}`,
+    failedCleanup: r => `cleanup after the fehlgeschlagen Handoff also fehlgeschlagen: ${r}`,
+    whyManual: 'the user ran /Handoff now',
+    whyTokens: tokens => `Kontext reached ${tokens} Tokens`,
+    intro: why =>
+      `The previous conversation was cleared automatically because ${why}. Here is the Handoff: read it, tell me in a few lines the current state and naechste step as you understand them, then wait for the user's instructions. Do not start working yet.`,
+    introHeld: why =>
+      `The previous conversation was cleared automatically because ${why}. Here is the Handoff and the Nachrichten the user sent during the Handoff: respond to the user's letzte Nachricht below, using the Handoff as Kontext.`,
+    note: note => ` (${note})`,
+    heldHead: '---\\nMessages the user sent during the Handoff:',
+  },
+
+  background: {
+    pause: 'Pause Abwesenheit work for this Sitzung',
+    resume: 'Resume Abwesenheit work for this Sitzung',
+    bound: (file, sid) => `Arbeitsbereich Notizen: ${file}; this Sitzung ${sid}`,
+    away: (paused, next) => `Abwesenheit work ${paused ? 'paused' : 'enabled'}; ${next === undefined ? 'no timer scheduled' : `next ${new Date(next).toLocaleString()}`}`,
+    task: (label, sid, phase, at) => `${label}: ${phase} (source ${sid}, started ${new Date(at).toLocaleTimeString()})`,
+    distill: 'Notizen update', handoff: 'Handoff / refresh', idle: 'Leerlauf',
+    idleTask: label => `${label}: Leerlauf`,
+    phases: { refresh: 'refreshing Cache', generating: 'generating summary', submitting: 'submitting Handoff' },
+    collected: (at, usage, unknown) => `Sitzung background Verwendung (collected since ${new Date(at).toLocaleString()} after this update, not a bill): ${usage}; ${unknown} requests with unbekannt Verwendung`,
+    uncollected: 'No background Verwendung collected for this Sitzung yet; earlier cost is not known to be zero',
+    pending: sid => `Undelivered Handoff source ${sid}; /Handoff resend ${sid}`,
+    history: 'Recent records (diagnostic history is not a recoverable summary)',
+  },
+  distill: {
+    why: {
+      idle: 'Leerlauf refresh',
+      away: 'Abwesenheit',
+      before: 'before Handoff',
+      manual: 'manual',
+      every: n => `every ${n} Nachrichten`,
+    },
+    failLog: (why, reason) => `Notizen update fehlgeschlagen (${why}): ${reason}`,
+    timeout: min => `timeout: no answer after ${min} Minuten, gave up`,
+    edited: file => `the Notizen file was edited during the update, skipped this Zeit: ${file}`,
+    skipLog: (why, reason) => `Notizen update (${why}): ${reason}`,
+    waiting: why => `Notizen update (${why}): another update is running, queued after it; this part of the conversation is already captured`,
+    doneLog: (why, changes, rejected, file) =>
+      `Notizen update (${why}): ${changes} change${s(changes)}${rejected ? `, dropped ${rejected} invalid line${s(rejected)}` : ''}${changes ? `; wrote ${file}` : ''}`,
+    queued: n => `${n} change${s(n)} queued for your naechste Nachricht`,
+    toast: (n, queued, file) => `Notizen updated: ${n} change${s(n)}${queued ? ', sent along with your next message' : ''}: ${file}`,
+    writeFailed: err => `could not write the file: ${err}`,
+    noUsableActions: 'No usable actions in the Notizen output; the conversation is kept for retry',
+    retryLost: 'The previous partial update endpoint is fehlt; Notizen and Fortschritt were not changed',
+    retryCleanup: err => `Notizen updated, but retry endpoint cleanup fehlgeschlagen: ${err}`,
+  },
+
+  status: {
+    running: 'Updating Notizen…',
+    left: n => `${n} more Nachricht${s(n)} until Notizen update`,
+    short: 'Conversation is short, Notizen not updated yet',
+    next: 'Notizen update after the naechste Nachricht',
+    deferred: parts => `Handoff delayed: ${parts}`,
+  },
+
+  distillStatus: {
+    head: (on, every) => `Background Notizen ${on} (Leerlauf refresh, Abwesenheit, before Handoff, every ${every} Nachrichten)`,
+    next: (left, idleMin) => `naechste: in ${left} Nachricht${s(left)}, after ${idleMin} min Leerlauf, or before a Handoff`,
+    last: (at, why, n) => `letzte: ${at} · ${why} · ${n} change${s(n)}`,
+    lastNone: 'letzte: keine',
+    rejected: (n, samples) => `Dropped ${n} ungueltig Zeile${s(n)}: ${samples}`,
+    failed: (at, why, reason) => `letzte Fehler: ${at} · ${why} · ${reason}`,
+    notes: (file, memory, rules, injected) =>
+      `Arbeitsbereich Notizen: ${file} (${memory} memor${memory === 1 ? 'y' : 'ies'}, ${rules} Regel${s(rules)}, ${injected} Regel${s(injected)} carried into neu conversations)`,
+    procedures: (n, inProject) => `Arbeitsbereich procedures: ${n} (${inProject} already in a Projekt skill or doc; procedures are not carried into neu conversations)`,
+    tiers: (full, titles, archived, days) =>
+      `Memories carried in: ${full} preference${s(full)} and correction${s(full)} in full, ${titles} fact${s(titles)} and location${s(titles)} as titles nur, ${archived} archived (not confirmed for over ${days} Tage, not carried in)`,
+  },
+
+  idle: {
+    refreshSkipped: 'Cache refresh skipped: this process has no request to fork; Leerlauf timing resumes after the naechste main conversation response',
+    refresh: (n, max, read, create) => `Cache refresh ${n}/${max} Cache_read=${read} Cache_creation=${create}`,
+    refreshFailed: (n, max, reason) => `Cache refresh ${n}/${max} fehlgeschlagen: ${reason}`,
+    awaySavedLog: tokens => `Abwesenheit Handoff saved (${tokens} Tokens), will not /clear automatically`,
+    awaySavedToast: 'Abwesenheit Handoff saved',
+    outdated: 'the conversation went on, deleted the outdated Abwesenheit Handoff',
+  },
+
+  stop: {
+    tasks: n => `${n} background Aufgabe${s(n)}`,
+    oneShot: n => `${n} one-off schedule${s(n)}`,
+    agents: n => `${n} subagent${s(n)}`,
+    deferral: (parts, cap) => `${parts} still running, waiting for them to finish before Handoff (Limit ${cap} Tokens)`,
+    deferLog: (tokens, parts) => `Kontext ${tokens} reached the Schwellenwert, but ${parts} still running; waiting for them to finish before Handoff`,
+    note: (parts, cap) => `${parts} still running at Handoff; Kontext reached the Limit of ${cap}`,
+    capLog: (tokens, cap, parts) => `Kontext ${tokens} reached the Limit of ${cap}; not waiting for ${parts} any longer, handing off now`,
+    retryLog: tokens => `Kontext ${tokens} reached the Schwellenwert, but the letzte Handoff fehlgeschlagen recently; will try again later`,
+    stopFailed: err => `Stop check fehlgeschlagen: ${err}`,
+  },
+
+  loops: {
+    doneLog: 'Said fertig, but no test or check ran after the edits this turn; asked Claude to verify erste',
+    rewriteLog: 'The final Antwort was not in the set Sprache; asked Claude to rewrite it once',
+    status: (retry, done, reply) => `Nudges: repeated Fehler ${retry}, verify before fertig ${done}, Antwort Sprache ${reply}`,
+  },
+
+  progress: {
+    status: (at, task, state, hintOff) => `Latest Fortschritt: ${at}, ${task} (${state})${hintOff ? ', not offered to new chats (resume_hint is off)' : ''}`,
+    states: { done: 'fertig', in_progress: 'in Fortschritt', blocked: 'blocked' },
+  },
+
+  start: {
+    description: 'ctx-Handoff: Status; Panel / now / dry / distill / resume / continue / resend / Abwesenheit / Guard / refresh',
+    taken: err => `/Handoff is already taken (${err}), using /ctx-Handoff instead`,
+    registerFailed: err => `could not register the command: ${err}`,
+    resumeFailed: err => `could not restore the Leerlauf timer: ${err}`,
+    pruneFailed: err => `could not tidy the store at startup: ${err}`,
+  },
+
+  submit: {
+    wait: (sec, max) => `${sec}s so far, usually fertig within a minute, up to about ${max} Minuten`,
+    attach: 'Images and other attachments cannot be held. Paste them again after the Handoff.',
+    busy: (wait, attach) => `Handoff in Fortschritt (${wait}).${attach ? ` ${attach}` : ''}`,
+    dup: (wait, attach) => `Handoff in Fortschritt (${wait}). This Nachricht is already held and will not be sent twice.${attach ? ` ${attach}` : ''}`,
+    held: (wait, attach) => `Handoff in Fortschritt (${wait}). This Nachricht is held and will be sent in the neu conversation.${attach ? ` ${attach}` : ''}`,
+    pendingToast: 'A Handoff was not delivered. Run /Handoff resend to send it again',
+    awayAttach: 'There is an Abwesenheit Handoff and the alt conversation\\\'s Cache has expired. Attachments cannot be held: run /Handoff resume (neu conversation) or /Handoff continue (stay in the alt one) erste, then paste again.',
+    awayHeld: hasAttach =>
+      'There is an Abwesenheit Handoff and the alt conversation\\\'s Cache has expired. /Handoff resume: continue in a neu conversation and include this Nachricht; /Handoff continue: send this Nachricht in the alt conversation (or just send it again).' +
+      (hasAttach ? 'There is an Abwesenheit Handoff and the alt conversation\\\'s Cache has expired. /Handoff resume: continue in a neu conversation and include this Nachricht; /Handoff continue: send this Nachricht in the alt conversation (or just send it again).' : 'There is an Abwesenheit Handoff and the alt conversation\\\'s Cache has expired. /Handoff resume: continue in a neu conversation and include this Nachricht; /Handoff continue: send this Nachricht in the alt conversation (or just send it again).'),
+  },
+
+  guard: {
+    state: { proposed: 'Entwurf', on: 'on', off: 'off' },
+    mode: { deny: 'blockieren', remind: 'erinnern' },
+    checkFailed: err => `Guard check fehlgeschlagen, letting the call through: ${err}`,
+    head: (id, rule, message) => `Guard #${id} (${rule}): ${message}`,
+    denyToast: (id, tool, rule) => `Guard #${id} blocked ${tool}: ${rule}`,
+    denyHint: id => `If the user really wants this to run as is, ask them to run /Handoff Guard off ${id} erste.`,
+    noCandidates: min => `No Regel without a Guard was corrected again after going into the repo, or came up ${min}+ Mal while kept out of it`,
+    suggestFailed: reason => `Guard suggestion fehlgeschlagen: ${reason}`,
+    autoFailed: reason => `Drafting guards fehlgeschlagen: ${reason}`,
+    autoDrafted: n => `Drafted ${n} Guard${n === 1 ? '' : 's'}; the naechste conversation will have Claude ask whether to use them`,
+    suggested: (rules, drafts) => `Looked at ${rules} Regel${s(rules)} and drafted ${drafts} Guard${s(drafts)} (not active yet; approve with /Handoff Guard on N)`,
+    droppedLines: (n, list) => `Dropped ${n} Zeile${s(n)}: ${list}`,
+    none: min => `Guards: keine (Regeln corrected again after going into the repo, or said ${min}+ Mal while kept out of it, get drafted and Claude asks you; or run /Handoff Guard suggest)`,
+    listHead: 'Guards:',
+    entry: (id, state, mode, rule, hits) => `#${id} [${state} · ${mode}] ${rule} (triggered ${hits} Zeit${s(hits)})`,
+    example: (bad, good) => `Example: blocks "${bad}", allows "${good}"`,
+    replay: (calls, hits) => `Trial match on this conversation when drafted: ${hits} of ${calls} tool call${s(calls)}`,
+    recentHits: 'Recent hits (check they should really fire; if most are false alarms, narrow the Guard or turn it off):',
+    usage: 'Verwendung: /Handoff Guard [suggest | on N | off N | mode N deny|erinnern | drop N]',
+    missing: id => `No Guard #${id}`,
+    changed: (id, dropped) => `Guard #${id} ${dropped ? 'deleted' : 'updated'}`,
+    summary: (on, draft, off) => `Guards: ${on} on, ${draft} Entwurf, ${off} off`,
+    summaryMore: (n, min) => `; ${n} Regel${s(n)} appeared ${min}+ Mal without a Guard (/Handoff Guard suggest)`,
+    panelDone: (id, action) => `Guard #${id} ${action === 'on' ? 'approved' : action === 'off' ? 'turned off' : 'deleted'}`,
+    parse: {
+      noMarker: 'ACTIONS marker not found',
+      notCandidate: 'Regel is not a candidate',
+      badTool: 'bad tool format',
+      missingFields: 'fehlt match / Nachricht / mode',
+      tooLong: 'regex too long',
+      missingExamples: 'fehlt bad / good examples',
+      badNotBlocked: 'the bad example is not blocked',
+      goodBlocked: 'the good example would be blocked too',
+      duplicate: 'same Regel repeated',
+      wrap: (line, why) => `${line} (${why})`,
+    },
+  },
+
+  panelCmd: {
+    opened: 'Panel opened above the input. Click the buttons, or press ctrl+x tab to use the keyboard. Run /Handoff Panel again to close it',
+    closed: 'Panel closed',
+    readFailed: err => `Could not read Panel data: ${err}`,
+    failed: err => `fehlgeschlagen: ${err}`,
+    busyKeep: 'Notizen are being updated, try again in a moment',
+    busyDrop: 'Notizen are being updated, try deleting again in a moment',
+    notFound: 'Could not find this entry. The Notizen file may have just been edited',
+    kept: title => `Kept: ${title} (carried into neu conversations again)`,
+    deleted: (kind, name, dir) =>
+      `Deleted ${kind === 'm' ? 'the memory' : kind === 'r' ? `the rule "${name}"` : `the procedure "${name}"`} (original backed up to ${dir}/.ctx-Handoff-backup/)`,
+    settingSet: (name, value) => `${name}: ${value} (other sessions pick it up on their naechste Nachricht)`,
+    settingReset: (name, value) => `${name} back to Einstellungen.json or the default: ${value}`,
+  },
+
+  change: {
+    addMemory: head => `Added Erinnerung: ${head}`,
+    updateMemory: head => `Updated Erinnerung: ${head}`,
+    confirmMemory: head => `Erinnerung confirmed: ${head}`,
+    deleteMemory: head => `Deleted Erinnerung: ${head}`,
+    addRule: (name, rule) => `neu Regel: ${name} (seen 1 Zeit): ${rule}`,
+    confirmRule: (name, count) => `Regel confirmed: ${name} → seen ${count} Mal`,
+    updateRule: name => `Updated Regel: ${name}`,
+    deleteRule: name => `Deleted Regel: ${name}`,
+    addProcedure: (name, steps) => `neu procedure: ${name} (${steps} Schritte, seen 1 Zeit)`,
+    confirmProcedure: (name, count) => `Procedure confirmed: ${name} → seen ${count} Mal`,
+    updateProcedure: name => `Updated procedure: ${name}`,
+    deleteProcedure: name => `Deleted procedure: ${name}`,
+    inProject: (name, where) => `Now in the repo: ${name} → ${where}`,
+    notInProject: name => `Not moving to the repo (you said no): ${name}`,
+    guardApproved: (id, rule) => `Guard #${id} turned on (you said yes): ${rule}`,
+    guardDeclined: (id, rule) => `Guard #${id} turned down (you said no): ${rule}`,
+  },
+
+  reject: {
+    over: (k, max) => `${k} over ${max} Zeichen`,
+    overJoin: ', ',
+    idNot: kind => `id is not ${kind}#`,
+    noId: id => `no such id ${id}`,
+    whereMissing: where => `${where} is not in the repo`,
+    buried: title => `"${title}" was deleted by the user and no neu Zitat from the user brings it back`,
+    badType: type => `ungueltig type (${type})`,
+    missing: names => `fehlt ${names}`,
+    quoteNotFound: 'Zitat is not in the user\\\'s Nachrichten',
+    quoteMissing: type => `${type} entries need a Zitat from the user`,
+    badOp: op => `unbekannt op (${op})`,
+    badSteps: (min, max) => `Schritte must be ${min} to ${max} non-empty strings`,
+    noMarker: marker => `${marker} marker not found`,
+    badJson: msg => `ungueltig JSON (${msg})`,
+    notObject: 'not a JSON object',
+    secret: 'looks like a Geheimnis',
+    badState: v => `ungueltig state (${v})`,
+    badFiles: 'files is not a list',
+    badList: field => `${field} is not a list`,
+    tooMany: (k, max) => `${k} has more than ${max} Elemente`,
+    overTotal: max => `Fortschritt note over ${max} Zeichen in total`,
+    noRecord: '(content not recorded)',
+    sample: (why, line) => `${why}: ${line}`,
+  },
+
+  cmd: {
+    unknown: sub => `unbekannt subcommand "${sub}"`,
+    usageHead: 'Verwendung:',
+    usageLines: [
+      '  /Handoff                  Status',
+      '  /Handoff                  Status',
+      '  /Handoff                  Status',
+      '  /Handoff                  Status',
+      '  /Handoff                  Status',
+      '  /Handoff                  Status',
+      '  /Handoff                  Status',
+      '  /Handoff                  Status',
+      '  /Handoff                  Status',
+      '  /Handoff                  Status',
+      '  /Handoff                  Status',
+      '  /Handoff                  Status',
+    ],
+    context: (tokens, threshold, window) => `Kontext ${tokens} / Schwellenwert ${threshold} (window ${window})`,
+    refresh: (on, n, max, timer) => `Cache refresh ${on}, refreshed ${n}/${max} this Leerlauf period, timer ${timer ? 'waiting' : 'not started'}`,
+    away: state => `Abwesenheit Handoff: ${state === 'none' ? 'none' : state === 'yes' ? 'yes' : 'yes (one message held)'}`,
+    latest: last => `Latest Handoff: ${last ? `${last.at} ${last.kind}, context ${last.tokens}` : 'none'}`,
+    latestFailure: (at, kind, reason) => `Latest Fehler: ${at} ${kind}, ${reason}`,
+    undelivered: 'Undelivered Handoff: yes (/Handoff resend to send it again)',
+    deferred: deferral => `Handoff delayed: ${deferral}`,
+    background: (tasks, oneShot, recurring) => `Background (letzte Stop): ${tasks} Aufgabe${s(tasks)}, ${oneShot} one-off schedule${s(oneShot)}, ${recurring} recurring schedule${s(recurring)}`,
+    busy: 'Another Handoff is in Fortschritt',
+    nowStarted: 'Creating the Handoff, then /clear and send it',
+    dryFailed: 'Trial run fehlgeschlagen, see the log above for the Grund',
+    dryDone: tokens => `Trial run fertig (no /clear), Kontext ${tokens}`,
+    distillSet: arg => `Background Notizen set to ${arg}`,
+    distillUsage: 'Verwendung: /Handoff distill (update now) or /Handoff distill on|off',
+    distilling: 'Already updating Notizen',
+    distillNone: 'Notizen not updated: no neu Nachrichten since the letzte update, or it fehlgeschlagen',
+    distillDone: 'Notizen updated',
+    refreshNow: on => `Currently ${on}. Verwendung: /Handoff refresh on|off`,
+    refreshSet: (arg, minutes) => `Cache refresh set to ${arg}${arg === 'off' ? ` (an away handoff is created after ${minutes} idle minutes)` : ''}`,
+    noAway: 'No Abwesenheit Handoff',
+    resumeIntro: 'The previous conversation went Leerlauf and a Handoff was created, so this is a neu conversation to continue it. Read the Handoff, tell me in a few lines the current state and naechste step as you understand them, then wait for the user\\\'s instructions.',
+    resumeIntroHeld: 'The previous conversation went Leerlauf and a Handoff was created, so this is a neu conversation to continue it. Respond to the user\\\'s Nachricht at the end, using the Handoff as Kontext.',
+    resumeHeld: '---\\nThe user\\\'s erste Nachricht after coming back:',
+    resumeFailedLog: r => `/clear or submit fehlgeschlagen: ${r}`,
+    resumeClearFailed: '/clear fehlgeschlagen. The Abwesenheit Handoff is kept, you can run /Handoff resume again',
+    resuming: 'About to /clear and send the Abwesenheit Handoff',
+    resendIntro: 'Resending the previous Handoff. Read it, tell me in a few lines the current state and naechste step as you understand them, then wait for the user\\\'s instructions. Do not start working yet.',
+    nothingToResend: 'No Handoff to resend in this Sitzung',
+    pendingUnbound: 'This older pending record has no Arbeitsbereich source and cannot be resent safely; it is kept unchanged',
+    awayUsage: 'Verwendung: /Handoff Abwesenheit pause|resume (this Sitzung nur; Notizen updates keep running)',
+    commandFailed: err => `Command fehlgeschlagen; completion was not reported: ${err}`,
+    awayChanged: paused => paused ? 'Abwesenheit work paused for this Sitzung. Requests already sent cannot be cancelled and may still cost Tokens; late results are ignored. Notizen updates keep running' : 'Abwesenheit work paused for this Sitzung. Requests already sent cannot be cancelled and may still cost Tokens; late results are ignored. Notizen updates keep running',
+    resendFailed: err => `resend fehlgeschlagen: ${err}`,
+    resending: 'Resending the Handoff (no /clear)',
+    discarded: 'Abwesenheit Handoff discarded, staying in the alt conversation',
+    discardedSend: 'Abwesenheit Handoff discarded, sending your letzte Nachricht in the alt conversation',
+    sendHeldFailed: err => `could not send the held Nachricht: ${err}`,
+  },
+
+  panel: {
+    title: ' · Projekt Notizen and guards',
+    close: 'Close',
+    more: 'More',
+    less: 'Less',
+    del: 'Delete',
+    confirmDel: 'Confirm',
+    cancel: 'Cancel',
+    keep: 'Keep',
+    off: 'Turn off',
+    approve: 'Approve',
+    draftBtn: 'Entwurf guards',
+    buttonsCells: 32,
+    tabGuard: n => `Guards ${n}`,
+    tabMemory: n => `Erinnerung ${n}`,
+    tabRules: (r, p = 0) => (p > 0 ? `Regeln ${r} / Proc ${p}` : `Regeln ${r} / Proc ${p}`),
+    tabDistill: 'letzte update',
+    tabSettings: 'Einstellungen',
+    settingsHint: 'Values set here win over Einstellungen.json and apply to every Arbeitsbereich. Press More for Details',
+    source: { panel: 'Panel', file: 'Einstellungen.json', default: 'default' },
+    on: 'on',
+    offValue: 'off',
+    toggleBtn: 'Toggle',
+    resetBtn: 'Reset',
+    minutes: n => `${n} min`,
+    settingName: {
+      auto_handoff: 'Hand off at the Schwellenwert',
+      threshold: 'Handoff Schwellenwert',
+      window_ratio: 'Schwellenwert ratio on klein windows',
+      refresh: 'Keep the Cache warm while Abwesenheit',
+      idle_minutes: 'Leerlauf Zeit before a refresh',
+      max_refresh: 'Refreshes per Leerlauf period',
+      away_handoff: 'Abwesenheit Handoff',
+      distill: 'Projekt Notizen (background)',
+      distill_every: 'Nachrichten between Notizen updates',
+      min_tokens: 'Smallest conversation handled',
+      notes_model: 'Modell for Notizen',
+      resume_hint: 'Tell neu chats where you stopped',
+      retry_nudge: 'Repeated Fehler nudge',
+      done_check: 'Check before "fertig"',
+      reply_language: 'Antwort Sprache reminder',
+      language: 'Nachricht Sprache',
+    },
+    settingHelp: {
+      auto_handoff: '"When off, nothing happens at the Schwellenwert and Claude Code\'s own compact takes over"',
+      threshold: 'Hand off to a neu conversation when the Kontext reaches this many Tokens (needs automatic Handoff on)',
+      window_ratio: 'On windows smaller than the Schwellenwert, hand off at this share of the window',
+      refresh: 'While you are Abwesenheit, send a tiny request now and then so the Cache does not expire',
+      idle_minutes: 'Minuten after the Cache was letzte used before refreshing (the Cache expires at 60)',
+      max_refresh: 'After this many, write an Abwesenheit Handoff to pick up from when you return',
+      away_handoff: 'When refreshes run out or are off, write an Abwesenheit Handoff and offer /Handoff resume or continue on return; off does nothing',
+      distill: 'Update the Projekt Notizen in the background every N Nachrichten, when Leerlauf and before a Handoff',
+      distill_every: 'Update the Notizen after this many of your Nachrichten; fewer is fresher but makes more requests',
+      min_tokens: 'Smaller conversations are cheap to rebuild: no refresh, Notizen or Abwesenheit Handoff',
+      notes_model: 'Modell for background Notizen (Sonnet 5.5 at least); Einstellungen.json can name another Modell',
+      resume_hint: 'A neu chat in the same folder within 7 Tage is told where the letzte one stopped',
+      retry_nudge: 'When a tool fails twice in a row for the same Grund, ask Claude to change approach',
+      done_check: 'When Claude says fertig after editing code with no passing test or check, ask it to verify once',
+      reply_language: '"erinnern Claude once when its explanation is not in this Sprache; auto follows Claude Code\'s Sprache"',
+      language: '"Sprache of the Status Zeile, notices and Panel; auto follows Claude Code\'s Sprache, then the System"',
+    },
+    noGuards: 'No guards yet. Once a Regel appears 3+ Mal you can ask the Modell to Entwurf one.',
+    guardMeta: (id, mode, hits) => `#${id} · ${mode} · ${hits} hit${s(hits)}`,
+    blockLabel: 'Blocks ',
+    allowLabel: 'Allows ',
+    replay: (calls, hits) => `Trial match on this conversation: ${hits} of ${calls} tool call${s(calls)}`,
+    recentHits: 'Recent hits (if most are false alarms, narrow or turn off):',
+    suggesting: 'Asking the Modell for drafts…',
+    candidates: n => `${n} Regel${s(n)} appeared 3+ Mal without a Guard `,
+    memoryHint: (shown, total) => `Latest ${shown} of ${total} · preferences and corrections go into neu conversations in full, facts and locations as titles nur`,
+    archived: (n, days) => `${n} archived: not confirmed for over ${days} Tage, not carried into neu conversations`,
+    noRules: 'No Regeln yet',
+    ruleCount: n => `${n}x`,
+    proceduresHint: n => `${n} procedure${s(n)} · not carried into neu conversations; at 3+ Mal the AI is asked to turn them into Projekt skills`,
+    inProject: project => (project.startsWith('已在 ') ? `in ${project.slice(3)}` : 'in ${project.slice(3)}'),
+    distillLine: (at, why, n) => `${at} · ${why} · ${n} change${s(n)}`,
+    noDistill: 'No Notizen updates yet',
+    footer: file => `After ctrl+x tab, press 1–5 to switch tabs · ${file}`,
+    typeLabel: { user: 'Preference', feedback: 'Correction', project: 'Fact', reference: 'Location' },
+  },
+}
+
+const MSG: Record<Lang, Messages> = { 'zh-TW': zh, en, 'de': de }
