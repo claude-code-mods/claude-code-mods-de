@@ -510,7 +510,7 @@ async function toggleLog($: EngineInterface): Promise<boolean> {
     // The surface may decline to draw the pane; say why rather than doing nothing on a press.
     const opened = await $.ui.open({ id: LOG_PANE, title: t(language, 'commands.logTitle') })
     if (!opened.isPlaced) {
-      const why = 'reason' in opened && opened.reason ? String(opened.reason) : 'nicht placed'
+      const why = 'reason' in opened && opened.reason ? String(opened.reason) : 'nicht platziert'
       $.ui.toast(t(language, 'toasts.logNotPlaced', { reason: why }))
       await report($, 'log pane', why)
     }
@@ -1009,7 +1009,7 @@ async function testJudge($: EngineInterface): Promise<void> {
   await update($, jev, value => ({ ...value, test: { state: 'testing' as const } }))
   try {
     const s = normalizeSettings(await read($, settingsDraft) ?? await read($, settings))
-    const judged = await judge($, s, { messages: [], next: 'Rename a local variable in one function and verify the result.' }, true)
+    const judged = await judge($, s, { messages: [], next: 'Benenne eine lokale Variable in einer Funktion um und überprüfe das Ergebnis.' }, true)
     const ok = !!judged.verdict && !judged.error
     await update($, jev, value => ({ ...value, test: { state: ok ? 'ok' as const : 'fail' as const, message: `${judged.ms} ms · ${judged.verdict?.effort ? t(language, 'band.' + judged.verdict.effort).toLowerCase() : t(language, 'toasts.noVerdict')} · ${judged.error ?? judged.by}` } }))
   } catch (error) {
@@ -1102,7 +1102,7 @@ async function requestPick($: EngineInterface, e: AgentSpawnInput, s: Settings):
   // The decision behind a pick is otherwise only in the agents panel; one debug line per pick keeps
   // it checkable: the tier it was given, the rung it landed on and what ran.
   const entry = { task: e.description.slice(0, 200), domain: value.domain, level: value.level, kind: value.kind ?? 'do', rule: value.rule, rung: value.rung, position: value.position, skipped: value.skipped, target: value.target, model: model ?? null, effort: value.effort, by, ...(ladderLine ? { fallbacks } : {}), ...(mode ? { mode: mode.name } : {}), ...(fallbackReason ? { fallbackReason } : {}) }
-  await $.ui.log('ClaudeRipple worker pick: ' + JSON.stringify(entry), { to: 'debug' })
+  await $.ui.log('ClaudeRipple: Worker-Auswahl: ' + JSON.stringify(entry), { to: 'debug' })
   // The brief itself is never logged (it can hold anything); its length is. To read a pick again,
   // its brief is in the session's own transcript under the same description. A model's reason is
   // kept, short, so a wrong source can be found.
@@ -2837,8 +2837,8 @@ export const register: Register = on => {
     if ((e.trigger === 'precompute' || e.trigger === 'auto') && !e.agentId && currentTurn === null) {
       try {
         if (!await read($, busy) && await warmHolds($)) {
-          await $.ui.log('ClaudeRipple: idle compaction skipped, behalten warm holds this chat\'s Cache', { to: 'debug' })
-          return { skip: 'keep warm holds this chat\'s cache' }
+          await $.ui.log('ClaudeRipple: idle compaction skipped, Warmhalten hält den Cache dieses Chats\'s Cache', { to: 'debug' })
+          return { skip: 'Warmhalten hält den Cache dieses Chats\'s cache' }
         }
       } catch (error) { await report($, 'session.compact warm', error) }
     }

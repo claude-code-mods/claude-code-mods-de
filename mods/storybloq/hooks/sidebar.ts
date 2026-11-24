@@ -82,7 +82,7 @@ const PANE_TITLE = "Storybloq";
 * a placed pane docks or sits inline is the renderer's call (ISS-1247).
 */
 const DOCK_COLUMNS = 144;
-const BAND_HINT = ", board öffnet at your nächste Prompt";
+const BAND_HINT = ", Board öffnet sich bei deiner nächsten Eingabe";
 const STORE_KEY = "sidebar-ledger-cache-v1";
 /** Under the store's 4 MiB, with room for whatever else the plugin keeps. */
 const STORE_BUDGET_BYTES = 3000000;
@@ -119,7 +119,7 @@ const CONFIG_PATH = ".story/config.json";
 const ROADMAP_PATH = ".story/roadmap.json";
 const STATUS_PATH = ".story/status.json";
 /** T-537: the setup hint's action, in the Claude Code profile's command. */
-export const SETUP_HINT = "Run /story to set this Projekt up; the pane öffnet when it finishes.";
+export const SETUP_HINT = "Führe /story aus, um dieses Projekt einzurichten; der Bereich öffnet sich, wenn es fertig ist.";
 /** T-532: tool calls read the context fill at most this often. */
 const CONTEXT_REFRESH_MS = 5000;
 function forgetEverything(dashboard: DashboardState): void {
@@ -191,8 +191,8 @@ function summaryLine(dashboard: DashboardState): string {
   const busy = dashboard.scanActive || dashboard.scanInitializing;
   if (!dashboard.warm || dashboard.projection === null) {
     return busy
-      ? `Storybloq: reading the ledger, ${dashboard.queue.length} Dateien left`
-      : "Storybloq: nein ledger lesen yet";
+      ? `Storybloq: Ledger wird gelesen, noch ${dashboard.queue.length} Dateien`
+      : "Storybloq: Ledger noch nicht gelesen";
   }
   // The phase in hand; failing that, why there is none: a project whose
   // every phase is complete is finished, not phaseless (ISS-1257, the
@@ -200,17 +200,17 @@ function summaryLine(dashboard: DashboardState): string {
   const phase = dashboard.projection.currentPhase
     ? dashboard.projection.currentPhase.name
     : dashboard.projection.phases.length > 0
-      ? "alle phases complete"
-      : "nein phase";
+      ? "alle Phasen abgeschlossen"
+      : "keine Phase";
   const parts = [
     phase,
-    `${dashboard.projection.openTickets} open`,
-    `${dashboard.projection.inProgressTickets.length} in progress`,
-    `${dashboard.projection.blockedTickets} blocked`,
-    `${dashboard.projection.openIssues} issues`,
+    `${dashboard.projection.openTickets} offen`,
+    `${dashboard.projection.inProgressTickets.length} in Arbeit`,
+    `${dashboard.projection.blockedTickets} blockiert`,
+    `${dashboard.projection.openIssues} Issues`,
   ];
   if (busy)
-    parts.push(`reading ${dashboard.queue.length}`);
+    parts.push(`lese ${dashboard.queue.length}`);
   return `Storybloq: ${parts.join(", ")}`;
 }
 /**
@@ -371,7 +371,7 @@ async function loadCache(dashboard: DashboardState, $: any): Promise<void> {
 async function saveCache(dashboard: DashboardState, $: any): Promise<void> {
   const text = JSON.stringify(dashboard.cache);
   if (text.length > STORE_BUDGET_BYTES) {
-    $.ui.log(`storybloq sidebar: the ledger Cache is over ${STORE_BUDGET_BYTES} bytes, so es ist nicht kept between Sitzungen`);
+    $.ui.log(`storybloq sidebar: Der Ledger-Cache ist über ${STORE_BUDGET_BYTES} Bytes groß und wird daher nicht zwischen Sitzungen beibehalten`);
     return;
   }
   try {
@@ -387,7 +387,7 @@ function noteFailure(dashboard: DashboardState, $: any, what: string): void {
     return;
   dashboard.saidScanFailed = true;
   try {
-    $.ui.log(`storybloq sidebar: ${what}, so the pane may be behind the ledger until a later Zug`);
+    $.ui.log(`storybloq sidebar: ${what}, daher kann der Bereich bis zu einem späteren Zug hinter dem Ledger zurückbleiben`);
   }
   catch {
     // A refused log is not worth a second failure.
@@ -1079,7 +1079,7 @@ export function registerSidebar(on: On, _options: Options): void {
     if (!dashboard.uiAvailable) {
       if (!dashboard.saidNoUi) {
         dashboard.saidNoUi = true;
-        $.ui.log("storybloq sidebar: this Client has nein UI render events, so the pane is nicht drawn");
+        $.ui.log("storybloq sidebar: Dieser Client hat keine UI-Render-Ereignisse, daher wird der Bereich nicht gezeichnet");
       }
       return next(e);
     }
@@ -1110,7 +1110,7 @@ export function registerSidebar(on: On, _options: Options): void {
       dashboard.noLedger = true;
       if (!dashboard.saidNoLedger) {
         dashboard.saidNoLedger = true;
-        $.ui.log("storybloq sidebar: this Sitzung starten carried nein working Verzeichnis, so the pane stays closed");
+        $.ui.log("storybloq sidebar: Dieser Sitzungsstart hatte kein Arbeitsverzeichnis, daher bleibt der Bereich geschlossen");
       }
       return next(e);
     }
@@ -1128,7 +1128,7 @@ export function registerSidebar(on: On, _options: Options): void {
       dashboard.noLedger = true;
       if (!dashboard.setupHintRoots.has(dashboard.initialCwd)) {
         dashboard.setupHintRoots.add(dashboard.initialCwd);
-        $.ui.log(`storybloq sidebar: nein .story Verzeichnis here, so the pane stays closed. ${SETUP_HINT}`);
+        $.ui.log(`storybloq sidebar: Hier ist kein .story-Verzeichnis, daher bleibt der Bereich geschlossen. ${SETUP_HINT}`);
       }
       return next(e);
     }
@@ -1143,7 +1143,7 @@ export function registerSidebar(on: On, _options: Options): void {
       dashboard.noLedger = true;
       if (!dashboard.saidRootUnresolved) {
         dashboard.saidRootUnresolved = true;
-        $.ui.log(`storybloq sidebar: could nicht resolve the ledger root (${resolution.reason}), so the pane stays closed until it can be lesen`);
+        $.ui.log(`storybloq sidebar: Das Ledger-Root-Verzeichnis konnte nicht ermittelt werden (${resolution.reason}), daher bleibt der Bereich geschlossen, bis es lesbar ist`);
       }
       return next(e);
     }

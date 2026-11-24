@@ -397,7 +397,7 @@ export function summarize(sessions) {
     const forks = expensive.some((a) => a.type === 'fork')
     findings.push({
       id: 'subagents-on-top-model', severity: 'warn',
-      title: `Subagents on Opus or Fable made ${Math.round(share(expensive.reduce((n, a) => n + a.top, 0)) * 100)}% of all cost`,
+      title: `Subagenten auf Opus oder Fable verursachten ${Math.round(share(expensive.reduce((n, a) => n + a.top, 0)) * 100)}% aller Kosten`,
       detail:
         expensive.map((a) => `${a.type}: ${a.runs} runs, ${Math.round(share(a.top) * 100)}%`).join('; ') +
         '. CLAUDE_CODE_SUBAGENT_MODEL sets the model for subagents without their own, and an agent ' +
@@ -411,9 +411,9 @@ export function summarize(sessions) {
   if (long.length) {
     findings.push({
       id: 'long-sessions', severity: 'info',
-      title: `${long.length} session(s) ran ${LONG_SESSION_TURNS}+ turns`,
+      title: `${long.length} Sitzung(en) liefen über ${LONG_SESSION_TURNS}+ Runden`,
       detail:
-        `They made ${Math.round(share(long.reduce((n, s) => n + s.cost, 0)) * 100)}% of all cost. ` +
+        `They made ${Math.round(share(long.reduce((n, s) => n + s.cost, 0)) * 100)}% aller Kosten. ` +
         'A long session keeps old work in context; /clear between tasks, or a new session, is cheaper ' +
         'than compacting the same conversation again and again.',
       doc: 'https://code.claude.com/docs/en/costs.md#manage-context-proactively',
@@ -424,9 +424,9 @@ export function summarize(sessions) {
   if (idle && share(idle.cost) > 0.01) {
     findings.push({
       id: 'idle-cache-rebuilds', severity: 'info',
-      title: `${idle.n} cache rebuild(s) after the prompt cache expired`,
+      title: `${idle.n} Cache-Neuaufbau(vorgänge), nachdem der Prompt-Cache abgelaufen war`,
       detail:
-        `Coming back after the cache TTL re-writes the whole context (${Math.round(share(idle.cost) * 1000) / 10}% of all cost here). ` +
+        `Nach Ablauf der Cache-Lebensdauer wird beim Zurückkehren der gesamte Kontext neu geschrieben (${Math.round(share(idle.cost) * 1000) / 10}% aller Kosten hier). ` +
         '/clear or /compact before a long break makes the next message cheaper.',
       doc: 'https://code.claude.com/docs/en/prompt-caching.md',
     })
@@ -439,7 +439,7 @@ export function summarize(sessions) {
     const slid = kinds.slide.length >= 3 ? ` After the ${kinds.slide.length} slides: ${per(kinds.slide).toFixed(1)}.` : ''
     findings.push({
       id: 'rereads-after-compaction', severity: 'info',
-      title: `After a summary, Claude read ${per(kinds.summary).toFixed(1)} files again on average`,
+      title: `Nach einer Zusammenfassung las Claude durchschnittlich ${per(kinds.summary).toFixed(1)} Dateien erneut gelesen`,
       detail:
         `Files read before each of ${kinds.summary.length} summaries and read again within the next ${REREAD_WINDOW} requests.${slid} ` +
         'A re-read is context the summary lost and the model fetched again, a cost the token counts of the summary do not show. ' +

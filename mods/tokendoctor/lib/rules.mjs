@@ -77,7 +77,7 @@ const RULES = [
       if (truthy(env.CLAUDE_CODE_DISABLE_1M_CONTEXT)) return null
       return {
         severity: 'warn',
-        title: 'No auto-compact window is set',
+        title: 'Kein Fenster für automatische Verdichtung gesetzt',
         detail:
           'Models with a native 1M window (Fable, Sonnet 5+, Haiku 5.5, Opus 4.7+) compact only at ' +
           'about 967K tokens by default, so every request carries a very long history. A smaller ' +
@@ -95,7 +95,7 @@ const RULES = [
       if (!scopes.length) return null
       return {
         severity: 'error',
-        title: '`autoCompactThreshold` is not a documented setting',
+        title: '`autoCompactThreshold` ist keine dokumentierte Einstellung',
         detail:
           `Found in ${scopes.join(', ')} settings. The documented keys are \`autoCompactWindow\` ` +
           '(a token count) and the `CLAUDE_CODE_AUTO_COMPACT_WINDOW` variable, so this key is most ' +
@@ -113,7 +113,7 @@ const RULES = [
       if (Number(raw) >= 100000) return null
       return {
         severity: 'error',
-        title: '`CLAUDE_CODE_AUTO_COMPACT_WINDOW` is below the 100,000 minimum',
+        title: '`CLAUDE_CODE_AUTO_COMPACT_WINDOW` liegt unter dem Minimum von 100.000',
         detail:
           `Set to ${raw}. In this variable a bare number is read as tokens (not thousands), and ` +
           'values outside 100,000 to 1,000,000 are clamped with a warning. Use 200000, or 200k on ' +
@@ -129,7 +129,7 @@ const RULES = [
       if ([...s.agents.user, ...s.agents.project].some((a) => a.name === 'Explore')) return null
       return {
         severity: 'info',
-        title: 'Built-in Explore agent has no override',
+        title: 'Der integrierte Explore-Agent hat keine Überschreibung',
         detail:
           'With a Claude subscription, a Console account or a gateway on ANTHROPIC_BASE_URL, the ' +
           'built-in Explore agent runs on Opus, the most expensive model, for read-only search. ' +
@@ -147,7 +147,7 @@ const RULES = [
       if (!truthy(s.env.CLAUDE_CODE_SUBAGENT_MODEL_FORCE)) return null
       return {
         severity: 'warn',
-        title: 'Every subagent is forced onto one model',
+        title: 'Alle Subagenten werden auf ein Modell gezwungen',
         detail:
           `CLAUDE_CODE_SUBAGENT_MODEL_FORCE ignores each agent's own model, including agents that ` +
           `need to reason (Plan, reviewers). Forced model: ${s.env.CLAUDE_CODE_SUBAGENT_MODEL ?? 'the main model'}. ` +
@@ -164,7 +164,7 @@ const RULES = [
       if (modelFamily(mainModel(s)) === 'sonnet' || modelFamily(mainModel(s)) === 'haiku') return null
       return {
         severity: 'info',
-        title: 'Subagents inherit the main model',
+        title: 'Subagenten erben das Hauptmodell',
         detail:
           `The main model is ${mainModel(s) ?? 'the default'}, so general-purpose subagents run on it too. ` +
           'Setting CLAUDE_CODE_SUBAGENT_MODEL (for example to sonnet) in the `env` block of ' +
@@ -197,7 +197,7 @@ const RULES = [
       if (!scopes.length) return null
       return {
         severity: 'warn',
-        title: '`effortLevel: "max"` is not accepted in settings',
+        title: '`effortLevel: "max"` wird in Einstellungen nicht akzeptiert',
         detail:
           `Found in ${scopes.join(', ')} settings. The \`effortLevel\` key accepts low, medium, high ` +
           'and xhigh; max works only per session (/effort max or --effort max).',
@@ -228,7 +228,7 @@ const RULES = [
       if (!reasons.length) return null
       return {
         severity: 'warn',
-        title: 'The configured advisor will not run',
+        title: 'Der konfigurierte Berater wird nicht ausgeführt',
         detail: `${reasons.join('; ')}. Claude Code silently sends requests without an advisor in these cases.`,
         doc: DOCS.advisor,
       }
@@ -241,7 +241,7 @@ const RULES = [
       if (!long.length) return null
       return {
         severity: 'info',
-        title: 'Instruction files are long',
+        title: 'Anweisungsdateien sind lang',
         detail:
           long.map((f) => `${f.path}: ${f.lines} lines`).join('; ') +
           '. These load into every session and into every subagent except Explore and Plan and ' +
@@ -266,7 +266,7 @@ const RULES = [
       if (!parts.length) return null
       return {
         severity: 'info',
-        title: 'Large always-on context surface',
+        title: 'Große dauerhaft geladene Kontextfläche',
         detail:
           `${parts.join(', ')}. Skill descriptions are part of every request; ` +
           '`disable-model-invocation: true` keeps a skill out of context until you run it, and a ' +
@@ -291,7 +291,7 @@ const RULES = [
       const names = [...new Set(open.map((d) => d.name))]
       return {
         severity: 'info',
-        title: 'Large generated directories are not excluded from reads',
+        title: 'Große generierte Verzeichnisse sind nicht von Lesevorgängen ausgeschlossen',
         detail:
           open.map((d) => `${d.path} (${Math.round(d.bytes / 1e6)} MB)`).join('; ') +
           '. There is no ignore file: permissions.deny Read rules are the supported mechanism, and ' +
@@ -318,7 +318,7 @@ const RULES = [
       const count = perScope.reduce((n, x) => n + x.n, 0)
       return {
         severity: 'info',
-        title: 'Hooks run on every tool call',
+        title: 'Hooks laufen bei jedem Werkzeugaufruf',
         detail:
           `${count} tool-event hook(s) match "*" and start a process for each tool call. This ` +
           'costs latency rather than tokens. Narrow the matcher if the hook only cares about some ' +
@@ -338,7 +338,7 @@ const RULES = [
       if (!scopes.length || optIn) return null
       return {
         severity: 'warn',
-        title: 'Fast mode starts on in every session',
+        title: 'Der Schnellmodus startet in jeder Sitzung aktiviert',
         detail:
           `\`fastMode: true\` is saved in ${scopes.join(', ')} settings. Fast mode costs more per ` +
           'token and runs only on Opus, so every session pays that rate whether or not it needs the ' +
@@ -357,7 +357,7 @@ const RULES = [
       if (!missing.length) return null
       return {
         severity: 'info',
-        title: 'No language server plugin for this project',
+        title: 'Kein Language-Server-Plugin für dieses Projekt',
         detail:
           'The project has files for a language with an official code intelligence plugin: ' +
           missing.map((p) => `/plugin install ${p}@claude-plugins-official`).join('; ') +
@@ -374,7 +374,7 @@ const RULES = [
       if (!s.unreadable.length) return null
       return {
         severity: 'error',
-        title: 'A settings file is not valid JSON',
+        title: 'Eine Einstellungsdatei ist kein gültiges JSON',
         detail:
           `${s.unreadable.join(', ')} exists but does not parse, so none of its settings were audited ` +
           '(and Claude Code reports a Settings Error for it at startup). Settings files are strict ' +
@@ -395,7 +395,7 @@ const RULES = [
       if (!small.length) return null
       return {
         severity: 'warn',
-        title: 'Auto-compact window is very small',
+        title: 'Das Fenster für automatische Verdichtung ist sehr klein',
         detail:
           `Window of ${Math.min(...small).toLocaleString('en')} tokens. Compaction reads the whole conversation ` +
           'and breaks the prompt cache each time, so compacting often can cost more than it saves. ' +
@@ -411,7 +411,7 @@ const RULES = [
       if (!set.length) return null
       return {
         severity: 'warn',
-        title: 'Prompt caching is switched off',
+        title: 'Prompt-Caching ist ausgeschaltet',
         detail:
           `${set.join(', ')} set. Without the cache every request reprocesses the whole conversation ` +
           'at the full input rate. The docs describe these variables as a debugging aid; leave caching ' +
@@ -427,7 +427,7 @@ const RULES = [
       if (!truthy(s.env.FORCE_PROMPT_CACHING_5M)) return null
       return {
         severity: 'info',
-        title: 'Cache lifetime is forced to five minutes',
+        title: 'Die Cache-Lebensdauer ist auf fünf Minuten festgelegt',
         detail:
           'FORCE_PROMPT_CACHING_5M overrides every other TTL control. After a break longer than five ' +
           'minutes the next message re-reads the full context uncached. The docs recommend it for ' +
@@ -442,7 +442,7 @@ const RULES = [
       if (!truthy(s.env.CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS)) return null
       return {
         severity: 'info',
-        title: 'Agent teams are enabled',
+        title: 'Agententeams sind aktiviert',
         detail:
           'Each teammate runs its own context window, and the docs put teams at roughly 7x the tokens ' +
           'of a standard session when teammates run in plan mode. Keep teams small, use Sonnet for ' +
@@ -458,7 +458,7 @@ const RULES = [
       if (family !== 'opus' && family !== 'fable') return null
       return {
         severity: 'info',
-        title: `The default model is ${mainModel(s)}`,
+        title: `Das Standardmodell ist ${mainModel(s)}`,
         detail:
           'The docs name Opus left as the default as a usual cause of unexpectedly high spend. For most ' +
           'coding work Sonnet is enough (`/model sonnet`, or `model` in settings). ' +
@@ -475,7 +475,7 @@ const RULES = [
       const names = inheriting.map((a) => a.name)
       return {
         severity: 'info',
-        title: 'Custom agents run on the main model',
+        title: 'Eigene Agents laufen auf dem Hauptmodell',
         detail:
           `${names.slice(0, 8).join(', ')}${names.length > 8 ? `, and ${names.length - 8} more` : ''} ` +
           'set no `model`, so they use the main conversation\'s model. Pin `model: haiku` or `sonnet` on ' +
@@ -490,7 +490,7 @@ const RULES = [
       if (!s.instructionFiles.length || s.instructionFiles.some((f) => f.compactInstructions)) return null
       return {
         severity: 'info',
-        title: 'No "Compact instructions" section',
+        title: 'Kein Abschnitt "Compact instructions"',
         detail:
           'A `# Compact instructions` section in CLAUDE.md tells compaction what to keep (failing test ' +
           'output, files changed, decisions) and what to drop, so a summary does not lose the thread. ' +
@@ -507,7 +507,7 @@ const RULES = [
       if (!open.length) return null
       return {
         severity: 'info',
-        title: 'Large lockfiles can be read in full',
+        title: 'Große Lockdateien können vollständig gelesen werden',
         detail:
           open.map((l) => `${l.name} (${Math.round(l.bytes / 1000)} KB)`).join('; ') +
           '. A model that opens one spends tens of thousands of tokens on content it can grep instead. ' +
@@ -524,7 +524,7 @@ const RULES = [
       if (!dup.length) return null
       return {
         severity: 'info',
-        title: 'The same skill exists at user and project level',
+        title: 'Dieselbe Skill existiert auf Benutzer- und Projektebene',
         detail: `${dup.join(', ')}. Each copy adds a description to context; keep the one you want.`,
         doc: DOCS.skills,
       }
@@ -537,7 +537,7 @@ const RULES = [
       if (!Number.isFinite(n) || n <= 50000) return null
       return {
         severity: 'info',
-        title: 'MCP tool output limit is raised',
+        title: 'Das Ausgabelimit für MCP-Werkzeuge ist erhöht',
         detail:
           `MAX_MCP_OUTPUT_TOKENS is ${n.toLocaleString('en')}. A single tool result can add that much ` +
           'to the context, and it is re-read on every later request. Raise it only for a server that ' +
@@ -557,7 +557,7 @@ const RULES = [
       const where = [...vars, ...scopes.map((sc) => `autoCompactEnabled: false in ${sc} settings`)]
       return {
         severity: 'warn',
-        title: 'Auto-compaction is off',
+        title: 'Automatische Verdichtung ist aus',
         detail:
           `${where.join('; ')}. Without it, every request carries the whole history until the model ` +
           'window fills, and idle compaction is off too. /compact still works by hand.',
@@ -574,7 +574,7 @@ const RULES = [
       if (!scopes.length) return null
       return {
         severity: 'info',
-        title: 'Idle compaction is off',
+        title: 'Verdichtung bei Inaktivität ist aus',
         detail:
           `\`idleCompaction: false\` in ${scopes.join(', ')} settings. Idle compaction compacts a long ` +
           'conversation (200K+ tokens by default) shortly before its one-hour prompt cache expires, ' +
@@ -590,7 +590,7 @@ const RULES = [
       if (String(s.env.ENABLE_TOOL_SEARCH ?? '').toLowerCase() !== 'false') return null
       return {
         severity: s.mcpServers ? 'warn' : 'info',
-        title: 'MCP tool search is off',
+        title: 'Die MCP-Werkzeugsuche ist aus',
         detail:
           'ENABLE_TOOL_SEARCH=false loads every MCP tool definition into every request instead of ' +
           `deferring them until used${s.mcpServers ? ` (${s.mcpServers} MCP servers configured)` : ''}. ` +
@@ -607,7 +607,7 @@ const RULES = [
       if (!(value > 30000)) return null
       return {
         severity: 'info',
-        title: 'Bash output limit is raised',
+        title: 'Das Bash-Ausgabelimit ist erhöht',
         detail:
           `${setting !== undefined ? 'bashOutputMaxChars' : 'BASH_MAX_OUTPUT_LENGTH'} is ${value} ` +
           '(default 30,000 characters). Long command output stays in context for the rest of the ' +
@@ -627,7 +627,7 @@ const RULES = [
       if (!found.length) return null
       return {
         severity: 'warn',
-        title: `${found.length} settings key(s) are not in Claude Code's documentation`,
+        title: `${found.length} Einstellungsschlüssel sind nicht in der Dokumentation von Claude Code`,
         detail:
           `${found.join(', ')}. Claude Code ignores a key it does not know, so a misspelled or removed key ` +
           'silently does nothing. Check the spelling against the settings reference, read today.',
@@ -645,7 +645,7 @@ const RULES = [
       if (!found.length) return null
       return {
         severity: 'info',
-        title: `${found.length} environment variable(s) look like Claude Code's but are not documented`,
+        title: `${found.length} Umgebungsvariablen sehen wie von Claude Code aus, sind aber nicht dokumentiert`,
         detail:
           `${found.join(', ')}, set under \`env\`. Claude Code reads only the variables it knows: a misspelled or ` +
           'retired one does nothing. Ignore this for a variable meant for another program.',
@@ -680,7 +680,7 @@ const RULES = [
       if (!Number.isInteger(pct) || pct < 1 || pct > 100) {
         return {
           severity: 'error',
-          title: 'CLAUDE_AUTOCOMPACT_PCT_OVERRIDE is not a percentage',
+          title: 'CLAUDE_AUTOCOMPACT_PCT_OVERRIDE ist kein Prozentwert',
           detail: `It is "${raw}"; Claude Code expects a whole number from 1 to 100 and ignores anything else.`,
           doc: 'https://code.claude.com/docs/en/env-vars.md',
         }
@@ -688,7 +688,7 @@ const RULES = [
       const window = Number(String(SCOPES.map((sc) => s.settings[sc].autoCompactWindow).find(Boolean) ?? '').replace(/k$/i, '000')) || null
       return {
         severity: pct < 50 ? 'warn' : 'info',
-        title: `Auto-compaction triggers at ${pct}% of the window`,
+        title: `Automatische Verdichtung setzt bei ${pct}% of the window`,
         detail:
           `CLAUDE_AUTOCOMPACT_PCT_OVERRIDE=${pct}${window ? `: about ${Math.round((window * pct) / 100000)}K of the ${Math.round(window / 1000)}K window` : ''}. ` +
           'It can only lower the point (a value above the default is ignored), and it applies to subagents too. ' +
@@ -708,7 +708,7 @@ const RULES = [
       if (!switching.length) return null
       return {
         severity: 'info',
-        title: `${switching.length} skill(s) switch the model when used`,
+        title: `${switching.length} Skill(s) wechseln bei Verwendung das Modell`,
         detail:
           `${switching.map((k) => `${k.name} (model: ${k.model})`).join(', ')}. A skill whose frontmatter names another model ` +
           'is a model switch for that turn: each model has its own prompt cache, so the request reads the whole ' +
@@ -724,7 +724,7 @@ const RULES = [
       if (mainModel(s) !== 'opusplan') return null
       return {
         severity: 'info',
-        title: 'opusplan switches models on every plan-mode toggle',
+        title: 'opusplan wechselt bei jedem Wechsel in den Plan-Modus das Modell',
         detail:
           '`opusplan` runs Opus in plan mode and Sonnet otherwise. Each model has its own prompt cache, so every ' +
           'toggle reads the whole conversation uncached on the model it switches to. Cheap early in a session, ' +
@@ -744,7 +744,7 @@ const RULES = [
       if (!note) return null
       return {
         severity: 'warn',
-        title: 'The slide is on but cannot run here',
+        title: 'Das Gleiten ist an, kann hier aber nicht ausgeführt werden',
         detail: note,
         doc: 'https://code.claude.com/docs/en/plugins/mods/admin.md#know-which-hooks-of-a-users-mod-dont-run',
       }
@@ -756,7 +756,7 @@ const RULES = [
       if (SCOPES.some((sc) => s.settings[sc].statusLine)) return null
       return {
         severity: 'info',
-        title: 'No status line',
+        title: 'Keine Statuszeile',
         detail:
           'A status line can show context fill and prompt-cache state (`context_window` and ' +
           '`prompt_cache` fields), which is the easiest way to see when to /clear or compact. The ' +

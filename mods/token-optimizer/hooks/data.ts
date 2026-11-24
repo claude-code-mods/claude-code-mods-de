@@ -36,11 +36,11 @@ export const STATUS_TIMEOUT_MS = 4_000
 export const GIT_TIMEOUT_MS = 1_000
 
 /** Shown as the savings reason when no Token Optimizer install is found. */
-export const NOT_FOUND = 'Token Optimizer nicht found'
+export const NOT_FOUND = 'Token Optimizer nicht gefunden'
 /** No Python 3 launcher starts: Token Optimizer's scripts cannot run. */
-export const NO_PYTHON = 'Token Optimizer needs Python 3 to measure savings.'
+export const NO_PYTHON = 'Token Optimizer benötigt Python 3, um Einsparungen zu messen.'
 /** The installed Token Optimizer predates the status command this band reads. */
-export const OUTDATED = 'Update Token Optimizer to see savings.'
+export const OUTDATED = 'Aktualisiere Token Optimizer, um Einsparungen zu sehen.'
 
 /**
  * Python launchers in the order tried on macOS and Linux. A launcher that
@@ -101,7 +101,7 @@ export function resetLauncher(): void {
 /** No Python 3 interpreter could be found: every launcher was tried. */
 export class PythonNotFoundError extends Error {
   constructor() {
-    super('python launcher not found')
+    super('Python-Launcher nicht gefunden')
     this.name = 'PythonNotFoundError'
   }
 }
@@ -409,7 +409,7 @@ export async function readStatusBar(
   if (!result) return null
   if (result.exitCode !== 0 && io.log) {
     // Why the status read failed, where `claude --debug` shows it.
-    void attempt(() => io.log!(`token-optimizer status bar: status-bar exited ${result.exitCode}: ${(result.stderr ?? '').trim().slice(0, 300)}`), undefined)
+    void attempt(() => io.log!(`Statusleiste von Token Optimizer: status-bar wurde mit ${result.exitCode} beendet: ${(result.stderr ?? '').trim().slice(0, 300)}`), undefined)
   }
   // The JSON is the last line that is one (a stray line printed before it is not a reason to fail).
   const json = result.stdout.split(/\r?\n/).map(l => l.trim()).filter(l => l.startsWith('{')).pop()

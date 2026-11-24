@@ -7,11 +7,11 @@ export const OPEN_ITEMS_TOOL = 'mcp__turbo__open-items'
 export const RESOLVED_SHOW_MS = 3_000
 
 export const OPEN_ITEMS_RULE = `
-## Open Items
+## Offene Punkte
 
 - Before ending a turn that leaves something only the user can decide or do, record each item with \`${OPEN_ITEMS_TOOL}\` (\`add\`). Give it a self-contained line as \`text\`. As \`detail\`, give a decision's choices with the recommendation first, or say that only the user can take the action. Still state the items in the reply. Then reread the reply: anything in it that only the user can decide or do is an item, even under a caveat or a summary heading.
 - Do not add an item that is already recorded and still open. Its id is in this conversation's earlier tool results. After a compaction, the \`openItems\` context block holds a snapshot from that compaction. When unsure, \`list\` gives the current set.
-- Do not record optional offers ("I could auch…"), questions the user settled within the turn, or work that is not this session's, such as a finding a peer Sitzung reports about its own Repository oder leftovers another Sitzung's run left on the user's machines; state those in the reply once. Record a Frage asked through \`AskUserQuestion\` that is still öffnen danach its Antwort, such as one answered mit "later" oder mit a request for clarification.
+- Do not record optional offers ("I could auch…"), questions the user settled within the turn, or work that is not this session's, such as a finding a peer Sitzung reports about its own Repository oder leftovers another Sitzung's run left on the user's machines; state those in the reply once. Record a Frage asked through \`AskUserQuestion\` die nach ihrer Beantwortung noch offen ist, etwa eine mit "later" oder mit a request for clarification.
 - When an open item's wording or choices change while it stays open, \`update\` it by id with the new \`text\` or \`detail\`, rather than resolving it and adding it again.
 - When a user message settles an item, or makes it moot, \`resolve\` it while acting on it. When \`resolve\` refuses the id, call \`list\` and resolve the item it shows for that question, if any. When a \`resolve\` reply names an item other than the one meant, \`add\` the named item back, then look for the meant one in \`list\`.
 `
@@ -41,7 +41,7 @@ const isValidDetail = (detail: unknown): detail is string =>
 const bareId = (id: string) => id.replace(/^#/, '')
 
 const notOpen = (outcome: string, id: string) =>
-  `Nothing ${outcome}: #${id} is not an open item. \`list\` gives the open ones.`
+  `Nichts ${outcome}: #${id} ist kein offener Punkt. \`list\` zeigt die offenen Punkte.`
 
 const isOpen = (item: OpenItem) => item.resolvedAt === undefined
 
@@ -105,7 +105,7 @@ export async function registerOpenItemsTool($: EngineInterface) {
 
 export async function answerOpenItems($: EngineInterface, e: Frozen<Args<'tool.call'>>) {
   if (e.agentId !== undefined) {
-    return { result: 'No open items for a subagent: the main session records them.' }
+    return { result: 'Keine offenen Punkte für einen Subagenten: Die Hauptsitzung erfasst sie.' }
   }
 
   const { action, text, detail, id } = e as { action?: unknown; text?: unknown; detail?: unknown; id?: unknown }
@@ -113,22 +113,22 @@ export async function answerOpenItems($: EngineInterface, e: Frozen<Args<'tool.c
   if (!isAction(action)) {
     const names = new Intl.ListFormat('en', { type: 'disjunction' }).format(ACTIONS.map(name => `\`${name}\``))
 
-    return { result: `Nothing done: pass \`action\` as ${names}.` }
+    return { result: `Nichts ausgeführt: Gib \`action\` als ${names} an.` }
   }
 
   if (action === 'list') {
-    return { result: listText(await read($, openItems)) || 'No open items.' }
+    return { result: listText(await read($, openItems)) || 'Keine offenen Punkte.' }
   }
 
   const now = await $.clock.now()
 
   if (action === 'add') {
     if (!isValidText(text)) {
-      return { result: `Nothing recorded: pass \`text\` as ${TEXT_SHAPE}.` }
+      return { result: `Nichts erfasst: Gib \`text\` als ${TEXT_SHAPE} an.` }
     }
 
     if (detail !== undefined && !isValidDetail(detail)) {
-      return { result: `Nothing recorded: pass \`detail\` as ${DETAIL_SHAPE}, or leave it out.` }
+      return { result: `Nichts erfasst: Gib \`detail\` als ${DETAIL_SHAPE} an oder lass es weg.` }
     }
 
     let answer = ''
@@ -138,13 +138,13 @@ export async function answerOpenItems($: EngineInterface, e: Frozen<Args<'tool.c
       const recorded = openWithText(kept, text)
 
       if (recorded !== undefined) {
-        answer = `Already recorded as open item #${recorded.id}: ${text}`
+        answer = `Bereits als offener Punkt #${recorded.id} erfasst: ${text}`
 
         return kept
       }
 
       const fresh = freshId(kept)
-      answer = `Recorded open item #${fresh}: ${text}`
+      answer = `Offener Punkt #${fresh} erfasst: ${text}`
 
       return [...kept, { id: fresh, text, ...(detail === undefined ? {} : { detail }) }]
     })
@@ -154,19 +154,19 @@ export async function answerOpenItems($: EngineInterface, e: Frozen<Args<'tool.c
 
   if (action === 'update') {
     if (typeof id !== 'string') {
-      return { result: "Nothing updated: pass the item's id as `id`." }
+      return { result: "Nichts aktualisiert: Gib die ID des Punkts als `id` an." }
     }
 
     if (text === undefined && detail === undefined) {
-      return { result: 'Nothing updated: pass a new `text`, a new `detail`, or both.' }
+      return { result: 'Nichts aktualisiert: Gib einen neuen `text`, ein neues `detail` oder beides an.' }
     }
 
     if (text !== undefined && !isValidText(text)) {
-      return { result: `Nothing updated: pass \`text\` as ${TEXT_SHAPE}, or leave it out.` }
+      return { result: `Nichts aktualisiert: Gib \`text\` als ${TEXT_SHAPE} an oder lass es weg.` }
     }
 
     if (detail !== undefined && !isValidDetail(detail)) {
-      return { result: `Nothing updated: pass \`detail\` as ${DETAIL_SHAPE}, or leave it out.` }
+      return { result: `Nichts aktualisiert: Gib \`detail\` als ${DETAIL_SHAPE} an oder lass es weg.` }
     }
 
     const wanted = bareId(id)
@@ -186,14 +186,14 @@ export async function answerOpenItems($: EngineInterface, e: Frozen<Args<'tool.c
         const duplicate = openWithText(kept, text, target)
 
         if (duplicate !== undefined) {
-          answer = `Nothing updated: open item #${duplicate.id} already has that text.`
+          answer = `Nichts aktualisiert: Offener Punkt #${duplicate.id} hat diesen Text bereits.`
 
           return kept
         }
       }
 
       const updated = { ...target, ...(text === undefined ? {} : { text }), ...(detail === undefined ? {} : { detail }) }
-      answer = `Updated #${updated.id}: ${updated.text}`
+      answer = `#${updated.id} aktualisiert: ${updated.text}`
 
       return kept.map(item => (item === target ? updated : item))
     })
@@ -202,7 +202,7 @@ export async function answerOpenItems($: EngineInterface, e: Frozen<Args<'tool.c
   }
 
   if (typeof id !== 'string') {
-    return { result: "Nothing resolved: pass the item's id as `id`." }
+    return { result: "Nichts erledigt: Gib die ID des Punkts als `id` an." }
   }
 
   const wanted = bareId(id)
@@ -221,7 +221,7 @@ export async function answerOpenItems($: EngineInterface, e: Frozen<Args<'tool.c
 
   $.clock.after(RESOLVED_SHOW_MS, () => $.ui.invalidate('ui.render'))
 
-  return { result: `Resolved #${resolved.id}: ${resolved.text}` }
+  return { result: `#${resolved.id} erledigt: ${resolved.text}` }
 }
 
 export async function clearOpenItems($: EngineInterface) {
@@ -241,8 +241,8 @@ export async function addOpenItemsContext(
   }
 
   const text =
-    'These items waited on the user in the main session as of the last compaction. ' +
-    `Only the main session resolves them, through the \`${OPEN_ITEMS_TOOL}\` tool. Its \`list\` action gives the current set.\n\n` +
+    'Diese Punkte warteten zum Zeitpunkt der letzten Verdichtung in der Hauptsitzung auf den Nutzer. ' +
+    `Nur die Hauptsitzung erledigt sie, über das Werkzeug \`${OPEN_ITEMS_TOOL}\`. Seine Aktion \`list\` zeigt die aktuelle Liste.\n\n` +
     list.replaceAll('<', '‹')
 
   return { ...result, blocks: [...result.blocks, { name: 'openItems', text }] }
@@ -272,22 +272,22 @@ export async function renderOpenItems(
   return (
     <Box flexDirection="column">
       <Box>
-        <Text bold>⏺ Open items </Text>
+        <Text bold>⏺ Offene Punkte </Text>
         <Box columnGap={1}>
           {resolvable ? (
-            <Button key="resolve" label="Resolve" hotkey={RESOLVE_HOTKEY} onPress={() => runResolve($)} />
+            <Button key="resolve" label="Erledigen" hotkey={RESOLVE_HOTKEY} onPress={() => runResolve($)} />
           ) : null}
           {expandable ? (
             <Button
               key="details"
-              label={expanded ? 'Hide details' : 'Show details'}
+              label={expanded ? 'Details ausblenden' : 'Details anzeigen'}
               hotkey={DETAILS_HOTKEY}
               onPress={() => update($, detailsShown, shown => !shown)}
             />
           ) : null}
         </Box>
         {hotkeys.length > 0 && e.surface === 'terminal' ? (
-          <Text dimColor>{` (ctrl+x tab, dann ${hotkeys.join(' or ')})`}</Text>
+          <Text dimColor>{` (Strg+x Tab, dann ${hotkeys.join(' oder ')})`}</Text>
         ) : null}
       </Box>
       {items.map((item, index) => {
@@ -314,6 +314,6 @@ async function runResolve($: EngineInterface) {
   try {
     await $.command.run({ command: RESOLVE_COMMAND })
   } catch {
-    $.ui.toast(`/${RESOLVE_COMMAND} did not start. Run it yourself.`, TOAST)
+    $.ui.toast(`/${RESOLVE_COMMAND} wurde nicht gestartet. Führe es selbst aus.`, TOAST)
   }
 }

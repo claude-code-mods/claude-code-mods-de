@@ -21,18 +21,18 @@ export async function registerCompactTool($: EngineInterface) {
 
 export async function queueCompaction(_: EngineInterface, e: Frozen<Args<'tool.call'>>) {
   if (e.agentId !== undefined) {
-    return { result: 'No compaction for a subagent: this tool compacts the main session.' }
+    return { result: 'Keine Verdichtung für einen Subagenten: Dieses Werkzeug verdichtet die Hauptsitzung.' }
   }
 
   const { handoff } = e as { handoff?: unknown }
 
   if (typeof handoff !== 'string' || !ONE_LINE.test(handoff)) {
-    return { result: 'No compaction queued: pass the path of the handoff file you wrote as `handoff`.' }
+    return { result: 'Keine Verdichtung vorgemerkt: Gib den Pfad der geschriebenen Übergabedatei als `handoff` an.' }
   }
 
   pendingHandoff = handoff
 
-  return { result: 'The session compacts and continues from the handoff once this turn ends. End the turn now.' }
+  return { result: 'Nach Ende dieser Runde wird die Sitzung verdichtet und mit der Übergabe fortgesetzt. Beende die Runde jetzt.' }
 }
 
 export async function compactAfterTurn($: EngineInterface, reason: TurnCompleteReason) {
@@ -45,16 +45,16 @@ export async function compactAfterTurn($: EngineInterface, reason: TurnCompleteR
 
   try {
     const compacted = await $.session.compact({
-      instructions: `Keep the handoff file's path, ${handoff}: the session continues from it after this compaction.`,
+      instructions: `Behalte den Pfad der Übergabedatei, ${handoff}: Die Sitzung wird nach dieser Verdichtung damit fortgesetzt.`,
     })
 
     if (compacted.skip !== undefined) {
-      $.ui.toast(`${compacted.skip}: compaction skipped. Run /compact, then reply "continue".`, TOAST)
+      $.ui.toast(`${compacted.skip}: Verdichtung übersprungen. Führe /compact aus und antworte dann "continue".`, TOAST)
 
       return
     }
   } catch (error) {
-    $.ui.toast(`${messageOf(error)}: compaction failed. Run /compact, then reply "continue".`, TOAST)
+    $.ui.toast(`${messageOf(error)}: Verdichtung fehlgeschlagen. Führe /compact aus und antworte dann "continue".`, TOAST)
 
     return
   }
@@ -65,7 +65,7 @@ export async function compactAfterTurn($: EngineInterface, reason: TurnCompleteR
       void submitOrToast(
         $,
         handoffPrompt(handoff, 'compacted'),
-        `${handoff}: compacted, but the continue prompt was not sent. Reply "continue".`,
+        `${handoff}: verdichtet, aber die Fortsetzungsaufforderung wurde nicht gesendet. Antworte "continue".`,
       ),
   )
 }

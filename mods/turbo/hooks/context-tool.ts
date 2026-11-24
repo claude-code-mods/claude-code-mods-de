@@ -12,15 +12,15 @@ export async function registerContextTool($: EngineInterface) {
 export async function answerContextLevel($: EngineInterface, e: Frozen<Args<'tool.call'>>) {
   if (e.agentId !== undefined) {
     return {
-      result: "No reading for a subagent: this tool reads the main session's context window.",
+      result: "Keine Messung für einen Subagenten: Dieses Werkzeug misst das Kontextfenster der Hauptsitzung.",
     }
   }
 
   const { context } = await $.session.usage()
 
   if (context.percent === undefined) {
-    return { result: 'No reading yet for the current context window.' }
+    return { result: 'Für das aktuelle Kontextfenster liegt noch keine Messung vor.' }
   }
 
-  return { result: `${100 - context.percent}% of the context window remains.` }
+  return { result: `Es sind noch ${100 - context.percent}% des Kontextfensters frei.` }
 }

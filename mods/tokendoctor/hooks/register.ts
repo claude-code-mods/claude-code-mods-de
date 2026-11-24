@@ -84,7 +84,7 @@ export const register: Register = (on, options) => {
     })
     await $.command.register({
       name: 'tokendoctor',
-      description: 'Show und ändern Token settings by Name (nein Modell call)',
+      description: 'Token-Einstellungen nach Namen anzeigen und ändern (ohne Modellaufruf)',
       argumentHint: '[window|slide|cache|effort|model|subagents|all|fix|undo] [value|reset]',
     })
     void audit($)
@@ -92,7 +92,7 @@ export const register: Register = (on, options) => {
         // Where Claude Code's guard sends compaction past the mods a person installs, the slide would
         // be on and never run: say so once, with the way out (lib/guard.mjs).
         const blocked = slideOn && found.find(f => f.id === 'slide-blocked-by-guard')
-        if (blocked) $.ui.toast('tokendoctor: the slide cannot ausführen under this login, Claude Code will summarize. /tokendoctor slide says why.', { timeoutMs: 12_000 })
+        if (blocked) $.ui.toast('tokendoctor: Das Gleiten kann bei dieser Anmeldung nicht ausgeführt werden, Claude Code fasst zusammen. /tokendoctor slide erklärt warum.', { timeoutMs: 12_000 })
       })
       .catch(() => {})
     return result
@@ -119,12 +119,12 @@ export const register: Register = (on, options) => {
     const before = menu.display(menu.current(merged, p.entry.key))
     const v = change.op.op === 'set' ? change.op.value : undefined
     const out = await bin($, 'tokendoctor-set', [p.entry.key, ...(v === undefined ? ['--unset'] : [JSON.stringify(v)]), '--scope', p.scope, '--write'])
-    if (/no change/.test(out)) return { text: `${p.entry.name} is already ${menu.display(v)} in ${p.scope} settings.` }
+    if (/no change/.test(out)) return { text: `${p.entry.name} ist bereits ${menu.display(v)} in den ${p.scope}-Einstellungen.` }
     if (!/\bwritten\b/.test(out)) return { text: out.trim() }
     void audit($).catch(() => {})
     const backup = /backup: (\S+)/.exec(out)?.[1]
-    const when = menu.live(p.entry.key) ? 'Applies jetzt.' : 'Takes effect in the nächste Sitzung.'
-    return { text: `${p.entry.name}: ${before} → ${menu.display(v)} in ${p.scope} settings. ${when}${backup ? `\nBackup: ${backup}` : ''}` }
+    const when = menu.live(p.entry.key) ? 'Gilt jetzt.' : 'Wirkt ab der nächsten Sitzung.'
+    return { text: `${p.entry.name}: ${before} → ${menu.display(v)} in den ${p.scope}-Einstellungen. ${when}${backup ? `\nSicherung: ${backup}` : ''}` }
   })
 
   on('prompt.autocomplete', async ($, e, next) => {
@@ -140,7 +140,7 @@ export const register: Register = (on, options) => {
   on('session.compact', async ($, e, next) => {
     if (!slideOn || e.agentId !== undefined) return next(e)
     // A summary computed ahead of time is a model request a slide never uses.
-    if (e.trigger === 'precompute') return { skip: 'tokendoctor slides the window instead' }
+    if (e.trigger === 'precompute') return { skip: 'tokendoctor gleitet stattdessen durch das Fenster' }
     // A summary leaves a few messages: the next compaction counts from none.
     const summarize = () => ((afterSlide = -Infinity), next(e))
     // What the person (`/compact`) or a plugin asks for is a summary. Every compaction Claude Code
@@ -174,14 +174,14 @@ export const register: Register = (on, options) => {
     const least = Math.max(1, Math.round(now - dropped - window * 0.6))
     const s = slide(messages, now + added - target - dropped, perChar, least)
     if (!s) {
-      $.ui.toast('tokendoctor: nothing left to elide, so the Gespräch is summarized')
+      $.ui.toast('tokendoctor: Nichts mehr zu kürzen, daher wird das Gespräch zusammengefasst')
       return summarize()
     }
     const after = Math.min(Math.round(window * 0.9), now - s.freed - dropped + added)
     $.ui.toast(
-      `tokendoctor slid the Fenster: ${k(now)} → ${k(after)}, ${s.elided} alt Werkzeug outputs elided` +
-        `${s.turns ? `, the ${s.turns} oldest turns removed` : ''}` +
-        `${dropped >= 1000 ? `, images and thinking dropped (${k(dropped)})` : ''}, nein summary`,
+      `tokendoctor hat das Fenster verschoben: ${k(now)} → ${k(after)}, ${s.elided} alte Werkzeugausgaben gekürzt` +
+        `${s.turns ? `, ${s.turns} älteste Runden entfernt` : ''}` +
+        `${dropped >= 1000 ? `, Bilder und Denkvorgänge entfernt (${k(dropped)})` : ''}, keine Zusammenfassung`,
     )
     afterSlide = s.messages.length
     measure = now - s.freed - dropped
@@ -204,7 +204,7 @@ export const register: Register = (on, options) => {
       compactAt: b?.autoCompactThreshold,
       compactWindow: b?.rawMaxTokens,
       // tokendoctor.slide: where Claude Code compacts, old tool outputs are elided instead of summarized.
-      slide: slideOn ? { to: `${slideTo}% of where Claude Code compacts` } : false,
+      slide: slideOn ? { to: `${slideTo}% des Punkts, an dem Claude Code verdichtet` } : false,
       autoCompact: b?.isAutoCompactEnabled,
       model: b?.model,
       biggest: b?.categories
@@ -248,11 +248,11 @@ export const register: Register = (on, options) => {
   on('tool.call', { tool: tool('config_set') }, async ($, e) => {
     const { key, value } = e as unknown as { key: string; value: never }
     const row = (await $.config.list()).find(r => r.key === key)
-    if (!row) return text(`Not changed: /config has no row "${key}".`)
-    const change = `/config ${row.label}: ${JSON.stringify(row.value)} → ${JSON.stringify(value)} (applies now)`
-    if (!(await confirm($, change))) return text(`Not changed: the person did not approve (${change}).`)
+    if (!row) return text(`Nicht geändert: /config hat keine Zeile "${key}".`)
+    const change = `/config ${row.label}: ${JSON.stringify(row.value)} → ${JSON.stringify(value)} (gilt jetzt)`
+    if (!(await confirm($, change))) return text(`Nicht geändert: Die Person hat nicht zugestimmt (${change}).`)
     const r = await $.config.set({ key, value })
-    return text(r.deny ? `Not changed: ${r.deny}` : `${key} is now ${JSON.stringify(r.value)} (live).`)
+    return text(r.deny ? `Nicht geändert: ${r.deny}` : `${key} ist jetzt ${JSON.stringify(r.value)} (live).`)
   })
 
   on('tool.call', { tool: tool('set_setting') }, async ($, e) => {
@@ -260,7 +260,7 @@ export const register: Register = (on, options) => {
     const args = [key, ...(value === undefined ? ['--unset'] : [JSON.stringify(value)]), '--scope', scope ?? 'user']
     const plan = await bin($, 'tokendoctor-set', args)
     if (!plan.startsWith('Would change')) return text(plan)
-    if (!(await confirm($, plan.replace(/\n+Dry run.*$/s, '')))) return text(`Not changed: the person did not approve.\n${plan}`)
+    if (!(await confirm($, plan.replace(/\n+Dry run.*$/s, '')))) return text(`Nicht geändert: Die Person hat nicht zugestimmt.\n${plan}`)
     return text(await bin($, 'tokendoctor-set', [...args, '--write']))
   })
 }
@@ -280,7 +280,7 @@ async function undo($: EngineInterface, n: string | undefined) {
     const journal = safeJson(await bin($, 'tokendoctor-undo', ['--json']))
     return Array.isArray(journal) ? menu.undoList(journal as menu.JournalEntry[]) : String(journal)
   }
-  if (!/^\d+$/.test(n)) return 'Put back which one? /tokendoctor undo lists them by number.'
+  if (!/^\d+$/.test(n)) return 'Welche soll zurückgesetzt werden? /tokendoctor undo listet sie nach Nummer.'
   const out = await bin($, 'tokendoctor-undo', [n, '--write'])
   void audit($).catch(() => {})
   return out.trim()
@@ -290,14 +290,14 @@ async function undo($: EngineInterface, n: string | undefined) {
 async function fix($: EngineInterface, id: string | undefined, scope: string | undefined) {
   if (!id) {
     const fixable = (await audit($)).filter(f => f.fixes)
-    if (!fixable.length) return 'The audit has nein fixes to apply.'
-    return ['The audit has fixes for:', ...fixable.map(f => `  /tokendoctor fix ${f.id.padEnd(28)} ${f.title}`)].join('\n')
+    if (!fixable.length) return 'Die Prüfung hat keine Korrekturen anzuwenden.'
+    return ['Die Prüfung hat Korrekturen für:', ...fixable.map(f => `  /tokendoctor fix ${f.id.padEnd(28)} ${f.title}`)].join('\n')
   }
   const args = [id, ...(scope ? ['--scope', scope] : [])]
   const plan = await bin($, 'tokendoctor-apply', args)
   if (!plan.startsWith('Would change')) return plan.trim()
   const shown = plan.replace(/\n+Dry run.*$/s, '').trim()
-  if (!(await confirm($, shown))) return `Not changed.\n${shown}`
+  if (!(await confirm($, shown))) return `Nicht geändert.\n${shown}`
   const out = await bin($, 'tokendoctor-apply', [...args, '--write'])
   void audit($).catch(() => {})
   return out.trim()
@@ -307,11 +307,11 @@ async function fix($: EngineInterface, id: string | undefined, scope: string | u
 // be asked (a -p run).
 async function confirm($: EngineInterface, change: string) {
   try {
-    const answer = await $.ui.ask(`tokendoctor wants to ändern a setting:\n${change}\nApply it?`, {
+    const answer = await $.ui.ask(`tokendoctor möchte eine Einstellung ändern:\n${change}\nAnwenden?`, {
       header: 'tokendoctor',
-      options: ['Apply', 'Cancel'],
+      options: ['Anwenden', 'Abbrechen'],
     })
-    return answer === 'Apply'
+    return answer === 'Anwenden'
   } catch {
     return false
   }
@@ -319,7 +319,7 @@ async function confirm($: EngineInterface, change: string) {
 
 async function bin($: EngineInterface, name: string, args: string[]) {
   const { exitCode, stdout, stderr } = await $.process.run(['node', `${$.plugin.root}/bin/${name}`, ...args], { timeoutMs: 120_000 })
-  return exitCode === 0 ? stdout : `${name} failed (${exitCode}): ${stderr || stdout}`
+  return exitCode === 0 ? stdout : `${name} fehlgeschlagen (${exitCode}): ${stderr || stdout}`
 }
 
 function clampSlideTo(v: unknown) {

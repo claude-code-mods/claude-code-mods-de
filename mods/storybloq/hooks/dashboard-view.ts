@@ -12,9 +12,9 @@ const BOARD_COLUMNS = 3;
 const UNTITLED = "(untitled)";
 /** What a column with nothing in it says, rather than drawing a blank frame. */
 const EMPTY_COLUMNS = {
-  "board-open": { symbol: "◇", title: "Queue leeren", short: "Queue leeren", hint: "Add your nächste story." },
-  "board-inprogress": { symbol: "○", title: "Ready to begin", short: "Ready to starten", hint: "Start a story von Open." },
-  "board-done": { symbol: "·", title: "Progress starts here", short: "Room to grow", hint: "Completed work gathers here." },
+  "board-open": { symbol: "◇", title: "Offene Warteschlange", short: "Offen", hint: "Füge deine nächste Story hinzu." },
+  "board-inprogress": { symbol: "○", title: "Bereit zum Beginn", short: "Bereit", hint: "Starte eine Story aus Offen." },
+  "board-done": { symbol: "·", title: "Fortschritt beginnt hier", short: "Wachstumsraum", hint: "Abgeschlossene Arbeit sammelt sich hier." },
 } as const;
 type BoardColumnKey = keyof typeof EMPTY_COLUMNS;
 /**
@@ -48,12 +48,12 @@ const MIN_COLUMN_WIDTH = 12;
 * nonzero one carries and the short label it falls back to.
 */
 /** What the issues line says when every bucket is empty. */
-const NO_ISSUES = "Issues: keine";
+const NO_ISSUES = "Keine Issues";
 const SEVERITY_ORDER = [
-  { key: "critical", long: "critical", short: "crit", tone: "red" },
-  { key: "high", long: "high", short: "high", tone: "yellow" },
-  { key: "medium", long: "medium", short: "med", tone: null },
-  { key: "low", long: "low", short: "low", tone: null },
+  { key: "critical", long: "kritisch", short: "krit", tone: "red" },
+  { key: "high", long: "hoch", short: "hoch", tone: "yellow" },
+  { key: "medium", long: "mittel", short: "med", tone: null },
+  { key: "low", long: "niedrig", short: "niedr", tone: null },
 ] as const;
 /**
 * The colour an issue's id carries on a board row, by severity.
@@ -200,7 +200,7 @@ export function rowBudget(e: any, stacked: boolean): {
 */
 function headingContent(dashboard: DashboardState, elements: any, label: string, count: number, width: number, stage: StageMark | null = null): unknown[] {
   const tail = ` ${count}`;
-  const emphasis = dashboard.motion.count(label === "In progress" ? "inProgress" : label === "Done" ? "done" : "open");
+  const emphasis = dashboard.motion.count(label === "In Arbeit" ? "inProgress" : label === "Erledigt" ? "done" : "open");
   const tag = headingTag(label, count, stage, width);
   return [
     paneText(dashboard, elements.Text, { children: truncate(label, Math.max(1, width - tail.length)) }),
@@ -284,8 +284,8 @@ function cardRow(dashboard: DashboardState, elements: any, card: SidebarBoardCar
   const effect = dashboard.motion.card(card.key);
   const ready = effect.ready && !card.blocked && !done;
   // T-486 U2-5: a withdrawn ticket is finished but was never delivered; its Done card says so.
-  const withdrawn = done && card.withdrawn ? (width >= 32 ? "[Withdrawn] " : "[W] ") : "";
-  const blocked = withdrawn !== "" ? withdrawn : card.blocked ? (width >= 32 ? "[Blocked] " : "[!] ") : ready ? (width >= 32 ? "✓ Ready " : "✓ ") : "";
+  const withdrawn = done && card.withdrawn ? (width >= 32 ? "[Zurückgezogen] " : "[Z] ") : "";
+  const blocked = withdrawn !== "" ? withdrawn : card.blocked ? (width >= 32 ? "[Blockiert] " : "[!] ") : ready ? (width >= 32 ? "✓ Bereit " : "✓ ") : "";
   const tag = stage !== null && stage.key === card.key
     && cellWidth(card.id) + 1 + cellWidth(stage.text) + cellWidth(blocked) + 2 <= width ? stage.text : "";
   const id = truncate(card.id, Math.max(1, width - cellWidth(tag) - cellWidth(blocked) - 3));
@@ -388,7 +388,7 @@ function emptyColumnRows(dashboard: DashboardState, elements: any, column: Board
 export function inProgressBoard(dashboard: DashboardState, elements: any, width: number, body: number): unknown {
   const cards = dashboard.projection?.board.inProgress ?? [];
   const shown = Math.min(COLUMN_CARD_CAP, Math.max(0, body - (cards.length > body ? 1 : 0)));
-  return boardColumn(dashboard, elements, "board-inprogress", "In progress", COLUMN_STYLES.inProgress,
+  return boardColumn(dashboard, elements, "board-inprogress", "In Arbeit", COLUMN_STYLES.inProgress,
     cards, width, shown, Math.max(1, Math.min(body, cards.length || 2)), sessionStage(dashboard, cards, shown));
 }
 
@@ -424,9 +424,9 @@ export function compactBoard(dashboard: DashboardState, elements: any, board: Si
     key: "board",
     flexDirection: "column",
     children: [
-      line("board-open", "Open", COLUMN_STYLES.open, board.open),
-      line("board-inprogress", "In progress", COLUMN_STYLES.inProgress, board.inProgress, sessionStage(dashboard, board.inProgress, 0)),
-      line("board-done", "Done", COLUMN_STYLES.done, board.done),
+      line("board-open", "Offen", COLUMN_STYLES.open, board.open),
+      line("board-inprogress", "In Arbeit", COLUMN_STYLES.inProgress, board.inProgress, sessionStage(dashboard, board.inProgress, 0)),
+      line("board-done", "Erledigt", COLUMN_STYLES.done, board.done),
     ],
   });
 }
@@ -452,7 +452,7 @@ export function narrowBoard(dashboard: DashboardState, elements: any, board: Sid
   const fallback = inProgress.length === 0;
   const cards = fallback ? (board.open as readonly SidebarBoardCard[]) : inProgress;
   const stage = sessionStage(dashboard, inProgress, NARROW_BOARD_CARDS);
-  const stageRow = fallback && headingTag("In progress", 0, stage, width) !== "";
+  const stageRow = fallback && headingTag("In Arbeit", 0, stage, width) !== "";
   const limit = stageRow ? NARROW_BOARD_CARDS - 1 : NARROW_BOARD_CARDS;
   const rows: unknown[] = [];
   if (stageRow) {
@@ -460,14 +460,14 @@ export function narrowBoard(dashboard: DashboardState, elements: any, board: Sid
       key: "narrow-stage-heading",
       ...COLUMN_STYLES.inProgress,
       wrap: "truncate",
-      children: headingContent(dashboard, elements, "In progress", 0, width, stage),
+      children: headingContent(dashboard, elements, "In Arbeit", 0, width, stage),
     }));
   }
   rows.push(paneText(dashboard, elements.Text, {
     key: "narrow-heading",
     ...(fallback ? COLUMN_STYLES.open : COLUMN_STYLES.inProgress),
     wrap: "truncate",
-    children: headingContent(dashboard, elements, fallback ? "Open" : "In progress", cards.length, width, fallback ? null : stage),
+    children: headingContent(dashboard, elements, fallback ? "Offen" : "In Arbeit", cards.length, width, fallback ? null : stage),
   }));
   if (cards.length === 0) {
     rows.push(...emptyColumnRows(dashboard, elements, fallback ? "board-open" : "board-inprogress", width, 1, false));
@@ -534,9 +534,9 @@ export function boardNode(dashboard: DashboardState, elements: any, board: Sideb
     flexDirection: stacked ? "column" : "row",
     gap: stacked ? 0 : COLUMN_GAP,
     children: [
-      boardColumn(dashboard, elements, "board-open", "Open", COLUMN_STYLES.open, board.open, widths[0]!, shown, height),
-      boardColumn(dashboard, elements, "board-inprogress", "In progress", COLUMN_STYLES.inProgress, board.inProgress, widths[1]!, shown, height, sessionStage(dashboard, board.inProgress, shown)),
-      boardColumn(dashboard, elements, "board-done", "Done", COLUMN_STYLES.done, board.done, widths[2]!, shown, height),
+      boardColumn(dashboard, elements, "board-open", "Offen", COLUMN_STYLES.open, board.open, widths[0]!, shown, height),
+      boardColumn(dashboard, elements, "board-inprogress", "In Arbeit", COLUMN_STYLES.inProgress, board.inProgress, widths[1]!, shown, height, sessionStage(dashboard, board.inProgress, shown)),
+      boardColumn(dashboard, elements, "board-done", "Erledigt", COLUMN_STYLES.done, board.done, widths[2]!, shown, height),
     ],
   });
 }
@@ -587,7 +587,7 @@ export function compactLineNode(dashboard: DashboardState, elements: any, column
   const runs: unknown[] = [wordmarkNode(dashboard, elements)];
   let used = 9;
   if (room >= 30) {
-    const status = item ? "In progress" : "Ready";
+    const status = item ? "In Arbeit" : "Bereit";
     runs.push(text({ dimColor: true, children: "  │  " }));
     runs.push(text({ color: item ? "cyan" : undefined, children: status }));
     used += 5 + status.length;
@@ -707,7 +707,7 @@ export function footerNode(dashboard: DashboardState, elements: any, bySeverity:
   const abbreviated = cellWidth(long) > room;
   const parts: unknown[] = [];
   if (!abbreviated)
-    parts.push(paneText(dashboard, elements.Text, { children: "issues: " }));
+    parts.push(paneText(dashboard, elements.Text, { children: "Issues: " }));
   SEVERITY_ORDER.forEach((severity, index) => {
     const count = counts[index] ?? 0;
     const props: Record<string, unknown> = {

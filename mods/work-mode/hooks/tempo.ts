@@ -292,7 +292,7 @@ export function parseTempo(arg: string): TempoParse {
     // off next to other words adds nothing: the words already replace the whole state.
     if (w === 'off') continue
     const mode = WORDS[w]
-    if (!mode) return { kind: 'error', message: `Unknown mode "${w}".` }
+    if (!mode) return { kind: 'error', message: `Unbekannter Modus "${w}".` }
     picked.add(mode)
   }
   return { kind: 'set', modes: ORDER.filter(m => picked.has(m)) }
@@ -367,7 +367,7 @@ export async function tempoStart($: EngineInterface): Promise<void> {
   await loadConfig($)
   await $.command.register({
     name: 'work-mode',
-    description: 'Work mode: automatisch (nein Fragen) | out (delegate) | wrap (converge) | off',
+    description: 'Arbeitsmodus: auto (autonom, keine Rückfragen) | out (Stapelarbeit delegieren) | wrap (zusammenführen) | off',
     argumentHint: '[auto] [out] [wrap] | off',
     immediate: true,
   })
@@ -442,20 +442,20 @@ async function modeTexts($: EngineInterface, list: readonly TempoMode[]): Promis
 /** The reply /work-mode prints after a switch. */
 export function switchReply(m: readonly TempoMode[], note: string | undefined, cfg: WorkModeConfig = getConfig()): string {
   const tail = note ? ` (${note})` : ''
-  if (m.length === 0) return 'Work mode off: zurück to normal.' + tail
+  if (m.length === 0) return 'Arbeitsmodus aus: zurück zum Normalmodus.' + tail
   if (m.length === 1 && m[0] === 'converge')
-    return 'Work mode wrap: nein neu branches, replies zeigen neu decisions plus an öffnen count. /work-mode off to stoppen.' + tail
+    return 'Arbeitsmodus wrap: keine neuen Richtungen, Antworten zeigen neue Entscheidungen und die Zahl offener Punkte. /work-mode off zum Beenden.' + tail
   return (
     `Work mode ${m.map(x => SHORT[x]).join(' + ')}: ` +
     (m.includes('autonomous')
-      ? 'nein mid-task Fragen on internal reversible steps; compatible PreToolUse gates ablehnen mit a how-to statt asking; hard stops go to a pending list. '
+      ? 'keine Rückfragen mitten in der Aufgabe bei internen, rückgängig zu machenden Schritten; passende PreToolUse-Gates lehnen mit einer Anleitung statt einer Frage ab; harte Stopps kommen auf die Liste offener Punkte. '
       : '') +
     (m.includes('dispatch')
-      ? `The delegation reminder (${cfg.dispatch.pickerHint}) reaches the Modell once, mit its nächste Werkzeug Ergebnis oder Prompt. `
+      ? `Die Erinnerung zur Delegierung (${cfg.dispatch.pickerHint}) erreicht das Modell einmal, zusammen mit dem nächsten Werkzeugergebnis oder Prompt. `
       : '') +
-    (m.includes('converge') ? 'No neu branches; replies end mit decisions plus recommendations. ' : '') +
-    (both(m) ? 'Delegation nur finishes work already öffnen. ' : '') +
-    '/work-mode off to stop.' +
+    (m.includes('converge') ? 'Keine neuen Richtungen; Antworten enden mit Entscheidungen und Empfehlungen. ' : '') +
+    (both(m) ? 'Delegierung dient nur dem Abschluss bereits offener Arbeit. ' : '') +
+    '/work-mode off zum Beenden.' +
     tail
   )
 }
@@ -471,7 +471,7 @@ export function registerTempo(on: On): void {
         const question =
           cfg.locale === 'zh-TW'
             ? `Work mode 目前：${label}。勾選要開的模式（可複選，會取代目前的設定）：`
-            : `Work mode is jetzt: ${label}. Tick the modes to einschalten (any mix; it replaces the aktuell set):`
+            : `Arbeitsmodus ist jetzt: ${label}. Wähle die zu aktivierenden Modi (beliebige Kombination; sie ersetzen die aktuelle Einstellung):`
         const answer = await $.ui.ask(question, {
           options: pickerLabels(current, cfg),
           header: 'Work mode',
@@ -480,14 +480,14 @@ export function registerTempo(on: On): void {
         parsed = parseTempo(pickedArgs(answer, cfg))
       } catch (err) {
         // Dismissed, or nobody to ask: fall through to the plain status line.
-        $.ui.log(`tempo picker unavailable: ${String(err).slice(0, 300)}`, { to: 'debug' })
+        $.ui.log(`Arbeitsmodus-Auswahl nicht verfügbar: ${String(err).slice(0, 300)}`, { to: 'debug' })
       }
     }
-    const usage = 'Use /work-mode mit any of automatisch, out, wrap (any order), oder off.'
+    const usage = 'Nutze /work-mode mit auto, out, wrap (beliebige Reihenfolge) oder off.'
     if (parsed.kind === 'error') return { text: `${parsed.message} ${usage}` }
     if (parsed.kind === 'status') {
       const label = tempoLabel(await read($, modes)) ?? 'off'
-      return { text: `Work mode: ${label}. ${usage}` }
+      return { text: `Arbeitsmodus: ${label}. ${usage}` }
     }
     const prev = await read($, modes)
     const prevSent = await read($, sent)

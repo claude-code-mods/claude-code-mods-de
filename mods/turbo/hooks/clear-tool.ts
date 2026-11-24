@@ -36,7 +36,7 @@ export async function registerClearTool($: EngineInterface) {
 
 export async function queueContinuation($: EngineInterface, e: Frozen<Args<'tool.call'>>) {
   if (e.agentId !== undefined) {
-    return { result: 'No clear for a subagent: this tool clears the main session.' }
+    return { result: 'Kein Clear für einen Subagenten: Dieses Werkzeug leert die Hauptsitzung.' }
   }
 
   const continuation = await validContinuation($, e as ContinuationInput)
@@ -44,16 +44,16 @@ export async function queueContinuation($: EngineInterface, e: Frozen<Args<'tool
   if (continuation === undefined) {
     return {
       result:
-        'Nothing queued: pass either the slug of a plan under .turbo/plans/ as `plan`, with `worktree` if wanted, ' +
-        'or the path of an existing handoff file as `handoff`, without `worktree`.',
+        'Nichts vorgemerkt: Gib entweder den Slug eines Plans unter .turbo/plans/ als `plan` an, optional mit `worktree`, ' +
+        'oder den Pfad einer vorhandenen Übergabedatei als `handoff`, ohne `worktree`.',
     }
   }
 
   pendingContinuation = continuation
-  const afterClear = 'plan' in continuation ? `runs /${IMPLEMENT_COMMAND} on the plan` : 'continues from the handoff'
+  const afterClear = 'plan' in continuation ? `führt /${IMPLEMENT_COMMAND} für den Plan aus` : 'fährt mit der Übergabe fort'
 
   return {
-    result: `The session clears and ${afterClear} once this turn ends. Finish any remaining task, then end the turn.`,
+    result: `Nach Ende dieser Runde wird die Sitzung geleert und ${afterClear}. Beende verbleibende Aufgaben und beende dann die Runde.`,
   }
 }
 
@@ -90,7 +90,7 @@ export async function continueAfterTurn($: EngineInterface, reason: TurnComplete
 }
 
 async function clearThenImplement($: EngineInterface, plan: PlanContinuation) {
-  const args = plan.worktree ? `${plan.plan} in a worktree` : plan.plan
+  const args = plan.worktree ? `${plan.plan} in einem Worktree` : plan.plan
   const typed = `/${IMPLEMENT_COMMAND} ${args}`
 
   if (!(await clearOrToast($, typed))) {
@@ -100,12 +100,12 @@ async function clearThenImplement($: EngineInterface, plan: PlanContinuation) {
   try {
     await $.command.run({ command: IMPLEMENT_COMMAND, args })
   } catch (error) {
-    $.ui.toast(`${messageOf(error)}: cleared, but the plan did not start. Run ${typed}`, TOAST)
+    $.ui.toast(`${messageOf(error)}: Sitzung geleert, aber der Plan wurde nicht gestartet. Führe ${typed} aus`, TOAST)
   }
 }
 
 async function clearThenResume($: EngineInterface, handoff: string) {
-  const reply = `reply "Read the handoff at ${handoff} and continue"`
+  const reply = `antworte "Lies die Übergabe unter ${handoff} und fahre fort"`
 
   if (!(await clearOrToast($, reply))) {
     return
@@ -114,7 +114,7 @@ async function clearThenResume($: EngineInterface, handoff: string) {
   await submitOrToast(
     $,
     handoffPrompt(handoff, 'cleared'),
-    `${handoff}: cleared, but the continue prompt was not sent. Reply "Read the handoff at ${handoff} and continue".`,
+    `${handoff}: Sitzung geleert, aber die Fortsetzungsaufforderung wurde nicht gesendet. Antworte "Lies die Übergabe unter ${handoff} und fahre fort".`,
   )
 }
 
@@ -124,7 +124,7 @@ async function clearOrToast($: EngineInterface, next: string) {
 
     return true
   } catch (error) {
-    $.ui.toast(`${messageOf(error)}: clear failed. Run /clear, then ${next}`, TOAST)
+    $.ui.toast(`${messageOf(error)}: Leeren fehlgeschlagen. Führe /clear aus, dann ${next}`, TOAST)
 
     return false
   }

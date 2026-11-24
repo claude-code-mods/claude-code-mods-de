@@ -113,7 +113,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.ar
   try {
     main();
   } catch (error) {
-    process.stderr.write(`TavernWeave Front Door hook skipped: ${error.message}\n`);
+    process.stderr.write(`TavernWeave-Hook für die Host Front Door übersprungen: ${error.message}\n`);
     process.exitCode = 1;
   }
 }

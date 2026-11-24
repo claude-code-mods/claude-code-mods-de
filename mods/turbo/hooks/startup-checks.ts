@@ -1,14 +1,14 @@
 import type { EngineInterface } from 'claude-code'
 
-const TODO_TOOLS_STATUS = 'set CLAUDE_CODE_ENABLE_TODO_TOOLS=1 in settings env (see SETUP.md)'
+const TODO_TOOLS_STATUS = 'setze CLAUDE_CODE_ENABLE_TODO_TOOLS=1 in den Einstellungen unter env (siehe SETUP.md)'
 
 const TODO_TOOLS_NOTICE =
-  '- `CLAUDE_CODE_ENABLE_TODO_TOOLS` is not set to `1` in this session, so the task tools are missing. Before running a Turbo pipeline, tell the user that its step tracking will not work until they add `"CLAUDE_CODE_ENABLE_TODO_TOOLS": "1"` under `env` in `~/.claude/settings.json` and restart Claude Code.'
+  '- `CLAUDE_CODE_ENABLE_TODO_TOOLS` ist in dieser Sitzung nicht auf `1` gesetzt, daher fehlen die Aufgaben-Werkzeuge. Informiere den Nutzer vor dem Start einer Turbo-Pipeline, dass die Schrittverfolgung erst funktioniert, wenn er `"CLAUDE_CODE_ENABLE_TODO_TOOLS": "1"` unter `env` in `~/.claude/settings.json` ergänzt und Claude Code neu startet.'
 
-const COPY_INSTALL_STATUS = 'ausführen /aktualisieren-turbo once to migrate to das Plugin'
+const COPY_INSTALL_STATUS = 'führe /update-turbo einmal aus, um zum Plugin zu migrieren'
 
 const COPY_INSTALL_NOTICE =
-  '- An earlier Turbo copy install is still present on this machine. Tell the user to run `/update-turbo` once to migrate to the plugin, or, when that skill is gone, to have you follow https://github.com/tobihagemann/turbo/blob/main/claude/UPDATE.md; until then, copied skills in `~/.claude/skills` shadow the plugin skills of the same name.'
+  '- Auf diesem Rechner ist noch eine ältere Turbo-Kopie installiert. Bitte den Nutzer, `/update-turbo` einmal zur Migration zum Plugin auszuführen, oder folge, wenn diese Skill fehlt, https://github.com/tobihagemann/turbo/blob/main/claude/UPDATE.md; bis dahin überlagern kopierte Skills in `~/.claude/skills` die gleichnamigen Plugin-Skills.'
 
 let notices: readonly string[] = []
 

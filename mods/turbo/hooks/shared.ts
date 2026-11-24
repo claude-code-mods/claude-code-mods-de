@@ -10,8 +10,8 @@ export function messageOf(error: unknown) {
 
 export function handoffPrompt(handoff: string, reset: 'compacted' | 'cleared') {
   return (
-    `The session was ${reset}. Read the handoff at ${handoff}, ` +
-    'then use the TaskList tool and continue with the next step it names.'
+    `Die Sitzung wurde ${reset}. Lies die Übergabe unter ${handoff}, ` +
+    'nutze dann das TaskList-Werkzeug und fahre mit dem nächsten darin genannten Schritt fort.'
   )
 }
 

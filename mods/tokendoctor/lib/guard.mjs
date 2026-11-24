@@ -57,8 +57,8 @@ export function marketplaceManifest() {
   return {
     name: ORG_MARKETPLACE,
     owner: { name: 'tokendoctor' },
-    description: 'tokendoctor installed as this machine’s own mod, so its slide runs after the built-in guard.',
-    plugins: [{ name: 'tokendoctor', source: './tokendoctor', description: 'tokendoctor, loaded in place' }],
+    description: 'tokendoctor als eigenes Mod dieses Rechners installiert, damit das Gleiten nach der integrierten Schutzfunktion läuft.',
+    plugins: [{ name: 'tokendoctor', source: './tokendoctor', description: 'tokendoctor, am Ort geladen' }],
   }
 }
 
@@ -83,8 +83,8 @@ export function guardState({ account, env = {}, managed = {}, mdm = false, remot
   const teamLogin = !otherCredential && isTeamOrg(account?.organizationType)
   const managedPresent = has(managed) || mdm || has(remote)
   const reasons = [
-    teamLogin && `you sign in with a ${/enterprise/i.test(account.organizationType) ? 'Enterprise' : 'Team'} plan`,
-    managedPresent && 'this machine has managed settings',
+    teamLogin && `du bist mit einem ${/enterprise/i.test(account.organizationType) ? 'Enterprise' : 'Team'}-Tarif angemeldet`,
+    managedPresent && 'dieser Rechner hat verwaltete Einstellungen',
   ].filter(Boolean)
   const seated = reasons.length > 0
 
@@ -118,13 +118,13 @@ export function blockedNote(state) {
   if (state.slideRuns) return null
   const why = state.reasons.join(' and ')
   const fix = state.filesHidden
-    ? 'Your organization delivers its own managed settings, which hide any file on this machine: ask an administrator to add tokendoctor as an organization mod (plugins/mods/admin.md).'
+    ? 'Deine Organisation liefert eigene verwaltete Einstellungen, die alle Dateien auf diesem Rechner verbergen: Bitte einen Administrator, tokendoctor als Organisations-Mod hinzuzufügen (plugins/mods/admin.md).'
     : state.orgInstalled
-      ? 'tokendoctor is installed as this machine’s mod: restart Claude Code so that copy loads instead of this one.'
+      ? 'tokendoctor ist als Mod dieses Rechners installiert: Starte Claude Code neu, damit jene Kopie statt dieser geladen wird.'
       : 'Run `tokendoctor-org-install` (dry run, then the one sudo command it prints) to install tokendoctor as this machine’s own mod, which runs after the guard. `tokendoctor-org-install --uninstall` undoes it.'
   return (
-    `The slide cannot run here: ${why}, so Claude Code seats its built-in guard (cc-plugin-sec-default) ` +
-    'ahead of the mods you install, and it sends compaction past them. Claude Code summarizes as usual. ' +
+    `Das Gleiten kann hier nicht ausgeführt werden: ${why}, daher setzt Claude Code seine integrierte Schutzfunktion (cc-plugin-sec-default) ` +
+    'vor den von dir installierten Mods ein und leitet die Verdichtung an ihnen vorbei. Claude Code fasst wie gewohnt zusammen. ' +
     fix
   )
 }

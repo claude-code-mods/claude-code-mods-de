@@ -25,7 +25,7 @@ const modelLabel = (model: string) => {
 const cacheText = (sentAt: number, ttl: number, now: number) => {
   const left = sentAt + ttl - now
 
-  return left <= 0 ? 'Cache expired' : `Cache expires in ${Math.ceil(left / MINUTE)} min`
+  return left <= 0 ? 'Cache abgelaufen' : `Cache läuft in ${Math.ceil(left / MINUTE)} Min. ab`
 }
 
 export async function turnParts($: EngineInterface, isWorking: boolean) {
