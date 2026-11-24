@@ -49,7 +49,7 @@ export function parseProfile(setting: unknown): JudgeProfile | undefined {
   if (setting === undefined || setting === "") return undefined;
   const error = () =>
     new Error(
-      "Invalid compact-adviser profile; advice is disabled. Restore valid version-1 profile JSON or clear the profile setting.",
+      "Ungültiges compact-adviser-Profil; Hinweise sind deaktiviert. Stelle ein gültiges Profil-JSON der Version 1 wieder her oder lösche die Profileinstellung.",
     );
   if (typeof setting !== "string" || new TextEncoder().encode(setting).byteLength > 4096)
     throw error();

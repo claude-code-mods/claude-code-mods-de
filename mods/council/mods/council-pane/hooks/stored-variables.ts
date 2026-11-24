@@ -2,12 +2,12 @@
 // ABOUTME: Option names match plugin.json's userConfig; a missing, blank or mistyped value sets nothing
 
 export const STORED_VARIABLES = [
-  { option: 'gemini_api_key', variable: 'GEMINI_API_KEY', title: 'Gemini API key', sensitive: true },
-  { option: 'openai_api_key', variable: 'OPENAI_API_KEY', title: 'OpenAI API key', sensitive: true },
-  { option: 'xai_api_key', variable: 'XAI_API_KEY', title: 'xAI API key (Grok)', sensitive: true },
-  { option: 'perplexity_api_key', variable: 'PERPLEXITY_API_KEY', title: 'Perplexity API key', sensitive: true },
-  { option: 'kimi_api_key', variable: 'KIMI_API_KEY', title: 'Kimi API key', sensitive: true },
-  { option: 'openrouter_api_key', variable: 'OPENROUTER_API_KEY', title: 'OpenRouter API key', sensitive: true },
+  { option: 'gemini_api_key', variable: 'GEMINI_API_KEY', title: 'Gemini-API-Schlüssel', sensitive: true },
+  { option: 'openai_api_key', variable: 'OPENAI_API_KEY', title: 'OpenAI-API-Schlüssel', sensitive: true },
+  { option: 'xai_api_key', variable: 'XAI_API_KEY', title: 'xAI-API-Schlüssel (Grok)', sensitive: true },
+  { option: 'perplexity_api_key', variable: 'PERPLEXITY_API_KEY', title: 'Perplexity-API-Schlüssel', sensitive: true },
+  { option: 'kimi_api_key', variable: 'KIMI_API_KEY', title: 'Kimi-API-Schlüssel', sensitive: true },
+  { option: 'openrouter_api_key', variable: 'OPENROUTER_API_KEY', title: 'OpenRouter-API-Schlüssel', sensitive: true },
   { option: 'openrouter_models', variable: 'OPENROUTER_MODELS', title: 'OpenRouter Modelle', sensitive: false },
 ] as const
 

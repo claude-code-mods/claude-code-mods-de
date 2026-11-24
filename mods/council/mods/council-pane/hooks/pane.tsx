@@ -150,7 +150,7 @@ type SetupOutcome = { readonly text: string } | { readonly turnRowOn: boolean }
 
 async function setupHeadsUp($: EngineInterface, state: PaneState, settings: PaneOptions): Promise<SetupOutcome> {
   const ask = (question: string, options: string[]) => $.ui.ask(question, { header: 'Heads-up', options }).catch(() => undefined)
-  const closed = { text: 'Setup closed; nothing changed.' }
+  const closed = { text: 'Einrichtung abgebrochen; nichts wurde geändert.' }
   const scope = await ask(SCOPE_QUESTION, [SCOPE.project, SCOPE.all, SCOPE.off])
   if (scope === undefined) return closed
   const file = await headsUpFile($)
@@ -158,24 +158,24 @@ async function setupHeadsUp($: EngineInterface, state: PaneState, settings: Pane
     await $.fs.write(file.path, withEnabled(file.text, false))
     return { turnRowOn: false }
   }
-  if (scope !== SCOPE.project && scope !== SCOPE.all) return { text: `Setup closed: ${JSON.stringify(scope)} is nicht one of the choices; nothing changed.` }
+  if (scope !== SCOPE.project && scope !== SCOPE.all) return { text: `Einrichtung abgebrochen: ${JSON.stringify(scope)} ist keine der Optionen; nichts wurde geändert.` }
   // The council's own discovery, so the seats offered are the ones this machine can run.
   const discovered = await seatInfo($, 'discover')
-  if (discovered.exitCode !== 0) return { text: `Setup closed: seat discovery exited ${discovered.exitCode}: ${discovered.stderr.trim()}; nothing changed.` }
+  if (discovered.exitCode !== 0) return { text: `Einrichtung abgebrochen: die Platz-Erkennung endete mit ${discovered.exitCode}: ${discovered.stderr.trim()}; nichts wurde geändert.` }
   const seatAnswer = await ask(SEAT_QUESTION, seatOptions(seatsFromDiscovery(discovered.stdout)))
   if (seatAnswer === undefined) return closed
   const everyAnswer = await ask(EVERY_QUESTION, [...EVERY_LABELS])
   if (everyAnswer === undefined) return closed
   const chosen = seatFromAnswer(seatAnswer)
-  if ('why' in chosen) return { text: `Setup closed: ${chosen.why}; nothing changed.` }
+  if ('why' in chosen) return { text: `Einrichtung abgebrochen: ${chosen.why}; nichts wurde geändert.` }
   const { seat } = chosen
   const unknown = await notASeat($, seat)
-  if (unknown !== undefined) return { text: `Setup closed: ${unknown}; nothing changed.` }
+  if (unknown !== undefined) return { text: `Einrichtung abgebrochen: ${unknown}; nichts wurde geändert.` }
   const every = everyFromAnswer(everyAnswer)
-  if ('why' in every) return { text: `Setup closed: ${every.why}; nothing changed.` }
+  if ('why' in every) return { text: `Einrichtung abgebrochen: ${every.why}; nichts wurde geändert.` }
   // The seat's model; codex also takes an effort, from its own catalog.
   const lookup = await seatInfo($, 'model', seat)
-  if (lookup.exitCode !== 0) return { text: `Setup closed: reading ${seat}'s Modell exited ${lookup.exitCode}: ${lookup.stderr.trim()}; nothing changed.` }
+  if (lookup.exitCode !== 0) return { text: `Einrichtung abgebrochen: das Lesen des Modells für ${seat} endete mit ${lookup.exitCode}: ${lookup.stderr.trim()}; nichts wurde geändert.` }
   const current = lookup.stdout.trim()
   const catalog = seat === 'codex' ? await readCatalog($) : undefined
   const slugs = catalog !== undefined && 'models' in catalog ? catalog.models.filter(m => m.listed).map(m => m.slug) : undefined
@@ -188,7 +188,7 @@ async function setupHeadsUp($: EngineInterface, state: PaneState, settings: Pane
     const effortAnswer = await ask(EFFORT_QUESTION, effortOptions(entry?.efforts ?? [], entry?.defaultEffort ?? ''))
     if (effortAnswer === undefined) return closed
     const effort = effortFromAnswer(effortAnswer)
-    if ('why' in effort) return { text: `Setup closed: ${effort.why}; nothing changed.` }
+    if ('why' in effort) return { text: `Einrichtung abgebrochen: ${effort.why}; nichts wurde geändert.` }
     if (effort.effort !== undefined) pick = { ...pick, effort: effort.effort }
   }
   // "Keep <current>" with no effort is no pick at all: the file's own model
@@ -232,7 +232,7 @@ async function wakeWhenFetchable($: EngineInterface, state: PaneState): Promise<
   if (outcome === 'running' && (await $.clock.now()) < pending.untilMs) return
   state.pendingWake = undefined
   if (outcome === 'completed') await $.prompt.submit({ text: pending.prompt })
-  else $.ui.log(`council job record ${pending.jobFile} did nicht complete (${outcome}); nein wake Prompt sent`)
+  else $.ui.log(`Rat-Auftragsdatei ${pending.jobFile} wurde nicht abgeschlossen (${outcome}); kein Weck-Prompt gesendet`)
 }
 
 // .done comes from the run's EXIT trap, which a SIGKILL skips. A run whose
@@ -409,9 +409,9 @@ async function applyStoredValues($: EngineInterface, stored: readonly StoredValu
   for (const { variable, value } of stored) {
     try {
       const { deny } = await setVariable($, variable, value)
-      if (deny) $.ui.log(`stored ${variable} nicht applied: ${deny.replaceAll(value, '<value>')}`)
+      if (deny) $.ui.log(`gespeicherte Variable ${variable} nicht angewendet: ${deny.replaceAll(value, '<value>')}`)
     } catch (error) {
-      $.ui.log(`stored ${variable} nicht applied: ${String(error).replaceAll(value, '<value>')}`)
+      $.ui.log(`gespeicherte Variable ${variable} nicht angewendet: ${String(error).replaceAll(value, '<value>')}`)
     }
   }
 }
@@ -490,8 +490,8 @@ function seatInfo($: EngineInterface, ...args: ['discover'] | ['model' | 'allowl
 async function notASeat($: EngineInterface, seat: string): Promise<string | undefined> {
   const ok = await seatInfo($, 'allowlisted', seat)
   if (ok.exitCode === 0) return undefined
-  if (ok.exitCode !== 1) return `checking ${JSON.stringify(seat)} exited ${ok.exitCode}: ${ok.stderr.trim()}`
-  return `${JSON.stringify(seat)} is not a council seat; one of ${(await providerScripts($)).join(', ')}`
+  if (ok.exitCode !== 1) return `Die Prüfung von ${JSON.stringify(seat)} endete mit ${ok.exitCode}: ${ok.stderr.trim()}`
+  return `${JSON.stringify(seat)} ist kein Rat-Platz; einer von ${(await providerScripts($)).join(', ')}`
 }
 
 // The runner's registry: one providers/<name>.sh per provider it can run.
@@ -650,12 +650,12 @@ async function pressHeadsUp($: EngineInterface, answer: Exclude<Answer, 'typed-p
   if (answer === 'turn-off') {
     const file = await headsUpFile($)
     await $.fs.write(file.path, withEnabled(file.text, false))
-    $.ui.log(`heads-up: off for this Projekt (${CONFIG_FILE}); /${HEADS_UP_COMMAND} on turns it zurück on`)
+    $.ui.log(`heads-up: für dieses Projekt aus (${CONFIG_FILE}); /${HEADS_UP_COMMAND} on schaltet es wieder ein`)
     return
   }
   if (answer !== 'tell') return
   const filled = await $.prompt.fill({ text: tellClaudeDraft(shown.note), mode: 'replace' })
-  if (!filled.isFilled) throw new Error(`the prompt box did not take the note: ${tellClaudeDraft(shown.note)}`)
+  if (!filled.isFilled) throw new Error(`die Eingabe hat den Hinweis nicht übernommen: ${tellClaudeDraft(shown.note)}`)
 }
 
 // The person's own prompt while a note shows: it is typed past.
@@ -701,18 +701,18 @@ function headsUpRow(
   turnOffArmed: boolean,
 ) {
   const { more } = band
-  const turnOff = <ui.Button key="heads-up:turn-off" hotkey="3" label={turnOffArmed ? 'Press erneut to ausschalten' : 'Turn off'} plain dimColor onPress={press['turn-off']} />
+  const turnOff = <ui.Button key="heads-up:turn-off" hotkey="3" label={turnOffArmed ? 'Erneut drücken zum Ausschalten' : 'Ausschalten'} plain dimColor onPress={press['turn-off']} />
   // Collapsed: Learn mehr, Knew this already, Dismiss. Expanded: Understood, Tell Claude, Close.
   const [first, second, last] = more === null
     ? [
-        <ui.Button key="heads-up:learn" hotkey="1" label="Learn mehr" plain onPress={press.learn} />,
-        <ui.Button key="heads-up:knew" hotkey="2" label="Knew this already" plain onPress={press.knew} />,
-        <ui.Button key="heads-up:dismiss" hotkey="0" label="Dismiss" plain role="dismiss" onPress={press.dismiss} />,
+        <ui.Button key="heads-up:learn" hotkey="1" label="Mehr erfahren" plain onPress={press.learn} />,
+        <ui.Button key="heads-up:knew" hotkey="2" label="Schon gewusst" plain onPress={press.knew} />,
+        <ui.Button key="heads-up:dismiss" hotkey="0" label="Verwerfen" plain role="dismiss" onPress={press.dismiss} />,
       ]
     : [
-        <ui.Button key="heads-up:understood" hotkey="1" label="Understood" plain onPress={press.understood} />,
-        <ui.Button key="heads-up:tell" hotkey="2" label="Tell Claude" plain onPress={press.tell} />,
-        <ui.Button key="heads-up:close" hotkey="0" label="Close" plain role="dismiss" onPress={press.dismiss} />,
+        <ui.Button key="heads-up:understood" hotkey="1" label="Verstanden" plain onPress={press.understood} />,
+        <ui.Button key="heads-up:tell" hotkey="2" label="Claude sagen" plain onPress={press.tell} />,
+        <ui.Button key="heads-up:close" hotkey="0" label="Schließen" plain role="dismiss" onPress={press.dismiss} />,
       ]
   return (
     <ui.Box key="heads-up" flexDirection="column" marginTop={1} paddingLeft={BAND_INDENT}>
@@ -758,7 +758,7 @@ function pausedRow(ui: Pick<Elements['terminal'], 'Box' | 'Button' | 'Text'>, pa
       </ui.Box>
       <ui.Box flexShrink={0}>
         <ui.Text>{'   '}</ui.Text>
-        <ui.Button key="heads-up-paused:dismiss" hotkey="0" label="Dismiss" plain role="dismiss" onPress={dismiss} />
+        <ui.Button key="heads-up-paused:dismiss" hotkey="0" label="Verwerfen" plain role="dismiss" onPress={dismiss} />
       </ui.Box>
     </ui.Box>
   )
@@ -821,9 +821,9 @@ function retryRow(
       </ui.Box>
       <ui.Box flexShrink={0} flexDirection="row">
         {/* No letters in the labels: r and s answer only once the band holds the focus. */}
-        <ui.Button key="retry:accept" hotkey="r" label="retry" onPress={press.accept} />
+        <ui.Button key="retry:accept" hotkey="r" label="wiederholen" onPress={press.accept} />
         <ui.Text>{' '}</ui.Text>
-        <ui.Button key="retry:skip" hotkey="s" label="skip" onPress={press.skip} />
+        <ui.Button key="retry:skip" hotkey="s" label="überspringen" onPress={press.skip} />
         <ui.Text color={COLOR.accent}>{`  ${offer.bar}`}</ui.Text>
         <ui.Text dimColor>{` ${offer.remaining}s`}</ui.Text>
       </ui.Box>
@@ -842,14 +842,14 @@ export const register: Register = (on, options) => {
 
   on('session.start', async ($, e, next) => {
     await applyStoredValues($, stored)
-    await $.command.register({ name: REOPEN_COMMAND, description: 'Reopen the council pane, oder forget where it was told to öffnen', argumentHint: '[ask]', immediate: true })
-    await $.command.register({ name: HEADS_UP_COMMAND, description: 'Heads-up side-check: set it up in a few Fragen, switch it on for this Projekt naming the seat, oder off, oder zeigen its state und counts', argumentHint: '[setup | on [seat] | off | Status]', immediate: true })
+    await $.command.register({ name: REOPEN_COMMAND, description: 'Rat-Bereich erneut öffnen oder vergessen, wohin er geöffnet werden sollte', argumentHint: '[ask]', immediate: true })
+    await $.command.register({ name: HEADS_UP_COMMAND, description: 'Heads-up-Nebenprüfung: in wenigen Schritten einrichten, für dieses Projekt mit Platzangabe einschalten, ausschalten oder Status und Zählwerte anzeigen', argumentHint: '[setup | on [seat] | off | Status]', immediate: true })
     if (settings.offersTool) await $.tool.register({ name: TOOL_NAME, description: TOOL_DESCRIPTION, inputSchema: TOOL_SCHEMA })
     void logFailure($, state, () => introduceHeadsUp($, state, settings))
     // A reload drops the heads-up timer; a check still in flight needs it back.
     if ((await readSession($)).phase.kind === 'checking') watchHeadsUp($, state)
     // Nothing after depends on these, so the request is not held up for them.
-    void Promise.all(SPECIALIST_STORE_KEYS.map(key => $.store.delete(key))).catch((err: unknown) => $.ui.log(`store cleanup: ${String(err)}`))
+    void Promise.all(SPECIALIST_STORE_KEYS.map(key => $.store.delete(key))).catch((err: unknown) => $.ui.log(`Speicherbereinigung: ${String(err)}`))
     return next(e)
   })
 
@@ -910,16 +910,16 @@ export const register: Register = (on, options) => {
     // Its declared type is the union of the listed tools, none of them this one.
     const input = e as unknown as Record<string, unknown>
     const script = `${$.plugin.root}/scripts/run-council.sh`
-    if (!(await $.fs.exists(script))) return { deny: `council script not found at ${script}` }
+    if (!(await $.fs.exists(script))) return { deny: `Rat-Skript nicht gefunden unter ${script}` }
     // The seats a default query runs, as /claude-council:ask offers them.
     const listed = await $.process.run(['bash', `${$.plugin.root}/scripts/query-council.sh`, '--list-default-models'], { timeoutMs: SEAT_INFO_MS })
-    if (listed.exitCode !== 0) return { result: `Listing the council seats exited ${listed.exitCode}: ${listed.stderr.trim()}. Nothing was sent.`, isError: true }
+    if (listed.exitCode !== 0) return { result: `Das Auflisten der Rat-Plätze endete mit ${listed.exitCode}: ${listed.stderr.trim()}. Es wurde nichts gesendet.`, isError: true }
     const seats = seatsFromList(listed.stdout)
     const defaults = seats.map(seat => seat.name)
     let askable: Askable = { found: defaults, namedOnly: [] }
     if (input.providers !== undefined) {
       const discovered = await seatInfo($, 'discover')
-      if (discovered.exitCode !== 0) return { result: `Listing the council seats exited ${discovered.exitCode}: ${discovered.stderr.trim()}. Nothing was sent.`, isError: true }
+      if (discovered.exitCode !== 0) return { result: `Das Auflisten der Rat-Plätze endete mit ${discovered.exitCode}: ${discovered.stderr.trim()}. Es wurde nichts gesendet.`, isError: true }
       askable = askableSeats(defaults, discovered.stdout.split(/\s+/).filter(name => name !== ''), await providerScripts($))
     }
     // Refused before any question, so the user never answers for a call that cannot send.
@@ -928,7 +928,7 @@ export const register: Register = (on, options) => {
     const missing = missingChoices(input)
     if (missing.length > 0 || parsed.seats === undefined) {
       // A call that named its seats needs none listed: only its verbosity is asked.
-      if (seats.length === 0 && missing.includes('seats')) return { result: 'No council seat is available on this machine, so nothing was sent. /claude-council:Status zeigt jede provider.', isError: true }
+      if (seats.length === 0 && missing.includes('seats')) return { result: 'Auf diesem Gerät ist kein Rat-Platz verfügbar, daher wurde nichts gesendet. /claude-council:status zeigt alle Anbieter.', isError: true }
       return { result: choiceRequest(seats, missing) }
     }
     // The question goes to third-party providers, so the user confirms every
@@ -945,24 +945,24 @@ export const register: Register = (on, options) => {
     await aimRun($, state, settings)
     const run = await $.process.run(['bash', script, ...parsed.args], { timeoutMs: RUN_TIMEOUT_MS })
     const saved = run.stdout.trim().split('\n').pop() ?? ''
-    if (run.exitCode !== 0 || !saved) return { result: run.stderr || 'council ausführen failed', isError: true }
+    if (run.exitCode !== 0 || !saved) return { result: run.stderr || 'Ratlauf fehlgeschlagen', isError: true }
     return { result: councilResult(await $.fs.read(saved)) }
   })
 
   on('command.run', { command: HEADS_UP_COMMAND }, async ($, e) => {
     const command = headsUpCommand(e.args)
-    if (command.action === 'unknown') return { text: `${command.why}. Usage: /${HEADS_UP_COMMAND} [on [seat] | off | setup | status]; one seat, a provider name such as codex, gemini or grok-cli.` }
+    if (command.action === 'unknown') return { text: `${command.why}. Verwendung: /${HEADS_UP_COMMAND} [on [Platz] | off | setup | status]; ein Platz, ein Anbietername wie codex, gemini oder grok-cli.` }
     if (command.action === 'setup') {
       const outcome = await setupHeadsUp($, state, settings)
       if ('text' in outcome) return outcome
       if (outcome.turnRowOn) {
         const written = await $.config.set({ key: 'claude-council.heads_up', value: true })
-        if (written.deny) return { text: `The Datei is written, aber the /config row was refused: ${written.deny}` }
+        if (written.deny) return { text: `Die Datei wurde geschrieben, aber die /config-Zeile wurde abgelehnt: ${written.deny}` }
         return { text: await headsUpReply($, state, true) }
       }
     } else if (command.action !== 'status') {
       const unknown = command.action === 'on' && command.seat !== undefined ? await notASeat($, command.seat) : undefined
-      if (unknown !== undefined) return { text: `${unknown}; nothing changed.` }
+      if (unknown !== undefined) return { text: `${unknown}; nichts wurde geändert.` }
       const file = await headsUpFile($)
       await $.fs.write(file.path, withEnabled(file.text, command.action === 'on', command.action === 'on' ? command.seat : undefined))
       // On is the one way to resume a session the seat's credits paused; off leaves the pause.
@@ -978,9 +978,9 @@ export const register: Register = (on, options) => {
     const command = paneCommand(e.args)
     if (command.action === 'forget') {
       await $.store.delete(HOST_STORE_KEY)
-      return { text: 'Forgotten. With the setting on ask, the nächste council ausführen inside tmux asks where to öffnen its pane.' }
+      return { text: 'Vergessen. Bei der Einstellung „fragen“ fragt der nächste Ratlauf in tmux, wo der Bereich geöffnet werden soll.' }
     }
-    if (command.action === 'unknown') return { text: 'Verwendung: /council-pane [ask]. Choose the pane in /config, row "Pane öffnet in".' }
+    if (command.action === 'unknown') return { text: 'Verwendung: /council-pane [ask]. Wähle den Bereich in /config in der Zeile „Pane öffnet in“.' }
     if (state.view) await $.ui.open({ id: PANE_ID, title: 'Council' })
     return { text: reopenReply(state.view !== undefined) }
   })
@@ -1014,12 +1014,12 @@ export const register: Register = (on, options) => {
           <ui.Box flexShrink={1}>
             <ui.Text bold wrap="truncate-end" {...(finished.isFailure ? { color: COLOR.danger } : {})}>{`  ${finished.text}  `}</ui.Text>
           </ui.Box>
-          <ui.Button key="finished:open" hotkey="o" label="öffnen pane" onPress={() => { void $.ui.open({ id: PANE_ID, title: 'Council' }) }} />
+          <ui.Button key="finished:open" hotkey="o" label="Bereich öffnen" onPress={() => { void $.ui.open({ id: PANE_ID, title: 'Council' }) }} />
           <ui.Text>{' '}</ui.Text>
           <ui.Button
             key="finished:dismiss"
             hotkey="x"
-            label="dismiss"
+            label="verwerfen"
             onPress={() => {
               state.finished = undefined
               $.ui.invalidate('ui.render')
@@ -1038,7 +1038,7 @@ export const register: Register = (on, options) => {
           <ui.Button
             key="heads-up-failure:dismiss"
             hotkey="x"
-            label="dismiss"
+            label="verwerfen"
             onPress={() => {
               state.headsUpFailure = undefined
               $.ui.invalidate('ui.render')
@@ -1072,12 +1072,12 @@ export const register: Register = (on, options) => {
         </ui.Box>
         {seatsToCancel(view).length > 0 && (
           <ui.Box flexShrink={0}>
-            <ui.Button key="progress:cancel" hotkey="c" label="abbrechen alle" onPress={() => cancelAll($, state)} />
+            <ui.Button key="progress:cancel" hotkey="c" label="alle abbrechen" onPress={() => cancelAll($, state)} />
             <ui.Text>{'  '}</ui.Text>
           </ui.Box>
         )}
         <ui.Box flexShrink={0}>
-          <ui.Button key="progress:open" hotkey="o" label="öffnen pane" onPress={() => { void $.ui.open({ id: PANE_ID, title: 'Council' }) }} />
+          <ui.Button key="progress:open" hotkey="o" label="Bereich öffnen" onPress={() => { void $.ui.open({ id: PANE_ID, title: 'Council' }) }} />
         </ui.Box>
       </ui.Box>
     )
@@ -1191,7 +1191,7 @@ export const register: Register = (on, options) => {
             <Box key={key} flexDirection="row" flexWrap="wrap" justifyContent="flex-end" width={columns} marginTop={1}>
               {fold && <Button key="footer:fold" hotkey="a" label={fold.label} onPress={() => foldAll(fold)} />}
               {fold && <Text>{'  '}</Text>}
-              {section.cancelAll && <Button key="footer:cancel" hotkey="c" label="abbrechen alle" onPress={() => cancelAll($, state)} />}
+              {section.cancelAll && <Button key="footer:cancel" hotkey="c" label="alle abbrechen" onPress={() => cancelAll($, state)} />}
               {section.cancelAll && <Text>{'  '}</Text>}
               {/* The pane's own close mark, which the engine draws and answers. */}
               <Text dimColor>{'\u2715 schließen'}</Text>

@@ -72,13 +72,13 @@ export function cooldownReason(
   tokens: number,
   now: number,
 ): string | undefined {
-  if (now < state.retryAfter) return "TypeSafe backoff";
-  if (state.completed < state.snoozeUntil) return "Snoozed";
+  if (now < state.retryAfter) return "TypeSafe-Abklingzeit";
+  if (state.completed < state.snoozeUntil) return "Ausgesetzt";
   if (
     state.compacted &&
     (state.baseline === null || tokens - state.baseline < 20000 || state.completed < 3)
   )
-    return "Waiting for 20k neu Tokens und 3 completed exchanges danach compaction";
+    return "Warten auf 20.000 neue Tokens und 3 abgeschlossene Austausche nach der Kompaktierung";
   return undefined;
 }
 

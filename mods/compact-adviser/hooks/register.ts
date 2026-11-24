@@ -82,10 +82,10 @@ import {
 
 const COMMAND = "compact-adviser";
 const PANE_ID = "compact-adviser";
-const HINT = "work appears completed oder recorded. Run /compact to speichern Tokens.";
+const HINT = "Die Arbeit scheint abgeschlossen oder erfasst zu sein. Führe /compact aus, um Tokens zu sparen.";
 const COMPACT_INSTRUCTIONS =
   "The session reached a natural boundary; keep the current work, pending tasks, referenced files, and the next step exact.";
-const BEFORE_COMPACT_STATUS = "läuft the vorher-compact Prompt…";
+const BEFORE_COMPACT_STATUS = "Prompt vor der Kompaktierung wird ausgeführt…";
 /** A before-compact turn that outlives this does not compact. */
 export const BEFORE_COMPACT_TIMEOUT_MS = 300_000;
 const BEFORE_COMPACT_RETRY_MS = 60_000;
@@ -93,7 +93,7 @@ const SLASH_COMMAND = /^\/([A-Za-z0-9_:-]{1,64})(?:\s+([\s\S]*))?$/;
 const PENDING_NOTICE_KEY = "pendingNotice";
 const LOOPBACK_ENDPOINT = /^http:\/\/127\.0\.0\.1:\d{1,5}\/[\x21-\x7e]*$/;
 const USAGE =
-  "Use /compact-adviser, automatisch, hint, off, Status, threshold <tokens|default>, budget <tokens|off>, snooze oder dismiss.";
+  "Verwendung: /compact-adviser auto | hint | off | status | threshold <tokens|default> | budget <tokens|off> | snooze | dismiss.";
 
 // Per module environment (a hot reload starts fresh; see the header).
 let activation: Promise<boolean> | undefined;
@@ -369,7 +369,7 @@ async function armBeforeCompact(
   $.ui.status(BEFORE_COMPACT_STATUS);
   $.clock.after(BEFORE_COMPACT_TIMEOUT_MS, () => {
     if (beforeCompact?.seq !== seq) return;
-    void abandonBeforeCompact($, "The vorher-compact Prompt timed out. Context left unchanged.");
+    void abandonBeforeCompact($, "Zeitüberschreitung beim Prompt vor der Kompaktierung. Der Kontext wurde nicht verändert.");
   });
   try {
     if (beforeCompact?.seq === seq) beforeCompact.dispatched = true;
@@ -377,7 +377,7 @@ async function armBeforeCompact(
   } catch {
     if (beforeCompact?.seq !== seq) return;
     beforeCompact.dispatched = false;
-    await abandonBeforeCompact($, "The vorher-compact Prompt did nicht ausführen. Context left unchanged.");
+    await abandonBeforeCompact($, "Der Prompt vor der Kompaktierung konnte nicht ausgeführt werden. Der Kontext wurde nicht verändert.");
   }
 }
 
@@ -387,7 +387,7 @@ async function compactNow($: EngineInterface, key: string): Promise<void> {
   compacting = true;
   // A status line, not a toast: the host drops a toast within two seconds of the last,
   // which would swallow the completion notice of a quick compaction.
-  $.ui.status("compacting at a checkpoint (experimental automatisch)…");
+  $.ui.status("Kompaktierung an einem Prüfpunkt (experimenteller Automatikmodus)…");
   let failure: string | undefined;
   let tokens: { before?: number; after?: number } = {};
   try {
@@ -409,7 +409,7 @@ async function compactNow($: EngineInterface, key: string): Promise<void> {
     });
     notice(
       $,
-      "Compaction failed oder was cancelled. No immediate erneut versuchen; Claude Code remains in control.",
+      "Die Kompaktierung ist fehlgeschlagen oder wurde abgebrochen. Kein sofortiger erneuter Versuch; Claude Code behält die Kontrolle.",
     );
     clearStatus($);
     return;
@@ -418,11 +418,11 @@ async function compactNow($: EngineInterface, key: string): Promise<void> {
   await $.store.set(key, initialState(true, after));
   const completed =
     tokens.before !== undefined && tokens.after !== undefined
-      ? `compaction completed: ${formatTokens(tokens.before)} to ${formatTokens(tokens.after)} Tokens.`
-      : "compaction completed.";
+      ? `Kompaktierung abgeschlossen: ${formatTokens(tokens.before)} auf ${formatTokens(tokens.after)} Tokens.`
+      : "Kompaktierung abgeschlossen.";
   // The dim transcript line (never sent to the model) records the automatic action even
   // when the host throttles the toast. Claude Code prefixes $.ui.log with the plugin name.
-  $.ui.log(`automatic ${completed}`);
+  $.ui.log(`automatisch ${completed}`);
   $.ui.toast(completed);
   clearStatus($);
 }
@@ -551,14 +551,14 @@ async function settle($: EngineInterface): Promise<void> {
   try {
     config = await loadConfig($);
   } catch (error) {
-    notice($, error instanceof Error ? error.message : "Cannot lesen compact-adviser settings.");
+    notice($, error instanceof Error ? error.message : "Einstellungen von compact-adviser konnten nicht gelesen werden.");
     return;
   }
   if (judging || !(await eligible($, config, state, context.tokens, now))) return;
   const epoch = generation;
   $.clock.after(0, () => {
     void judgeCheckpoint($, epoch).catch(() =>
-      notice($, "Compact adviser could nicht inspect this checkpoint; Kontext left unchanged."),
+      notice($, "Compact adviser konnte diesen Prüfpunkt nicht prüfen; der Kontext wurde nicht verändert."),
     );
   });
 }
@@ -576,7 +576,7 @@ async function saveRow(
   const result = await $.config.set({ key, value });
   if (result.deny !== undefined) {
     await $.store.delete(PENDING_NOTICE_KEY);
-    $.ui.toast(`Not gespeichert: ${result.deny}`, { timeoutMs: 8000 });
+    $.ui.toast(`Nicht gespeichert: ${result.deny}`, { timeoutMs: 8000 });
     return false;
   }
   if (key === API_KEY_KEY && typeof value === "string") {
@@ -629,7 +629,7 @@ async function saveConsent($: EngineInterface, patch: Partial<Omit<Consent, "ver
 function openPane($: EngineInterface): Promise<void> {
   return $.ui.open({
     id: PANE_ID,
-    title: "Compact adviser (gespeichert for alle Sitzungen)",
+    title: "Compact adviser (für alle Sitzungen gespeichert)",
     focus: true,
     closeOnEscape: true,
     rows: 12,
@@ -670,17 +670,17 @@ async function placeRing($: EngineInterface, attempts = 10): Promise<void> {
 }
 
 const MODE_LABELS: Record<Mode, string> = {
-  hint: "Hints nur (default)",
+  hint: "Nur Hinweise (Standard)",
   auto: "Automatic (experimental)",
   off: "Off",
 };
 
 /** What the list row says about the key in effect: its source, never its value. */
 const KEY_SOURCE_LABELS: Record<TypesafeKeySource, string> = {
-  env: "von the environment",
-  saved: "saved",
-  ".env": "von .env",
-  missing: "missing",
+  env: "aus der Umgebung",
+  saved: "gespeichert",
+  ".env": "aus .env",
+  missing: "fehlt",
 };
 
 /** The key view's explanation: which key is in effect, and what the actions here change. */
@@ -688,14 +688,14 @@ function keyDetail(source: TypesafeKeySource, saved: boolean): string {
   switch (source) {
     case "env":
       return saved
-        ? "In effect: TYPESAFE_API_KEY von the launch environment, which wins over the key gespeichert here."
-        : "In effect: TYPESAFE_API_KEY von the launch environment.";
+        ? "Wirksam: TYPESAFE_API_KEY aus der Startumgebung, die Vorrang vor dem hier gespeicherten Schlüssel hat."
+        : "Wirksam: TYPESAFE_API_KEY aus der Startumgebung.";
     case "saved":
-      return "In effect: the key gespeichert here, for alle Sitzungen.";
+      return "Wirksam: der hier gespeicherte Schlüssel, für alle Sitzungen.";
     case ".env":
-      return "In effect: TYPESAFE_API_KEY von the .env Datei in the working Verzeichnis.";
+      return "Wirksam: TYPESAFE_API_KEY aus der .env-Datei im Arbeitsverzeichnis.";
     default:
-      return "No key in effect. Save one here, oder set TYPESAFE_API_KEY in the environment oder a .env Datei.";
+      return "Kein Schlüssel wirksam. Speichere hier einen oder setze TYPESAFE_API_KEY in der Umgebung oder in einer .env-Datei.";
   }
 }
 
@@ -711,7 +711,7 @@ async function confirm(
   fromPane: boolean,
 ) {
   try {
-    return (await $.ui.ask(question, { options: [yes, "Cancel"], header })) === yes;
+    return (await $.ui.ask(question, { options: [yes, "Abbrechen"], header })) === yes;
   } catch {
     return false;
   } finally {
@@ -724,9 +724,9 @@ async function changeMode($: EngineInterface, mode: Mode, fromPane = false): Pro
     if (!(await loadConsent($)).autoAcknowledged) {
       const confirmed = await confirm(
         $,
-        "Automatic mode persists across alle Claude Code Sitzungen und Projekte. Compaction is lossy und timing accuracy is nicht proven. It nur acts at eligible checkpoints; it does nicht compact immediately. Enable experimental automatic compaction?",
-        "Enable automatic mode",
-        "Auto mode",
+        "Der Automatikmodus bleibt über alle Claude Code-Sitzungen und -Projekte hinweg bestehen. Kompaktierung verliert Informationen, und die zeitliche Genauigkeit ist nicht erwiesen. Sie greift nur an geeigneten Prüfpunkten und kompaktiert nicht sofort. Experimentelle automatische Kompaktierung aktivieren?",
+        "Automatikmodus aktivieren",
+        "Automatikmodus",
         fromPane,
       );
       if (!confirmed) return;
@@ -736,7 +736,7 @@ async function changeMode($: EngineInterface, mode: Mode, fromPane = false): Pro
       $,
       MODE_KEY,
       "auto",
-      "Automatic mode gespeichert (alle Sitzungen). A TypeSafe key is still required.",
+      "Automatikmodus gespeichert (alle Sitzungen). Ein TypeSafe-Schlüssel ist weiterhin erforderlich.",
     );
     return;
   }
@@ -744,7 +744,7 @@ async function changeMode($: EngineInterface, mode: Mode, fromPane = false): Pro
     $,
     MODE_KEY,
     mode,
-    `${mode === "hint" ? "Hints only" : "Off"} saved (all sessions). Claude Code's built-in compaction is unchanged.`,
+    `${mode === "hint" ? "Nur Hinweise" : "Aus"} gespeichert (alle Sitzungen). Die integrierte Kompaktierung von Claude Code bleibt unverändert.`,
   );
 }
 
@@ -756,8 +756,8 @@ async function changeBudget($: EngineInterface, text: string): Promise<boolean> 
     BUDGET_KEY,
     count,
     count > 0
-      ? `Context budget gespeichert: ${formatTokens(count)} Tokens (alle Sitzungen).`
-      : "Context budget off (alle Sitzungen): the hint floor follows Claude Code's own limit.",
+      ? `Kontextbudget gespeichert: ${formatTokens(count)} Tokens (alle Sitzungen).`
+      : "Kontextbudget aus (alle Sitzungen): die Hinweisuntergrenze folgt dem Limit von Claude Code.",
   );
 }
 
@@ -767,13 +767,13 @@ async function changeMinimum($: EngineInterface, text: string): Promise<boolean>
   const { context } = await $.session.usage();
   const warning =
     count >= context.window
-      ? ` Warnung: das ist at oder above the active Modell's ${formatTokens(context.window)}-token Fenster, so advice will nicht trigger vorher Claude Code's own compaction.`
+      ? ` Warnung: Das liegt auf oder über dem ${formatTokens(context.window)}-Token-Fenster des aktiven Modells, sodass der Hinweis vor der eigenen Kompaktierung von Claude Code nicht ausgelöst wird.`
       : "";
   return saveRow(
     $,
     MINIMUM_KEY,
     count,
-    `Minimum Kontext gespeichert: ${formatTokens(count)} Tokens (alle Sitzungen).${warning}`,
+    `Minimaler Kontext gespeichert: ${formatTokens(count)} Tokens (alle Sitzungen).${warning}`,
   );
 }
 
@@ -783,8 +783,8 @@ async function changeLogRequests($: EngineInterface, enabled: boolean): Promise<
     LOG_KEY,
     enabled,
     enabled
-      ? `TypeSafe request logging on (alle Sitzungen). ${await sessionLogPath($)}`
-      : "TypeSafe request logging off (alle Sitzungen).",
+      ? `Protokollierung der TypeSafe-Anfragen an (alle Sitzungen). ${await sessionLogPath($)}`
+      : "Protokollierung der TypeSafe-Anfragen aus (alle Sitzungen).",
   );
 }
 
@@ -793,7 +793,7 @@ async function changeSavedApiKey($: EngineInterface, text: string): Promise<bool
     $,
     API_KEY_KEY,
     parseSavedApiKey(text),
-    "TypeSafe API key gespeichert (alle Sitzungen). Status zeigt the source, nie the value.",
+    "TypeSafe-API-Schlüssel gespeichert (alle Sitzungen). Der Status zeigt die Quelle, nie den Wert.",
   );
 }
 
@@ -802,7 +802,7 @@ async function clearSavedApiKey($: EngineInterface): Promise<boolean> {
     $,
     API_KEY_KEY,
     "",
-    "Saved TypeSafe API key cleared (alle Sitzungen). Launch environment und .env still apply.",
+    "Gespeicherter TypeSafe-API-Schlüssel gelöscht (alle Sitzungen). Startumgebung und .env gelten weiter.",
   );
 }
 
@@ -816,16 +816,16 @@ async function statusText($: EngineInterface): Promise<string> {
     breakdown === undefined
       ? ""
       : breakdown.isAutoCompactEnabled && breakdown.autoCompactThreshold !== undefined
-        ? ` Claude Code automatisch-compacts at ${formatTokens(breakdown.autoCompactThreshold)} Tokens.`
-        : " Claude Code automatisch-compact is off.";
+        ? ` Claude Code kompaktiert automatisch bei ${formatTokens(breakdown.autoCompactThreshold)} Tokens.`
+        : " Die automatische Kompaktierung von Claude Code ist aus.";
   const cooldown =
     typeof tokens === "number"
       ? (cooldownReason(state, tokens, await $.clock.now()) ??
-        "No cooldown; semantic prüft still apply.")
-      : "Waiting for fresh Modell Nutzung.";
+        "Keine Abklingzeit; semantische Prüfungen gelten weiter.")
+      : "Warten auf neue Modellnutzung.";
   const budget = config.contextBudgetTokens;
   const fraction = usageFraction(usage.context, budget);
-  return `Mode: ${config.mode}${config.mode === "auto" && !config.autoAcknowledged ? " (not confirmed)" : ""}. Minimum: ${formatTokens(config.minContextTokens)} tokens. Budget: ${budget > 0 ? `${formatTokens(budget)} tokens` : "off"}. Context: ${typeof tokens === "number" ? formatTokens(tokens) : "unknown"}${Number.isFinite(fraction) ? ` (${Math.round(fraction * 100)}% of the ${effectiveBudget(contextLimit(usage.context), budget) > 0 ? "budget" : "context limit"}; hint floor ${floorFor(fraction, parseProfile(config.profile)).toFixed(2)})` : ""}. ${formatKeyStatus((await resolvedKey($)).source)}. ${cooldown}${engine} Request log: ${config.logRequests ? await sessionLogPath($) : "off"}. Settings: /config (compact-adviser rows) and /compact-adviser.`;
+  return `Modus: ${config.mode}${config.mode === "auto" && !config.autoAcknowledged ? " (nicht bestätigt)" : ""}. Minimum: ${formatTokens(config.minContextTokens)} Tokens. Budget: ${budget > 0 ? `${formatTokens(budget)} Tokens` : "aus"}. Kontext: ${typeof tokens === "number" ? formatTokens(tokens) : "unbekannt"}${Number.isFinite(fraction) ? ` (${Math.round(fraction * 100)} % des ${effectiveBudget(contextLimit(usage.context), budget) > 0 ? "Budgets" : "Kontextlimits"}; Hinweisuntergrenze ${floorFor(fraction, parseProfile(config.profile)).toFixed(2)})` : ""}. ${formatKeyStatus((await resolvedKey($)).source)}. ${cooldown}${engine} Anfragenprotokoll: ${config.logRequests ? await sessionLogPath($) : "aus"}. Einstellungen: /config (compact-adviser-Zeilen) und /compact-adviser.`;
 }
 
 async function snoozeOrDismiss($: EngineInterface, command: "snooze" | "dismiss") {
@@ -839,12 +839,12 @@ async function snoozeOrDismiss($: EngineInterface, command: "snooze" | "dismiss"
     });
   }
   $.ui.toast(
-    command === "snooze" ? "Advice snoozed for three completed exchanges." : "Hint dismissed.",
+    command === "snooze" ? "Hinweis für drei abgeschlossene Austausche ausgesetzt." : "Hinweis ausgeblendet.",
   );
 }
 
 function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : "Could nicht speichern settings.";
+  return error instanceof Error ? error.message : "Einstellungen konnten nicht gespeichert werden.";
 }
 
 export const register: Register = (on, options) => {
@@ -863,7 +863,7 @@ export const register: Register = (on, options) => {
     foreignSubmitted = false;
     await $.command.register({
       name: COMMAND,
-      description: "Configure persistent compaction advice, experimental automatisch, und Token minimum",
+      description: "Dauerhafte Kompaktierungshinweise konfigurieren, experimenteller Automatikmodus und Token-Minimum",
       argumentHint: "[auto|hint|off|status|threshold <tokens|default>|snooze|dismiss]",
     });
     try {
@@ -946,7 +946,7 @@ export const register: Register = (on, options) => {
           void compactNow($, key).catch(() =>
             notice(
               $,
-              "Compact adviser could not compact after the before-compact prompt; context left unchanged.",
+              "Compact adviser konnte nach dem Prompt vor der Kompaktierung nicht kompaktieren; der Kontext wurde nicht verändert.",
             ),
           );
         });
@@ -954,7 +954,7 @@ export const register: Register = (on, options) => {
       }
       clearStatus($);
       await deferRetry($, handoff.key);
-      notice($, "The before-compact turn did not finish cleanly. Context left unchanged.");
+      notice($, "Die Runde vor der Kompaktierung wurde nicht sauber abgeschlossen. Der Kontext wurde nicht verändert.");
       return result;
     }
     if (e.agentId !== undefined || e.reason !== "answer" || e.isAborted || !e.answer.trim()) {
@@ -963,7 +963,7 @@ export const register: Register = (on, options) => {
     try {
       await settle($);
     } catch {
-      notice($, "Compact adviser could nicht inspect this checkpoint; Kontext left unchanged.");
+      notice($, "Compact adviser konnte diesen Prüfpunkt nicht prüfen; der Kontext wurde nicht verändert.");
     }
     return result;
   });
@@ -1054,11 +1054,11 @@ export const register: Register = (on, options) => {
         marginBottom: 1,
         children: [
           Text({ bold: true, children: "Compact adviser" }),
-          Text({ dimColor: true, children: crumb ? ` › ${crumb}` : "  gespeichert for alle Sitzungen" }),
+          Text({ dimColor: true, children: crumb ? ` › ${crumb}` : "  für alle Sitzungen gespeichert" }),
         ],
       });
     const hint = (leave: string) =>
-      Text({ dimColor: true, children: `↑↓ move · Enter auswählen · Esc ${leave}` });
+      Text({ dimColor: true, children: `↑↓ bewegen · Enter auswählen · Esc ${leave}` });
     const closePane = () => void $.ui.close({ id: PANE_ID });
     const redraw = async () => {
       await $.ui.invalidate("ui.render");
@@ -1082,7 +1082,7 @@ export const register: Register = (on, options) => {
         Text({ color: "error", children: errorMessage(error) }),
         Button({
           key: "menu:close",
-          label: "Close",
+          label: "Schließen",
           plain: true,
           autoFocus: true,
           onPress: closePane,
@@ -1131,7 +1131,7 @@ export const register: Register = (on, options) => {
                 else pick(choice.value);
               },
             })),
-            { key: "back", label: "  Back", dim: true, onPress: back },
+            { key: "back", label: "  Zurück", dim: true, onPress: back },
           ],
           `${view}:${current}`,
         ),
@@ -1159,13 +1159,13 @@ export const register: Register = (on, options) => {
     }
     if (view === "minimum") {
       return column([
-        heading("Minimum Kontext"),
+        heading("Minimaler Kontext"),
         Input({
           key: "minimum",
           label: "Tokens",
           value: minimumDraft?.text ?? String(config.minContextTokens),
           placeholder: String(DEFAULT_MINIMUM),
-          submitLabel: "save",
+          submitLabel: "speichern",
           autoFocus: true,
           onSubmit: (text: string) => {
             run(async () => {
@@ -1182,9 +1182,9 @@ export const register: Register = (on, options) => {
           ? Text({ color: "error", children: minimumDraft.error })
           : Text({
               dimColor: true,
-              children: "A Token count, nicht a percentage; nein judgment below it.",
+              children: "Eine Anzahl an Tokens, kein Prozentsatz; darunter keine Bewertung.",
             }),
-        list([{ key: "back", label: "Back", dim: true, onPress: back }], ""),
+        list([{ key: "back", label: "Zurück", dim: true, onPress: back }], ""),
         hint("back"),
       ]);
     }
@@ -1196,8 +1196,8 @@ export const register: Register = (on, options) => {
           key: "typesafeApiKey",
           label: "Key",
           value: keyDraft?.text ?? "",
-          placeholder: savedKey ? "paste a key to replace the gespeichert one" : "paste a key to speichern it",
-          submitLabel: "save",
+          placeholder: savedKey ? "Schlüssel einfügen, um den gespeicherten zu ersetzen" : "Schlüssel einfügen, um ihn zu speichern",
+          submitLabel: "speichern",
           autoFocus: true,
           onSubmit: (text: string) => {
             run(async () => {
@@ -1217,7 +1217,7 @@ export const register: Register = (on, options) => {
               ? [
                   {
                     key: "clearKey",
-                    label: "Clear gespeichert key",
+                    label: "Gespeicherten Schlüssel löschen",
                     onPress: () => {
                       run(async () => {
                         if (await clearSavedApiKey($)) showMenu();
@@ -1226,7 +1226,7 @@ export const register: Register = (on, options) => {
                   },
                 ]
               : []),
-            { key: "back", label: "Back", dim: true, onPress: back },
+            { key: "back", label: "Zurück", dim: true, onPress: back },
           ],
           "",
         ),
@@ -1235,7 +1235,7 @@ export const register: Register = (on, options) => {
     }
 
     const modeValue = `${MODE_LABELS[config.mode]}${
-      config.mode === "auto" && !config.autoAcknowledged ? ", not confirmed" : ""
+      config.mode === "auto" && !config.autoAcknowledged ? ", nicht bestätigt" : ""
     }`;
     const setting = (label: string, value: string) => `${label.padEnd(24)}${value}`;
     const open = (target: Exclude<PaneView, "menu">, row: string, focus: string) => () => {
@@ -1253,12 +1253,12 @@ export const register: Register = (on, options) => {
           },
           {
             key: "menu:minimum",
-            label: setting("Minimum Kontext", `${formatTokens(config.minContextTokens)} tokens`),
+            label: setting("Minimaler Kontext", `${formatTokens(config.minContextTokens)} tokens`),
             onPress: open("minimum", "menu:minimum", "minimum"),
           },
           {
             key: "menu:logRequests",
-            label: setting("Log TypeSafe requests", config.logRequests ? "On" : "Off"),
+            label: setting("TypeSafe-Anfragen protokollieren", config.logRequests ? "An" : "Aus"),
             onPress: open(
               "logging",
               "menu:logRequests",
@@ -1272,7 +1272,7 @@ export const register: Register = (on, options) => {
           },
           {
             key: "menu:reset",
-            label: `Reset minimum to ${formatTokens(DEFAULT_MINIMUM)}`,
+            label: `Minimum auf ${formatTokens(DEFAULT_MINIMUM)} zurücksetzen`,
             onPress: () => {
               menuRow = "menu:reset";
               run(() => changeMinimum($, "default"));
@@ -1288,7 +1288,7 @@ export const register: Register = (on, options) => {
               });
             },
           },
-          { key: "menu:close", label: "Close", onPress: closePane },
+          { key: "menu:close", label: "Schließen", onPress: closePane },
         ],
         menuRow,
       ),
