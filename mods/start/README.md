@@ -1,35 +1,35 @@
 # Start Plugin - The Agentic Startup
 
-**Workflow orchestration plugin for spec-driven development in Claude Code.**
+**Workflow-Orchestrierungs-Plugin für spec-getriebene Entwicklung in Claude Code.**
 
-The `start` plugin provides ten user-invocable workflow Skills, five autonomous Skills, und three Ausgabe styles to transform how you build software mit Claude Code.
+Das Plugin `start` bietet zehn vom Benutzer aufrufbare Workflow-Skills, fünf autonome Skills und drei Ausgabe-Styles, um die Art zu verändern, wie du Software mit Claude Code baust.
 
-**For quick starten, workflow guide, und Skill selection, see the [main README](../../README.md).**
-
----
-
-## Table of Contents
-
-- [User-Invocable Skills](#user-invocable-skills) — specify, implement, validate, test, review, document, analyze, refactor, debug, constitution
-- [Autonomous Skills](#autonomous-skills) — 5 Kontext-activated Skills
-- [Documentation Structure](#documentation-structure) — specs, domain, patterns, interfaces
-- [Output Styles](#output-styles) — The Garage, The Startup, The ScaleUp
-- [Typical Development Workflow](#typical-development-workflow) — primary und maintenance flows
-- [Skills in Action](#skills-in-action) — real-world examples
-- [Templates](#templates) — PRD, SDD, Plan, Scenario
-- [Philosophy](#philosophy) — spec-driven development principles
+**Für den schnellen Einstieg, den Workflow-Leitfaden und die Skill-Auswahl siehe die [Haupt-README](../../README.md).**
 
 ---
 
-## User-Invocable Skills
+## Inhaltsverzeichnis
 
-These Skills are invoked by the user via slash commands (e.g., `/specify`). Unlike autonomous Skills which activate automatisch based on Kontext, user-invocable Skills wait for explicit invocation.
+- [Vom Benutzer aufrufbare Skills](#user-invocable-skills) — specify, implement, validate, test, review, document, analyze, refactor, debug, constitution
+- [Autonome Skills](#autonomous-skills) — 5 kontextaktivierte Skills
+- [Dokumentationsstruktur](#documentation-structure) — Specs, Domain, Patterns, Interfaces
+- [Ausgabe-Styles](#output-styles) — The Garage, The Startup, The ScaleUp
+- [Typischer Entwicklungsworkflow](#typical-development-workflow) — Haupt- und Wartungsabläufe
+- [Skills in Aktion](#skills-in-action) — Beispiele aus der Praxis
+- [Vorlagen](#templates) — PRD, SDD, Plan, Szenario
+- [Philosophie](#philosophy) — Prinzipien der spec-getriebenen Entwicklung
+
+---
+
+## Vom Benutzer aufrufbare Skills
+
+Diese Skills werden vom Benutzer per Slash-Befehl aufgerufen (z. B. `/specify`). Anders als autonome Skills, die automatisch anhand des Kontexts aktiv werden, warten sie auf einen expliziten Aufruf.
 
 ### `/specify <description>`
 
-Create comprehensive specifications von brief descriptions through deep research und specialist Agent coordination, producing a narrative plan plus the slice Aufgaben `/implement` runs.
+Erstelle umfassende Spezifikationen aus kurzen Beschreibungen durch intensive Recherche und die Koordination von Spezialisten-Agenten; das Ergebnis ist ein narrativer Plan plus die Slice-Aufgaben, die `/implement` ausführt.
 
-**Purpose:** Transform ideas in implementation-ready specifications mit product requirements, solution design, und a plan — one `spec.md` plus the implementation Aufgaben in the tracker
+**Zweck:** Ideen in implementierungsreife Spezifikationen überführen – mit Produktanforderungen, Lösungsdesign und einem Plan: eine `spec.md` plus die Implementierungsaufgaben im Tracker.
 
 **Verwendung:**
 ```bash
@@ -37,36 +37,36 @@ Create comprehensive specifications von brief descriptions through deep research
 /specify 001  # Resume existing specification work
 ```
 
-**Key Funktionen:**
-- **Auto-incrementing Spec IDs** - Automatically creates numbered directories (001, 002, etc.)
-- **Resume Capability** - Can resume work on existing specifications by ID
-- **Sliced Plan** - Slices the work in self-contained slice Aufgaben, jede correlating features (ACs), EARS behavior, und quality gates, mit holdout scenarios as separate scenario child Aufgaben
-- **Dependency-ordered** - slices declare `--depends-on` jede other; that graph is the parallelization contract `/implement` verwendet
-- **Pattern Documentation** - Automatically documents discovered patterns in `docs/patterns/`
-- **Interface Documentation** - Captures external service contracts in `docs/interfaces/`
-- **Domain Documentation** - Records business rules in `docs/domain/`
-- **Quality Gates** - Requires user approval between major phases
+**Wichtige Funktionen:**
+- **Automatisch inkrementierende Spec-IDs** – erstellt nummerierte Verzeichnisse (001, 002 usw.)
+- **Fortsetzen** – Arbeit an bestehenden Spezifikationen kann über die ID fortgesetzt werden
+- **Slice-Plan** – zerlegt die Arbeit in in sich geschlossene Slice-Aufgaben, die jeweils Merkmale (ACs), EARS-Verhalten und Qualitäts-Gates miteinander verknüpfen, mit Holdout-Szenarien als eigenen Szenario-Kinderaufgaben
+- **Abhängigkeitsreihenfolge** – Slices deklarieren gegenseitig `--depends-on`; dieser Graph ist der Parallelisierungsvertrag, den `/implement` nutzt
+- **Pattern-Dokumentation** – gefundene Muster werden automatisch in `docs/patterns/` dokumentiert
+- **Interface-Dokumentation** – Verträge externer Dienste werden in `docs/interfaces/` festgehalten
+- **Domain-Dokumentation** – Geschäftsregeln werden in `docs/domain/` erfasst
+- **Qualitäts-Gates** – erfordern die Zustimmung des Benutzers zwischen den Hauptphasen
 
-**Each slice's code brief correlates three facets:**
+**Der Code-Brief jedes Slices verknüpft drei Facetten:**
 
-| Facet | Source | Role |
+| Facette | Quelle | Rolle |
 |-------|--------|------|
-| **Funktionen** (acceptance criteria) | Voraussetzungen part | what the slice delivers |
-| **Behavior** (EARS) | Solution part | how it must behave |
-| **Quality Gates** | derived | checkable conditions |
+| **Merkmale** (Akzeptanzkriterien) | Anforderungsteil | was der Slice liefert |
+| **Verhalten** (EARS) | Lösungsteil | wie es sich verhalten muss |
+| **Qualitäts-Gates** | abgeleitet | prüfbare Bedingungen |
 
-Its **acceptance scenarios** are separate scenario child Aufgaben (holdout evidence) — how es ist proven.
+Seine **Akzeptanzszenarien** sind eigene Szenario-Kinderaufgaben (Holdout-Belege) – daran wird der Nachweis geführt.
 
 <details>
-<summary><strong>View Details</strong></summary>
+<summary><strong>Details anzeigen</strong></summary>
 
-**What you get:** One document, `.start/specs/[NNN]-[name]/spec.md`, in three parts, jede closed by its own approval gate:
+**Du erhältst:** Ein Dokument, `.start/specs/[NNN]-[name]/spec.md`, in drei Teilen, die jeweils durch ein eigenes Freigabe-Gate abgeschlossen werden:
 
-- **Voraussetzungen** - User stories, feature specifications, success criteria, non-functional requirements
-- **Solution** - Technical architecture, system components, data Modelle, technology stack
-- **Plan** - The target state und the phases mit their outcomes; the implementation Aufgaben (phases → slices → scenario child Aufgaben) live in **.tracker/**
+- **Anforderungen** – User Stories, Merkmalsspezifikationen, Erfolgskriterien, nichtfunktionale Anforderungen
+- **Lösung** – technische Architektur, Systemkomponenten, Datenmodelle, Technologie-Stack
+- **Plan** – Zielzustand und Phasen mit ihren Ergebnissen; die Implementierungsaufgaben (Phasen → Slices → Szenario-Kinderaufgaben) liegen in **.tracker/**
 
-Its Ledger part holds the öffnen Fragen, assumptions, decision log, und accepted review trade-offs.
+Im Ledger-Teil stehen offene Fragen, Annahmen, das Entscheidungsprotokoll und akzeptierte Review-Kompromisse.
 
 ```mermaid
 flowchart TD
@@ -85,9 +85,9 @@ flowchart TD
 
 ### `/implement <spec-id>`
 
-Execute a specification by läuft its slice Aufgaben on Claude Code's dynamic-workflow runtime.
+Führe eine Spezifikation aus, indem ihre Slice-Aufgaben auf der Dynamic-Workflow-Laufzeit von Claude Code ausgeführt werden.
 
-**Purpose:** Transform validated specifications in working code through one loop — jede slice built by a code Agent und proven by an eval Agent, mit an information barrier between them und erneut versuchen to a satisfaction threshold.
+**Zweck:** Validierte Spezifikationen in funktionierenden Code überführen – in einem Zyklus, in dem jeder Slice von einem Code-Agenten gebaut und von einem Eval-Agenten nachgewiesen wird, mit einer Informationsbarriere zwischen ihnen und Wiederholungen bis zur Zufriedenheitsschwelle.
 
 **Verwendung:**
 ```bash
@@ -97,26 +97,26 @@ Execute a specification by läuft its slice Aufgaben on Claude Code's dynamic-wo
 
 **So funktioniert es:**
 
-`/implement` liest the spec's slice Aufgaben von the tracker und topologically sorts them by `--depends-on`. It dann authors und runs one dynamic workflow:
+`/implement` liest die Slice-Aufgaben der Spezifikation aus dem Tracker und sortiert sie topologisch nach `--depends-on`. Danach verfasst es einen Dynamic Workflow und führt ihn aus:
 
-| Step | What happens |
+| Schritt | Was passiert |
 |------|--------------|
-| **Read** | Read the slice Aufgaben (`task.js graph`); jede carries a code brief (features + EARS + gates) mit its holdout scenarios as scenario child Aufgaben |
-| **Launch** | Write the workflow script von the Skill's loop contract und ausführen it via the Workflow Werkzeug; independent slices ausführen concurrently |
-| **Loop** | Per phase: code Agenten build its slices — one Agent for a phase whose slices depend on jede other in a chain, one per slice for slices that can ausführen in parallel (they lesen the slice Aufgaben, blind to the scenarios) → one eval Agent proves the phase mit a holdout script kept outside the Projekt (it liest the scenario Aufgaben, blind to the slices + source) → erneut versuchen mit filtered summaries until threshold oder max iterations |
+| **Lesen** | Die Slice-Aufgaben lesen (`task.js graph`); jede trägt einen Code-Brief (Merkmale + EARS + Gates) mit ihren Holdout-Szenarien als Szenario-Kinderaufgaben |
+| **Starten** | Das Workflow-Skript aus dem Schleifenvertrag des Skills schreiben und über das Workflow-Werkzeug ausführen; unabhängige Slices laufen gleichzeitig |
+| **Schleife** | Pro Phase: Code-Agenten bauen die Slices – ein Agent für eine Phase, deren Slices in einer Kette voneinander abhängen, einer pro Slice bei parallelisierbaren Slices (sie lesen die Slice-Aufgaben, ohne die Szenarien zu sehen) → ein Eval-Agent weist die Phase mit einem außerhalb des Projekts gehaltenen Holdout-Skript nach (er liest die Szenario-Aufgaben, ohne Slices + Quellcode zu sehen) → Wiederholung mit gefilterten Zusammenfassungen bis zur Schwelle oder maximalen Iterationen |
 
-**Key Funktionen:**
-- **One loop, emergent scale** - A 1-slice plan is a short loop; a 40-slice plan fans out. No tier oder strategy to wählen
-- **Structural information barrier** - The barrier is which Aufgabe jede Agent liest: code Agent → slice Aufgabe; eval Agent → scenario child Aufgaben
-- **Resumability** - The dynamic-workflow runtime resumes completed Agenten von Cache within a Sitzung
-- **Drift Detection** - Runs `Skill(start:validate)` drift prüft
-- **Constitution Enforcement** - L1/L2 violations block completion
-- **Real-time Updates** - `/workflows` zeigt live per-slice progress
+**Wichtige Funktionen:**
+- **Ein Zyklus, emergent skalierbar** – ein 1-Slice-Plan ist eine kurze Schleife; ein 40-Slice-Plan fächelt auf. Es gibt keine Stufe oder Strategie zu wählen
+- **Strukturelle Informationsbarriere** – die Barriere ist, welche Aufgabe jeder Agent liest: Code-Agent → Slice-Aufgabe; Eval-Agent → Szenario-Kinderaufgaben
+- **Fortsetzbarkeit** – die Dynamic-Workflow-Laufzeit setzt abgeschlossene Agenten innerhalb einer Sitzung aus dem Cache fort
+- **Drift-Erkennung** – führt Drift-Prüfungen von `Skill(start:validate)` aus
+- **Constitution-Durchsetzung** – L1/L2-Verstöße blockieren den Abschluss
+- **Echtzeit-Updates** – `/workflows` zeigt den Live-Fortschritt pro Slice
 
 <details>
-<summary><strong>View Details — the slice loop</strong></summary>
+<summary><strong>Details anzeigen — die Slice-Schleife</strong></summary>
 
-Reads the spec's slice Aufgaben von the tracker und topologically sorts them by `--depends-on`. Runs a dynamic workflow written von the Skill's loop contract. Each phase goes through a barriered code→eval loop: code Agenten build its slices (reading the slice Aufgaben' features + EARS + gates und AGENTS.md, aber nie their scenario child Aufgaben), one eval Agent proves the phase against those scenario Aufgaben mit a holdout script it keeps outside the Projekt (accessing the läuft service und, for UI scenarios, a real Browser, aber nie the slices oder the source), und filtered one-line failure summaries feed the nächste erneut versuchen until the satisfaction threshold oder max iterations. A phase whose slices form a dependency chain is built by one code Agent; slices that can ausführen in parallel get one Agent jede, concurrently.
+Liest die Slice-Aufgaben der Spezifikation aus dem Tracker und sortiert sie topologisch nach `--depends-on`. Führt einen Dynamic Workflow aus, der aus dem Schleifenvertrag des Skills geschrieben wurde. Jede Phase durchläuft eine durch eine Barriere getrennte Code→Eval-Schleife: Code-Agenten bauen ihre Slices (sie lesen Merkmale + EARS + Gates der Slice-Aufgaben und AGENTS.md, aber nie deren Szenario-Kinderaufgaben), ein Eval-Agent weist die Phase anhand dieser Szenario-Aufgaben mit einem Holdout-Skript nach, das er außerhalb des Projekts hält (er greift auf den laufenden Dienst und bei UI-Szenarien auf einen echten Browser zu, aber nie auf die Slices oder den Quellcode), und gefilterte einzeilige Fehlerzusammenfassungen speisen die nächste Wiederholung, bis die Zufriedenheitsschwelle oder die maximale Iterationszahl erreicht ist. Eine Phase, deren Slices eine Abhängigkeitskette bilden, wird von einem Code-Agenten gebaut; parallelisierbare Slices erhalten jeweils einen Agenten, gleichzeitig.
 
 ```mermaid
 flowchart TD
@@ -138,9 +138,9 @@ flowchart TD
 
 ### `/validate <target>`
 
-Validate specifications, implementations, oder understanding through intelligent Kontext detection und the 3 Cs framework (Completeness, Consistency, Correctness).
+Validiere Spezifikationen, Implementierungen oder das Verständnis durch intelligente Kontexterkennung und das 3-Cs-Framework (Completeness, Consistency, Correctness).
 
-**Purpose:** Quality gate that works at any lifecycle stage - during specification, vorher implementation, oder danach completion
+**Zweck:** Qualitäts-Gate, das in jeder Lebenszyklusphase funktioniert – während der Spezifikation, vor der Implementierung oder nach Abschluss.
 
 **Verwendung:**
 ```bash
@@ -152,35 +152,35 @@ Validate specifications, implementations, oder understanding through intelligent
 /validate Is my caching approach correct?              # Validate understanding
 ```
 
-**Key Funktionen:**
-- **Intelligent Mode Detection** - Automatically determines validation type von Eingabe
-- **The 3 Cs Framework** - Checks Completeness, Consistency, und Correctness
-- **Ambiguity Detection** - Scans for vague language ("should", "various", "etc.")
-- **Cross-Document Traceability** - Verifies requirements to solution to manifest alignment
-- **Drift Detection** - Checks spec-implementation alignment
-- **Constitution Enforcement** - Validates L1/L2/L3 governance rules
-- **Advisory Only** - Provides recommendations ohne blocking
-- **Comparison Validation** - Compares implementations against specifications
+**Wichtige Funktionen:**
+- **Intelligente Moduserkennung** – bestimmt den Validierungstyp automatisch aus der Eingabe
+- **Das 3-Cs-Framework** – prüft Vollständigkeit, Konsistenz und Korrektheit
+- **Erkennung von Mehrdeutigkeiten** – sucht nach vager Sprache („should", „various", „etc.")
+- **Dokumentübergreifende Nachvollziehbarkeit** – prüft die Abstimmung von Anforderungen, Lösung und Manifest
+- **Drift-Erkennung** – prüft die Übereinstimmung von Spezifikation und Implementierung
+- **Constitution-Durchsetzung** – validiert die Governance-Regeln L1/L2/L3
+- **Nur beratend** – gibt Empfehlungen, ohne zu blockieren
+- **Vergleichsvalidierung** – vergleicht Implementierungen mit Spezifikationen
 
 <details>
-<summary><strong>View Details</strong></summary>
+<summary><strong>Details anzeigen</strong></summary>
 
-**Six validation modes** automatisch detected von Eingabe:
+**Sechs Validierungsmodi**, die automatisch aus der Eingabe erkannt werden:
 
-| Input Type | Mode | What Gets Validated |
+| Eingabetyp | Modus | Was validiert wird |
 |------------|------|---------------------|
-| Spec ID (`005`) | Specification | Full spec quality und readiness |
-| File Pfad (`src/auth.ts`) | File | Individual Datei quality |
-| `drift` oder `check drift` | Drift Detection | Spec-implementation alignment |
-| `constitution` | Constitution | Governance rule compliance |
-| "Check X against Y" | Comparison | Implementation vs specification |
-| Freeform Text | Understanding | Approach correctness |
+| Spec-ID (`005`) | Spezifikation | Gesamtqualität und Reife der Spec |
+| Dateipfad (`src/auth.ts`) | Datei | Qualität einer einzelnen Datei |
+| `drift` oder `check drift` | Drift-Erkennung | Abstimmung Spec ↔ Implementierung |
+| `constitution` | Constitution | Einhaltung der Governance-Regeln |
+| „Check X against Y" | Vergleich | Implementierung vs. Spezifikation |
+| Freiformtext | Verständnis | Korrektheit des Ansatzes |
 
-**The 3 Cs Framework:**
+**Das 3-Cs-Framework:**
 
-1. **Completeness** - All sections filled, nein `[NEEDS CLARIFICATION]` markers, checklists complete
-2. **Consistency** - Cross-document traceability, terminology alignment, nein contradictions
-3. **Correctness** - ADRs confirmed, dependencies valid, acceptance criteria testable
+1. **Completeness (Vollständigkeit)** – alle Abschnitte gefüllt, keine `[NEEDS CLARIFICATION]`-Marker, Checklisten vollständig
+2. **Consistency (Konsistenz)** – dokumentübergreifende Nachvollziehbarkeit, einheitliche Terminologie, keine Widersprüche
+3. **Correctness (Korrektheit)** – ADRs bestätigt, Abhängigkeiten gültig, Akzeptanzkriterien testbar
 
 ```mermaid
 flowchart TD
@@ -205,9 +205,9 @@ flowchart TD
 
 ### `/test [target]`
 
-Run tests mit strict code ownership enforcement — nein "pre-existing failures" excuses allowed.
+Führe Tests mit strikter Code-Ownership-Durchsetzung aus – Ausreden wie „vorbestehende Fehler" sind nicht erlaubt.
 
-**Purpose:** Discover und execute tests, ensure the codebase is left in a passing state, und enforce ownership of any failures encountered
+**Zweck:** Tests entdecken und ausführen, sicherstellen, dass die Codebasis in einem grünen Zustand bleibt, und die Verantwortung für alle auftretenden Fehler übernehmen.
 
 **Verwendung:**
 ```bash
@@ -217,30 +217,30 @@ Run tests mit strict code ownership enforcement — nein "pre-existing failures"
 /test baseline                   # Capture current test state
 ```
 
-**Key Funktionen:**
-- **Test Discovery** - Automatically finds test runner, config, und test Dateien
-- **Code Ownership** - If tests fail, you own the fix — nein blaming pre-existing Issues
-- **Baseline Capture** - Record aktuell passing/failing state vorher ändert
-- **Multi-Agent Parallel** - Can distribute test suites across parallel Agenten
-- **Targeted Execution** - Run specific test Dateien, directories, oder the full suite
+**Wichtige Funktionen:**
+- **Test-Erkennung** – findet automatisch Test-Runner, Konfiguration und Testdateien
+- **Code-Ownership** – wenn Tests fehlschlagen, gehört dir die Behebung – kein Verweis auf vorbestehende Probleme
+- **Baseline-Erfassung** – hält den aktuell grünen/roten Zustand vor Änderungen fest
+- **Multi-Agent-Parallel** – kann Testsuiten auf parallele Agenten verteilen
+- **Gezielte Ausführung** – bestimmte Testdateien, Verzeichnisse oder die gesamte Suite ausführen
 
 <details>
-<summary><strong>View Details</strong></summary>
+<summary><strong>Details anzeigen</strong></summary>
 
-**The Ownership Mandate:**
+**Das Ownership-Gebot:**
 
-When tests fail, the Skill enforces strict ownership:
-- No "these were pre-existing failures"
-- No "nicht caused by my ändert"
-- No leaving failing tests for the user
+Wenn Tests fehlschlagen, erzwingt der Skill strikte Verantwortung:
+- Kein „das waren vorbestehende Fehler"
+- Kein „nicht durch meine Änderungen verursacht"
+- Keine fehlgeschlagenen Tests für den Benutzer zurücklassen
 
-**Test Modes:**
+**Test-Modi:**
 
-| Input | Mode | What Happens |
+| Eingabe | Modus | Was passiert |
 |-------|------|--------------|
-| (empty) oder `all` | Full Suite | Discovers und runs alle tests |
-| File/Verzeichnis Pfad | Targeted | Runs tests for specific scope |
-| `baseline` | Capture | Records aktuell test state for comparison |
+| (leer) oder `all` | Gesamte Suite | Entdeckt und führt alle Tests aus |
+| Datei-/Verzeichnispfad | Gezielt | Führt Tests für den jeweiligen Bereich aus |
+| `baseline` | Erfassung | Hält den aktuellen Testzustand zum Vergleich fest |
 
 ```mermaid
 flowchart TD
@@ -258,9 +258,9 @@ flowchart TD
 
 ### `/review [target]`
 
-Multi-agent code review mit specialized perspectives läuft in parallel.
+Multi-Agenten-Code-Review mit spezialisierten Perspektiven, die parallel laufen.
 
-**Purpose:** Comprehensive code review vorher merging, mit specialized Agenten examining different concerns simultaneously
+**Zweck:** Umfassendes Code-Review vor dem Merge, bei dem spezialisierte Agenten gleichzeitig unterschiedliche Aspekte prüfen.
 
 **Verwendung:**
 ```bash
@@ -271,35 +271,35 @@ Multi-agent code review mit specialized perspectives läuft in parallel.
 /review staged                   # Explicitly review staged changes
 ```
 
-**Key Funktionen:**
-- **Parallel Specialists** - Security, Performance, Quality, und Test Agenten review simultaneously
-- **Conditional Perspectives** - Concurrency, Dependencies, Compatibility, Accessibility activate when relevant
-- **Target Auto-Detection** - Detects PR number, staged ändert, Datei Pfad, oder Branch diffs
-- **Confidence Scoring** - Each finding includes confidence level (HIGH/MEDIUM/LOW)
-- **Severity Classification** - CRITICAL, HIGH, MEDIUM, LOW findings
-- **Standard oder Team Mode** - Fire-and-forget Subagenten oder persistent teammates mit coordination
+**Wichtige Funktionen:**
+- **Parallele Spezialisten** – Sicherheits-, Performance-, Qualitäts- und Test-Agenten prüfen gleichzeitig
+- **Bedingte Perspektiven** – Nebenläufigkeit, Abhängigkeiten, Kompatibilität und Barrierefreiheit werden bei Bedarf aktiviert
+- **Automatische Zielerkennung** – erkennt PR-Nummer, gestagte Änderungen, Dateipfad oder Branch-Diffs
+- **Konfidenzbewertung** – jeder Fund enthält eine Konfidenzstufe (HIGH/MEDIUM/LOW)
+- **Schweregradklassifikation** – Funde mit CRITICAL, HIGH, MEDIUM, LOW
+- **Standard- oder Team-Modus** – Fire-and-forget-Subagenten oder dauerhafte Teammitglieder mit Koordination
 
 <details>
-<summary><strong>View Details</strong></summary>
+<summary><strong>Details anzeigen</strong></summary>
 
-**Core Review Perspectives (immer active):**
+**Kern-Reviewperspektiven (immer aktiv):**
 
-| Perspective | Focus Areas |
+| Perspektive | Schwerpunkte |
 |-------------|-------------|
-| **Security** | SQL injection, XSS, hardcoded secrets, auth bypasses, Eingabe validation |
-| **Performance** | N+1 queries, missing indexes, memory leaks, inefficient algorithms |
-| **Quality** | Code complexity, naming, SOLID principles, Fehler handling, duplication |
-| **Tests** | Coverage gaps, missing edge cases, test quality, assertion completeness |
+| **Sicherheit** | SQL-Injection, XSS, hartcodierte Secrets, Auth-Umgehungen, Eingabevalidierung |
+| **Performance** | N+1-Abfragen, fehlende Indizes, Speicherlecks, ineffiziente Algorithmen |
+| **Qualität** | Code-Komplexität, Benennung, SOLID-Prinzipien, Fehlerbehandlung, Duplizierung |
+| **Tests** | Abdeckungslücken, fehlende Randfälle, Testqualität, Vollständigkeit der Assertions |
 
-**Conditional Perspectives (activated when relevant):**
+**Bedingte Perspektiven (werden bei Bedarf aktiviert):**
 
-| Perspective | Trigger |
+| Perspektive | Auslöser |
 |-------------|---------|
-| **Concurrency** | async/await, Promise, threading detected |
-| **Dependencies** | Dependency Datei ändert |
-| **Compatibility** | Public API oder schema ändert |
-| **Accessibility** | Frontend component ändert |
-| **Constitution** | CONSTITUTION.md exists in Projekt |
+| **Nebenläufigkeit** | async/await, Promise, Threading erkannt |
+| **Abhängigkeiten** | Änderungen an Abhängigkeitsdateien |
+| **Kompatibilität** | Änderungen an öffentlicher API oder Schema |
+| **Barrierefreiheit** | Änderungen an Frontend-Komponenten |
+| **Constitution** | CONSTITUTION.md im Projekt vorhanden |
 
 ```mermaid
 flowchart TD
@@ -322,9 +322,9 @@ flowchart TD
 
 ### `/document [target]`
 
-Generate und sync documentation including API docs, READMEs, JSDoc comments, und documentation audits.
+Erzeuge und synchronisiere Dokumentation, einschließlich API-Dokumentation, READMEs, JSDoc-Kommentaren und Dokumentations-Audits.
 
-**Purpose:** Keep documentation aktuell mit code, generate missing docs, und identify staleness
+**Zweck:** Dokumentation aktuell zum Code halten, fehlende Dokumentation erzeugen und veraltete Stellen erkennen.
 
 **Verwendung:**
 ```bash
@@ -334,31 +334,31 @@ Generate und sync documentation including API docs, READMEs, JSDoc comments, und
 /document audit                  # Audit documentation coverage
 ```
 
-**Key Funktionen:**
-- **Multiple Documentation Modes** - Code, API, README, Audit, Module
-- **Staleness Detection** - Identifies outdated documentation
-- **Coverage Metrics** - Reports documentation completeness percentage
-- **OpenAPI Generation** - Creates OpenAPI/Swagger specs von API code
-- **Multi-Agent Parallel** - Multiple documentation Agenten work simultaneously
+**Wichtige Funktionen:**
+- **Mehrere Dokumentationsmodi** – Code, API, README, Audit, Modul
+- **Erkennung veralteter Dokumentation** – identifiziert veraltete Inhalte
+- **Abdeckungsmetriken** – meldet den Prozentsatz der Dokumentationsabdeckung
+- **OpenAPI-Generierung** – erstellt OpenAPI-/Swagger-Spezifikationen aus API-Code
+- **Multi-Agent-Parallel** – mehrere Dokumentations-Agenten arbeiten gleichzeitig
 
 <details>
-<summary><strong>View Details</strong></summary>
+<summary><strong>Details anzeigen</strong></summary>
 
-**Documentation Modes:**
+**Dokumentationsmodi:**
 
-| Input | Mode | Output |
+| Eingabe | Modus | Ausgabe |
 |-------|------|--------|
-| File/Verzeichnis Pfad | Code | JSDoc/TSDoc comments |
-| `api` | API | OpenAPI spec, endpoint docs |
-| `readme` | README | README.md updates |
-| `audit` | Audit | Coverage report |
+| Datei-/Verzeichnispfad | Code | JSDoc-/TSDoc-Kommentare |
+| `api` | API | OpenAPI-Spezifikation, Endpunkt-Dokumentation |
+| `readme` | README | Aktualisierungen der README.md |
+| `audit` | Audit | Abdeckungsbericht |
 
-**Staleness Detection:**
+**Erkennung veralteter Dokumentation:**
 
-The Skill automatisch detects when documentation is outdated by:
-- Comparing doc timestamps to code ändert
-- Checking if documented APIs still match implementation
-- Identifying undocumented neu exports
+Der Skill erkennt automatisch veraltete Dokumentation durch:
+- Vergleich der Dokumentations-Zeitstempel mit Code-Änderungen
+- Prüfung, ob dokumentierte APIs noch zur Implementierung passen
+- Identifizierung undokumentierter neuer Exporte
 
 ```mermaid
 flowchart TD
@@ -380,9 +380,9 @@ flowchart TD
 
 ### `/analyze <area>`
 
-Discover und document business rules, technical patterns, und system interfaces through iterative exploration.
+Entdecke und dokumentiere Geschäftsregeln, technische Muster und System-Schnittstellen durch iterative Erkundung.
 
-**Purpose:** Extract organizational knowledge von existing codebase und create reusable documentation
+**Zweck:** Organisatorisches Wissen aus der bestehenden Codebasis extrahieren und wiederverwendbare Dokumentation erstellen.
 
 **Verwendung:**
 ```bash
@@ -392,9 +392,9 @@ Discover und document business rules, technical patterns, und system interfaces 
 ```
 
 <details>
-<summary><strong>View Details</strong></summary>
+<summary><strong>Details anzeigen</strong></summary>
 
-Uses cyclical discovery-documentation-review workflow to extract organizational knowledge. Specialist Agenten explore the codebase to identify patterns, rules, und interfaces across business, technical, security, performance, integration, data, testing, und deployment areas. Documentation is automatisch organized in `docs/domain/`, `docs/patterns/`, und `docs/interfaces/` directories.
+Verwendet einen zyklischen Entdeckungs-Dokumentations-Review-Ablauf, um organisatorisches Wissen zu extrahieren. Spezialisten-Agenten erkunden die Codebasis, um Muster, Regeln und Schnittstellen in den Bereichen Geschäft, Technik, Sicherheit, Performance, Integration, Daten, Tests und Deployment zu identifizieren. Die Dokumentation wird automatisch in `docs/domain/`, `docs/patterns/` und `docs/interfaces/` einsortiert.
 
 ```mermaid
 flowchart TD
@@ -413,9 +413,9 @@ flowchart TD
 
 ### `/refactor <description>`
 
-Improve code quality while strictly preserving alle existing behavior through test-validated incremental ändert.
+Verbessere die Codequalität, während strikt das gesamte bestehende Verhalten durch testvalidierte inkrementelle Änderungen erhalten bleibt.
 
-**Purpose:** Safe, systematic refactoring mit automatic rollback on test failures
+**Zweck:** Sicheres, systematisches Refactoring mit automatischem Rollback bei Testfehlern.
 
 **Verwendung:**
 ```bash
@@ -424,9 +424,9 @@ Improve code quality while strictly preserving alle existing behavior through te
 ```
 
 <details>
-<summary><strong>View Details</strong></summary>
+<summary><strong>Details anzeigen</strong></summary>
 
-Strictly preserves behavior through test-validated incremental ändert. All tests must pass vorher refactoring begins und danach jede ändern. Automatic rollback on test failures. For simple refactorings, applies ändert directly mit continuous validation. For complex refactorings, creates specification documents und defers to `/implement` for planned execution.
+Erhält Verhalten strikt durch testvalidierte inkrementelle Änderungen. Alle Tests müssen vor dem Refactoring und nach jeder Änderung bestehen. Automatischer Rollback bei Testfehlern. Bei einfachen Refactorings werden Änderungen direkt mit fortlaufender Validierung vorgenommen. Bei komplexen Refactorings werden Spezifikationsdokumente erstellt und die Ausführung an `/implement` delegiert.
 
 ```mermaid
 flowchart TD
@@ -445,9 +445,9 @@ flowchart TD
 
 ### `/debug <description>`
 
-Diagnose und resolve bugs through conversational investigation mit systematic root cause analysis.
+Diagnostiziere und behebe Fehler durch eine dialogbasierte Untersuchung mit systematischer Ursachenanalyse.
 
-**Purpose:** Natural language debugging partner that helps identify und fix Issues through dialogue, nicht rigid procedures
+**Zweck:** Ein Debugging-Partner in natürlicher Sprache, der Probleme durch Dialoge statt starrer Abläufe findet und behebt.
 
 **Verwendung:**
 ```bash
@@ -456,18 +456,18 @@ Diagnose und resolve bugs through conversational investigation mit systematic ro
 /debug Users report slow page loads after the latest deployment
 ```
 
-**Key Funktionen:**
-- **Conversational Flow** - Natural dialogue, nicht rigid checklists oder procedures
-- **Progressive Disclosure** - Starts mit summary, reveals details on request
-- **Observable Actions Only** - Reports nur what was actually checked und found
-- **User-Driven** - Proposes nächste steps, lets user guide the direction
-- **Hypothesis Tracking** - Forms und tests ranked hypotheses systematically
-- **Evidence-Based** - Never fabricates reasoning; alle conclusions backed by evidence
+**Wichtige Funktionen:**
+- **Dialogbasierter Ablauf** – natürliches Gespraech, keine starren Checklisten oder Prozeduren
+- **Progressive Offenlegung** – beginnt mit einer Zusammenfassung, zeigt Details auf Anfrage
+- **Nur beobachtbare Aktionen** – berichtet nur, was tatsaechlich geprüft und gefunden wurde
+- **Vom Benutzer gesteuert** – schlaegt naechste Schritte vor, laesst den Benutzer die Richtung bestimmen
+- **Hypothesenverfolgung** – bildet und testet systematisch priorisierte Hypothesen
+- **Belegbasiert** – erfindet nie Begruendungen; alle Schlussfolgerungen sind belegt
 
 <details>
-<summary><strong>View Details</strong></summary>
+<summary><strong>Details anzeigen</strong></summary>
 
-Uses a conversational approach through five natural phases: understand the problem, narrow it down, find the root cause, fix und verify, wrap up. The debugger reports nur observable actions ("I checked X und found Y") und nie fabricates reasoning. Users can ask "what did you prüfen?" at any point und receive honest, verifiable answers.
+Verwendet einen dialogbasierten Ansatz in fünf natürlichen Phasen: Problem verstehen, eingrenzen, Grundursache finden, beheben und prüfen, abschliessen. Der Debugger berichtet nur beobachtbare Aktionen („Ich habe X geprüft und Y gefunden") und erfindet nie Begruendungen. Benutzer koennen jederzeit fragen: „Was hast du geprüft?" und erhalten ehrliche, ueberpruefbare Antworten.
 
 ```mermaid
 flowchart TD
@@ -482,11 +482,11 @@ flowchart TD
     G --> |different angle| C
 ```
 
-**The Four Commandments:**
-1. **Conversational, nicht procedural** - It's a dialogue, nicht a checklist
-2. **Observable nur** - "I looked at X und found Y" nicht "Das ist probably..."
-3. **Progressive disclosure** - Start brief, expand on request
-4. **User in control** - "Want me to...?" nicht "I will jetzt..."
+**Die vier Gebote:**
+1. **Dialogisch, nicht prozedural** – es ist ein Gespraech, keine Checkliste
+2. **Nur beobachtbar** – „Ich habe X angesehen und Y gefunden", nicht „Das ist wahrscheinlich…"
+3. **Progressive Offenlegung** – kurz beginnen, auf Anfrage ausführen
+4. **Benutzer hat die Kontrolle** – „Soll ich…?" statt „Ich mache jetzt…"
 
 </details>
 
@@ -494,9 +494,9 @@ flowchart TD
 
 ### `/constitution [focus-areas]`
 
-Create oder aktualisieren a Projekt constitution mit governance rules through discovery-based pattern analysis.
+Erstelle oder aktualisiere eine Projekt-Constitution mit Governance-Regeln durch musterbasierte Entdeckungsanalyse.
 
-**Purpose:** Establish checkable Projekt rules that are enforced during implementation, review, und validation
+**Zweck:** Pruefbare Projektregeln festlegen, die bei Implementierung, Review und Validierung durchgesetzt werden.
 
 **Verwendung:**
 ```bash
@@ -505,38 +505,38 @@ Create oder aktualisieren a Projekt constitution mit governance rules through di
 /constitution Add API patterns                   # Update existing constitution
 ```
 
-**Key Funktionen:**
-- **Discovery-Based Rules** - Analyzes actual codebase patterns, nie assumes frameworks
-- **L1/L2/L3 Level System** - L1 (blocking + autofix), L2 (blocking, manuell), L3 (advisory)
-- **Three-Layer Enforcement** - Checked during specify (SDD), implement, und review
-- **Pattern + Check Rules** - Supports regex patterns und semantic LLM-interpreted prüft
-- **Graceful Degradation** - System works normally if nein constitution exists
+**Wichtige Funktionen:**
+- **Regeln aus Entdeckung** – analysiert tatsächliche Muster in der Codebasis, nimmt keine Frameworks an
+- **L1/L2/L3-Stufensystem** – L1 (blockierend + Autofix), L2 (blockierend, manuell), L3 (beratend)
+- **Dreischichtige Durchsetzung** – geprüft bei specify (SDD), implement und review
+- **Muster- und Pruefregeln** – unterstuetzt Regex-Muster und semantische, vom LLM interpretierte Prüfungen
+- **Sanfte Degradation** – das System funktioniert normal, auch wenn keine Constitution existiert
 
 <details>
-<summary><strong>View Details</strong></summary>
+<summary><strong>Details anzeigen</strong></summary>
 
-Creates `CONSTITUTION.md` at Projekt root (like README, LICENSE, CODE_OF_CONDUCT). The constitution defines checkable guardrails that detect violations during development.
+Erzeugt `CONSTITUTION.md` im Projektstamm (wie README, LICENSE, CODE_OF_CONDUCT). Die Constitution definiert pruefbare Leitplanken, die Verstöße während der Entwicklung erkennen.
 
-**Key Distinction:**
-- **CLAUDE.md** = Project Beschreibung, AI guidance ("Use React mit TypeScript")
-- **CONSTITUTION.md** = Checkable rules that catch violations ("No barrel exports")
+**Wesentlicher Unterschied:**
+- **CLAUDE.md** = Projektbeschreibung, KI-Anleitung („React mit TypeScript verwenden")
+- **CONSTITUTION.md** = pruefbare Regeln, die Verstöße abfangen („Keine Barrel-Exports")
 
-**Level Definitions:**
+**Stufendefinitionen:**
 
-| Level | Name | Blocking | Autofix | Use Case |
+| Stufe | Name | Blockierend | Autofix | Anwendungsfall |
 |-------|------|----------|---------|----------|
-| **L1** | Must | Yes | AI automatisch-corrects | Security, correctness, critical architecture |
-| **L2** | Should | Yes | No | Important rules requiring human judgment |
-| **L3** | May | No | No | Style preferences, suggestions |
+| **L1** | Must | Ja | KI korrigiert automatisch | Sicherheit, Korrektheit, kritische Architektur |
+| **L2** | Should | Ja | Nein | Wichtige Regeln, die menschliches Urteilsvermoegen erfordern |
+| **L3** | May | Nein | Nein | Stilpraeferenzen, Vorschläge |
 
-**Rule Format Example:**
+**Beispiel für ein Regelformat:**
 
 ```markdown
 ### No Hardcoded Secrets
 
 \```yaml
 level: L1
-pattern: "(api_key|secret|password)\\s*[:=]\\s*['\"][^'\"]{8,}['\"]"
+pattern: "(api_key|secret|password)\s*[:=]\s*['\"][^'\"]{8,}['\"]"
 scope: "**/*.{ts,js}"
 exclude: "**/*.test.*, .env.example"
 message: Hardcoded secret detected. Use environment variables.
@@ -545,13 +545,13 @@ message: Hardcoded secret detected. Use environment variables.
 Secrets must never be committed to source control.
 ```
 
-**Three-Layer Enforcement:**
+**Dreischichtige Durchsetzung:**
 
-| Phase | Command | Enforcement |
+| Phase | Befehl | Durchsetzung |
 |-------|---------|-------------|
-| **Planning** | `/specify` (SDD) | SDD must nicht violate constitutional principles |
-| **Task** | `/implement` | Task ordering respects constitutional priorities |
-| **Implementation** | `/implement` | Generated code checked; L1/L2 violations block completion |
+| **Planung** | `/specify` (SDD) | SDD darf nicht gegen Verfassungsprinzipien verstoßen |
+| **Aufgabe** | `/implement` | Aufgabenreihenfolge beachtet Verfassungsprioritaeten |
+| **Implementierung** | `/implement` | Generierter Code geprüft; L1/L2-Verstöße blockieren Abschluss |
 
 ```mermaid
 flowchart TD
@@ -573,49 +573,49 @@ flowchart TD
 
 ### Installation
 
-Install The Agentic Startup framework mit the interactive installer:
+Installiere das Framework The Agentic Startup mit dem interaktiven Installer:
 
 ```bash
 npx the-startup
 ```
 
-**What it does:**
-- Supports both Claude marketplace installs und Datei-based installs for other harnesses
-- Prompts for plugin multi-select
-- Prompts for harness + installation Pfad when using Datei installieren mode
-- Copies Datei-install artifacts von the remote GitHub Repository
+**Was er tut:**
+- Unterstuetzt sowohl Claude-Marketplace-Installationen als auch dateibasierte Installationen für andere Harnesses
+- Fragt nach der Mehrfachauswahl von Plugins
+- Fragt bei dateibasiertem Installationsmodus nach Harness + Installationspfad
+- Kopiert die dateibasierten Installationsartefakte aus dem entfernten GitHub-Repository
 
 **Flags:**
-- `--help` - Show Nutzung information
+- `--help` – Nutzungsinformationen anzeigen
 
-**Hinweis:** Output styles are selected via `/config` — see [Output Styles](#output-styles).
-
----
-
-## Autonomous Skills
-
-The `start` plugin includes five autonomous Skills that activate automatisch based on Kontext. You nie need to explicitly invoke them — they work when needed.
-
-### Specification Skills
-
-| Skill | Purpose |
-|-------|---------|
-| `specify-meta` | Spec Verzeichnis creation, README tracking, phase transitions |
-| `specify-requirements` | Product requirements template, validation, requirements gathering |
-| `specify-solution` | Solution design template, architecture design, ADR management |
-| `specify-plan` | Authors the narrative plan + the slice und scenario Aufgaben in the tracker |
-
-### Implementation Skills
-
-| Skill | Purpose |
-|-------|---------|
-| `implement` | Runs the slice loop as a dynamic workflow — barriered code→eval erneut versuchen per slice |
+**Hinweis:** Ausgabe-Styles werden ueber `/config` gewaehlt – siehe [Ausgabe-Styles](#output-styles).
 
 ---
 
-## Documentation Structure
+## Autonome Skills
 
-Das Plugin encourages structured knowledge management:
+Das Plugin `start` enthält fünf autonome Skills, die automatisch anhand des Kontexts aktiviert werden. Du musst sie nie explizit aufrufen – sie arbeiten, wenn sie gebraucht werden.
+
+### Spezifikations-Skills
+
+| Skill | Zweck |
+|-------|---------|
+| `specify-meta` | Erstellung des Spec-Verzeichnisses, README-Nachverfolgung, Phasenübergänge |
+| `specify-requirements` | Vorlage für Produktanforderungen, Validierung, Anforderungsermittlung |
+| `specify-solution` | Vorlage für Lösungsdesign, Architekturdesign, ADR-Verwaltung |
+| `specify-plan` | Verfasst den narrativen Plan sowie die Slice- und Szenario-Aufgaben im Tracker |
+
+### Implementierungs-Skills
+
+| Skill | Zweck |
+|-------|---------|
+| `implement` | Fuehrt die Slice-Schleife als Dynamic Workflow aus – durch Barrieren getrenntes Code→Eval-Retry pro Slice |
+
+---
+
+## Dokumentationsstruktur
+
+Das Plugin fördert strukturiertes Wissensmanagement:
 
 ```
 .start/
@@ -643,59 +643,52 @@ docs/
     └── oauth-providers.md
 ```
 
-### Auto-Documentation
+### Automatische Dokumentation
 
-The `document` Skill's Capture perspective automatisch creates Dateien in the correct location when patterns, interfaces, oder domain rules are discovered during:
-- Specification creation (`/specify`)
-- Implementation (`/implement`)
-- Analysis (`/analyze`)
+Die Capture-Perspektive des `document`-Skills erzeugt automatisch Dateien am richtigen Ort, wenn während folgender Vorgänge Muster, Schnittstellen oder Domain-Regeln gefunden werden:
+- Erstellung einer Spezifikation (`/specify`)
+- Implementierung (`/implement`)
+- Analyse (`/analyze`)
 
-### Deduplication
+### Deduplizierung
 
-The capture workflow immer prüft existing documentation vorher creating neu Dateien, preventing duplicates.
+Der Capture-Ablauf prüft vor dem Anlegen neuer Dateien immer die vorhandene Dokumentation und verhindert so Duplikate.
 
 ---
 
-## Output Styles
+## Ausgabe-Styles
 
-The `start` plugin ships three Ausgabe styles — one register per company stage. A style ändert how
-Claude communicates und how much process it applies, nicht what it knows. All three behalten Claude Code's
-built-in engineering instructions (`keep-coding-instructions: true`), und a style shapes the main
-Gespräch nur — Subagenten und das Plugin's workflows are unaffected.
+Das Plugin `start` liefert drei Ausgabe-Styles – eine Registerbreite pro Unternehmensphase. Ein Style verändert, wie Claude kommuniziert und wie viel Prozess er anwendet, nicht sein Wissen. Alle drei behalten Claudes eingebaute Entwicklungsanweisungen (`keep-coding-instructions: true`), und ein Style wirkt nur auf das Hauptgespraech – Subagenten und die Workflows des Plugins sind unberührt.
 
-Pick the register that matches who the work is for:
+Wähle das Register passend dazu, für wen die Arbeit bestimmt ist:
 
-| Style | Register | Reach for it when |
+| Style | Register | Wann greifen |
 |-------|----------|-------------------|
-| **The Garage** | Pre-startup — build the least thing that works, say the least about it | Prototypes und spikes; nothing is load-bearing yet, you are finding out whether the thing works |
-| **The Startup** | Solo — one engineer, one Agent, nein ceremony | Es ist just you; nein delegation, nein plan-for-approval theater, nein Status for third parties |
-| **The ScaleUp** | Coordinated — work that moves through other people | Someone who was nicht in the Gespräch will lesen what you schreiben und touch what you ändern; delegate und leave a trail |
+| **The Garage** | Pre-Startup – das Kleinste bauen, das funktioniert, und möglichst wenig darueber reden | Prototypen und Spikes; noch nichts ist tragend, du findest heraus, ob die Sache funktioniert |
+| **The Startup** | Solo – eine Ingenieurin oder ein Ingenieur, ein Agent, kein Zeremoniell | Du bist allein; keine Delegation, kein Plan-zur-Freigabe-Theater, kein Status für Dritte |
+| **The ScaleUp** | Koordiniert – Arbeit, die durch andere Menschen laeuft | Jemand, der nicht im Gespraech war, liest, was du schreibst, und fasst an, was du änderst; delegiere und hinterlasse eine Spur |
 
-### Activating a style
+### Einen Style aktivieren
 
-The `/output-style` Befehl was removed in Claude Code v2.1.91. Current ways to auswählen:
+Der Befehl `/output-style` wurde in Claude Code v2.1.91 entfernt. Aktuelle Auswahlmöglichkeiten:
 
-- **Interactive:** `/config` → Output style.
-- **Direct:** `/config outputStyle=The Startup` (Claude Code v2.1.181+).
-- **Pinned for a Projekt** (shared mit the team via git) in `.claude/settings.json`:
+- **Interaktiv:** `/config` → Output style.
+- **Direkt:** `/config outputStyle=The Startup` (Claude Code v2.1.181+).
+- **Fuer ein Projekt festgelegt** (per git mit dem Team geteilt) in `.claude/settings.json`:
 
   ```json
   { "outputStyle": "The Garage" }
   ```
 
-  Use `.claude/settings.local.json` for a personal per-project choice, oder `~/.claude/settings.json`
-  for alle Projekte. Precedence: local > Projekt > user. A ändern takes effect on the nächste Sitzung
-  (oder danach `/clear`).
+  Verwende `.claude/settings.local.json` für eine persönliche Projektauswahl oder `~/.claude/settings.json` für alle Projekte. Rangfolge: lokal > Projekt > Benutzer. Eine Änderung gilt ab der nächsten Sitzung (oder nach `/clear`).
 
-Dieses Plugin deliberately does **nicht** force a style (`force-for-plugin` is unset on alle three): the
-stage is your call, und a forced style would override both your `/config` selection und any settings
-pin for as long as das Plugin is aktiviert.
+Dieses Plugin erzwingt bewusst **keinen** Style (`force-for-plugin` ist bei allen dreien nicht gesetzt): die Phase bestimmst du, und ein erzwungener Style wuerde sowohl deine `/config`-Auswahl als auch jede Einstellungs-Festlegung ueberschreiben, solange das Plugin aktiv ist.
 
 ---
 
-## Typical Development Workflow
+## Typischer Entwicklungsworkflow
 
-### Setup (Optional)
+### Einrichtung (optional)
 
 ```
 /constitution ──> Create project governance rules
@@ -703,7 +696,7 @@ pin for as long as das Plugin is aktiviert.
                   CONSTITUTION.md at project root
 ```
 
-### Primary Workflow: Specify > Validate > Implement > Review
+### Hauptworkflow: Specify > Validate > Implement > Review
 
 ```
 /specify ──> /validate ──> /implement ──> /review
@@ -718,77 +711,77 @@ SDD
 Optional: /document after implementation for documentation sync
 ```
 
-*If `CONSTITUTION.md` exists, rules are automatisch checked at jede stage.*
+*Wenn `CONSTITUTION.md` existiert, werden die Regeln in jeder Phase automatisch geprüft.*
 
-**1. Create Specification**
+**1. Spezifikation erstellen**
 
 ```bash
 /specify Add real-time notification system with WebSocket support
 ```
 
-**What happens:**
-- Creates `.start/specs/001-notification-system/`
-- Generates spec.md und the tracker Aufgaben
-- Documents discovered patterns/interfaces
-- Optional: Creates `spec/001-notification-system` git Branch
+**Was passiert:**
+- Erstellt `.start/specs/001-notification-system/`
+- Generiert spec.md und die Tracker-Aufgaben
+- Dokumentiert gefundene Muster/Schnittstellen
+- Optional: Erstellt den Git-Branch `spec/001-notification-system`
 
-**2. Validate Before Implementation (Recommended)**
+**2. Vor der Implementierung validieren (empfohlen)**
 
 ```bash
 /validate 001
 ```
 
-**What happens:**
-- Checks completeness, consistency, correctness (3 Cs)
-- Detects ambiguities und vague language
-- Security scanning for common vulnerabilities
-- Verifies cross-document traceability
+**Was passiert:**
+- Prüft Vollständigkeit, Konsistenz, Korrektheit (3 Cs)
+- Erkennt Mehrdeutigkeiten und vage Sprache
+- Sicherheits-Scan nach häufigen Schwachstellen
+- Prüft die dokumentübergreifende Nachvollziehbarkeit
 
-**3. Execute Implementation**
+**3. Implementierung ausführen**
 
 ```bash
 /implement 001
 ```
 
-**What happens:**
-- Optional: Creates `feature/001-notification-system` git Branch
-- Runs the slice loop as a dynamic workflow
-- Per slice: a code Agent builds it, an eval Agent proves it against holdout scenario Aufgaben
-- Retries mit filtered failure summaries until the satisfaction threshold is met
-- Optional: Creates PR at completion
+**Was passiert:**
+- Optional: Erstellt den Git-Branch `feature/001-notification-system`
+- Fuehrt die Slice-Schleife als Dynamic Workflow aus
+- Pro Slice: ein Code-Agent baut ihn, ein Eval-Agent weist ihn anhand von Holdout-Szenario-Aufgaben nach
+- Wiederholungen mit gefilterten Fehlerzusammenfassungen, bis die Zufriedenheitsschwelle erreicht ist
+- Optional: Erstellt bei Abschluss einen PR
 
-**4. Review Before Merge**
+**4. Vor dem Merge prüfen**
 
 ```bash
 /review
 ```
 
-**What happens:**
-- Parallel specialists review (Security, Performance, Quality, Tests + conditionals)
-- Generates consolidated report mit severity rankings
+**Was passiert:**
+- Parallele Spezialisten prüfen (Sicherheit, Performance, Qualitaet, Tests + bedingte Perspektiven)
+- Erzeugt einen konsolidierten Bericht mit Schweregrad-Rangfolge
 
-**5. Generate Documentation (Optional)**
+**5. Dokumentation erzeugen (optional)**
 
 ```bash
 /document src/notifications/
 ```
 
-**What happens:**
-- Adds JSDoc/TSDoc comments
-- Updates README if needed
-- Reports documentation coverage
+**Was passiert:**
+- Fuegt JSDoc-/TSDoc-Kommentare hinzu
+- Aktualisiert die README, falls nötig
+- Berichtet ueber die Dokumentationsabdeckung
 
 ---
 
-### Maintenance Workflows
+### Wartungsabläufe
 
-**Understand Existing Code**
+**Bestehenden Code verstehen**
 
 ```bash
 /analyze security patterns in authentication
 ```
 
-Documents findings in `docs/patterns/`, `docs/domain/`, `docs/interfaces/`
+Dokumentiert die Ergebnisse in `docs/patterns/`, `docs/domain/`, `docs/interfaces/`.
 
 **Refactoring**
 
@@ -796,50 +789,50 @@ Documents findings in `docs/patterns/`, `docs/domain/`, `docs/interfaces/`
 /refactor Restructure the authentication module for better testability
 ```
 
-For architectural ändert - creates specs, plans migration, handles breaking ändert.
+Bei architektonischen Änderungen: erstellt Spezifikationen, plant die Migration, behandelt Breaking Changes.
 
-**Fix Bugs**
+**Fehler beheben**
 
 ```bash
 /debug The notification system stops working after 100 concurrent users
 ```
 
-Conversational investigation mit observable evidence und user-driven direction.
+Dialogbasierte Untersuchung mit beobachtbaren Belegen und vom Benutzer gesteuerter Richtung.
 
-**Audit Documentation**
+**Dokumentation prüfen**
 
 ```bash
 /document audit
 ```
 
-Reports documentation coverage und identifies stale oder missing docs.
+Berichtet ueber die Dokumentationsabdeckung und findet veraltete oder fehlende Dokumentation.
 
 ---
 
-## Skills in Action
+## Skills in Aktion
 
-### Example: Knowledge Capture via Document Skill
+### Beispiel: Wissenserfassung mit dem Document-Skill
 
-**Scenario:** During implementation, an Agent discovers a pattern
+**Szenario:** Waehrend der Implementierung entdeckt ein Agent ein Muster.
 
 ```
 Agent output: "I implemented a retry mechanism with exponential backoff for API calls"
 ```
 
-**What happens automatisch:**
-1. Document Skill's Capture perspective activates
-2. Checks `docs/patterns/` for existing erneut versuchen patterns
-3. Not found — Creates `docs/patterns/api-retry-strategy.md`
-4. Uses pattern template
-5. Reports: "Created docs/patterns/api-retry-strategy.md"
+**Was automatisch passiert:**
+1. Die Capture-Perspektive des Document-Skills aktiviert sich
+2. Prüft `docs/patterns/` auf vorhandene Retry-Muster
+3. Keines gefunden – erstellt `docs/patterns/api-retry-strategy.md`
+4. Verwendet die Muster-Vorlage
+5. Meldet: „Created docs/patterns/api-retry-strategy.md"
 
-**You didn't have to:** Manually request documentation oder specify the Pfad
+**Du musstest nicht:** Dokumentation manuell anfordern oder den Pfad angeben.
 
 ---
 
-## Templates
+## Vorlagen
 
-Rich templates for structured documentation, co-located mit their Skills:
+Umfangreiche Vorlagen für strukturierte Dokumentation, zusammen mit ihren Skills:
 
 ```
 plugins/start/skills/
@@ -851,36 +844,36 @@ plugins/start/skills/
     └── interface-template.md            # External integrations
 ```
 
-**Verwendung:** Automatically used by `/specify` und `/document` when creating documentation
+**Verwendung:** Werden von `/specify` und `/document` automatisch beim Erstellen von Dokumentation genutzt.
 
 ---
 
-## Philosophy
+## Philosophie
 
-### Spec-Driven Development
+### Spec-getriebene Entwicklung
 
-**The problem:** Funktionen built ohne leeren requirements lead to technical debt, rework, und inconsistency.
+**Das Problem:** Funktionen ohne klare Anforderungen fuehren zu technischer Schuld, Nacharbeit und Inkonsistenz.
 
-**Our approach:**
+**Unser Ansatz:**
 
-1. **Specify First** - Comprehensive specifications vorher code
-2. **Review & Refine** - Validate mit stakeholders
-3. **Implement mit Confidence** - Execute validated plans
-4. **Document & Learn** - Capture patterns for reuse
+1. **Zuerst spezifizieren** – umfassende Spezifikationen vor dem Code
+2. **Pruefen und verfeinern** – Validierung mit den Beteiligten
+3. **Mit Sicherheit implementieren** – validierte Plaene ausführen
+4. **Dokumentieren und lernen** – Muster zur Wiederverwendung erfassen
 
-### Core Principles
+### Kernprinzipien
 
-- **Measure twice, cut once** - Upfront planning saves Zeit
-- **Documentation as code** - Specs evolve mit your codebase
-- **Parallel execution** - Multiple specialists, leeren boundaries
-- **Quality gates** - DOR/DOD enforce standards
-- **Progressive disclosure** - Load details nur when needed
+- **Zweimal messen, einmal schneiden** – Planung im Voraus spart Zeit
+- **Dokumentation als Code** – Spezifikationen entwickeln sich mit deiner Codebasis
+- **Parallele Ausführung** – mehrere Spezialisten, klare Grenzen
+- **Qualitaets-Gates** – DOR/DOD setzen Standards durch
+- **Progressive Offenlegung** – Details nur bei Bedarf laden
 
 ---
 
-## Further Reading
+## Weiterführende Literatur
 
-- **[Main README](../../README.md)** - Project overview und installation
+- **[Haupt-README](../../README.md)** – Projektuebersicht und Installation
 
 ## Quelle und Lizenz
 
