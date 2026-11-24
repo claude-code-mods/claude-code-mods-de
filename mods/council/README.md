@@ -85,7 +85,7 @@ Bei einem API-Sitzplatz oder einem OpenRouter-Sitzplatz ist das Modell in Grau e
 
 Claude wartet höchstens 11,5 Minuten, nachdem die Auswahl geöffnet wurde. Wenn es bis zum Eintreffen der Antworten nicht mehr wartet oder du Ask im selben Bereich ein zweites Mal drückst:
 
-- Desktop setzt „Synthesise the council's answers (run 3f9a2c).“ in das Nachrichtenfeld, unter einem Warnhinweis zu bösartigen Inhalten; die die Zeile unter den Antworten sagt, Enter zu drücken. Der Bereich kann diese Nachricht nicht selbst senden.
+- Desktop setzt „Fasse die Antworten des Councils zusammen (Lauf 3f9a2c).“ in das Nachrichtenfeld, unter einem Warnhinweis zu bösartigen Inhalten; die Zeile unter den Antworten sagt, Enter zu drücken. Der Bereich kann diese Nachricht nicht selbst senden.
 - Claude ruft dann mit `council_result` die Antworten dieses Laufs ab und schreibt die Synthese.
 - Lehnt Desktop die Nachricht ab, gibt die Zeile stattdessen den selbst zu sendenden Text an (`Ask Claude: "synthesise council run 3f9a2c"`).
 - Die Erweiterung behält die letzten 5 Läufe, in denen ein Sitzplatz geantwortet hat; danach frage den Council erneut.
@@ -120,7 +120,7 @@ Die [Referenz](docs/REFERENCE.md) listet jedes Flag, jede Variable, jeden Modell
 
 ![Der Einstiegshinweis, eine Notiz, Learn more und ein ungesendeter Tell-Claude-Entwurf](assets/heads-up.svg)
 
-Aktiviere sie über die Zeile „Heads-up side-check“ in `/config` oder in `.claude/council-heads-up.json` des Projekts. Ein Sitzplatz, standardmäßig codex, prüft während Claudes Arbeit die letzten Züge und Werkzeugergebnisse. Bei einem Write oder Edit erhält er den von Claude geschriebenen Text. Die Notiz zeigt, was wohin gegangen ist. Learn more klappt sie auf; Tell Claude legt einen Entwurf ins Eingabefeld, ohne ihn zu senden. Lies die [Datengrenzen und den Ausschalter](docs/REFERENCE.md#what-gets-sent-and-saved) sowie die [Anleitung zur Nebenprüfung](docs/USAGE.md#heads-up-side-check-opt-in-off-by-default).
+Aktiviere sie über die Zeile „Heads-up side-check“ in `/config` oder in `.claude/council-heads-up.json` des Projekts. Ein Sitzplatz, standardmäßig codex, prüft während Claudes Arbeit die letzten Züge und Werkzeugergebnisse. Bei einem Write oder Edit erhält er den von Claude geschriebenen Text. Die Notiz zeigt, was wohin gegangen ist. Learn more klappt sie auf; Tell Claude legt einen Entwurf ins Eingabefeld, ohne ihn zu senden. Lies die [Datengrenzen und Ausschalter](docs/REFERENCE.md#what-gets-sent-and-saved) sowie [Anleitung zur Nebenprüfung](docs/USAGE.md#heads-up-side-check-opt-in-off-by-default).
 
 ## Der Bereich
 
@@ -132,7 +132,7 @@ Die [Mod-Anleitung](mods/council-pane/README.md) listet Tasten, Einstellungen, G
 
 Der Mod tätigt selbst keine Netzwerkaufrufe. Er startet die folgenden Programme aus einem Argument-Array, nie aus einer Shell-Zeichenkette, und übergibt `bash -c` nie ein Skript. Dein Text erreicht Modellanbieter nur über die ersten beiden:
 
-- `bash scripts/run-council.sh`, wenn Claude das Council-Werkzeug aufruft und falls du `Send to the council` wählst. Es sendet deine Frage an die von dir eingerichteten Anbieter.
+- `bash scripts/run-council.sh`, wenn Claude das Council-Werkzeug aufruft und falls du `Send to the council` wählst. Es übermittelt deine Frage an deine eingerichteten Anbieter.
 - `bash scripts/heads-up.sh`, nur bei eingeschalteter Nebenprüfung. Es liest das Transkript dieser Sitzung (standardmäßig die letzten 5 Züge und bis zu 8 Werkzeugergebnisse mit je 2.000 Zeichen) und sendet diese Zusammenfassung an einen Sitzplatz, standardmäßig `codex`, falls du keinen anderen wählst. Das Laufverzeichnis bewahrt `digest.md` und `prompt.md`, also genau das, was den Rechner verlassen hat, bis der Mod das Ergebnis liest und es entfernt. Der codex-Sitzplatz läuft in diesem Verzeichnis mit einem eigenen codex-Home: dein Modell und Aufwand, ein Link zu deiner `auth.json`, damit eine Token-Aktualisierung deine Anmeldung erreicht (ohne sie meldet `CODEX_API_KEY` oder `OPENAI_API_KEY` codex an), und ohne deine Plugins, Hooks, `AGENTS.md`, Skills oder MCP-Server.
 - `bash scripts/query-council.sh --list-default-models`, wenn Claude das Council-Werkzeug aufruft, um die angebotenen Sitzplätze zu listen und die genannten zu prüfen. Es liest deine Konfiguration und sendet nichts.
 - `bash scripts/seat-info.sh discover`, `model <seat>` oder `allowlisted <seat>` während `/heads-up setup` und `/heads-up on <seat>`. Es prüft, welche Sitzplätze dieser Rechner ausführen kann, und sendet nichts.
