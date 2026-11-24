@@ -6,56 +6,56 @@
   "userConfig": {
     "apiKey": {
       "type": "string",
-      "title": "TypeSafe API key",
-      "description": "TypeSafe API key. Leave unset to use TYPESAFE_API_KEY.",
+      "title": "TypeSafe-API-Schlüssel",
+      "description": "TypeSafe-API-Schlüssel. Leer lassen, um TYPESAFE_API_KEY zu verwenden.",
       "sensitive": true
     },
     "keepThreshold": {
       "type": "number",
-      "title": "Keep threshold",
-      "description": "Minimum Jev probability that a tool call or tool result is still needed; below it the item is removed.",
+      "title": "Behalt-Schwellenwert",
+      "description": "Minimale Jev-Wahrscheinlichkeit, dass ein Tool-Aufruf oder ein Tool-Ergebnis noch benötigt wird; darunter wird der Eintrag entfernt.",
       "default": 0.5
     },
     "preserveRecentMessages": {
       "type": "number",
-      "title": "Recent messages to preserve",
-      "description": "Number of newest messages pinned from compaction.",
+      "title": "Aktuelle Nachrichten behalten",
+      "description": "Anzahl der neuesten Nachrichten, die vor der Komprimierung festgehalten werden.",
       "default": 6
     },
     "compactAtPercent": {
       "type": "number",
-      "title": "Compaction percentage",
-      "description": "Context percentage at which turn.complete requests compaction.",
+      "title": "Komprimierungsprozentsatz",
+      "description": "Prozentsatz des Kontexts, bei dem turn.complete eine Komprimierung anfordert.",
       "default": 60
     },
     "minReductionRatio": {
       "type": "number",
-      "title": "Minimum reduction ratio",
-      "description": "Minimum estimated character reduction required to replace history.",
+      "title": "Minimales Reduktionsverhältnis",
+      "description": "Minimal geschätzte Zeichenreduktion, die erforderlich ist, um den Verlauf zu ersetzen.",
       "default": 0.25
     },
     "maxStateTokens": {
       "type": "number",
-      "title": "Maximum Jev state tokens",
-      "description": "Estimated token budget for the conversation state sent with every Jev request.",
+      "title": "Maximale Jev-Zustands-Tokens",
+      "description": "Geschätztes Token-Budget für den Gesprächszustand, der mit jeder Jev-Anfrage gesendet wird.",
       "default": 25000
     },
     "maxRequestTokens": {
       "type": "number",
-      "title": "Maximum Jev request tokens",
-      "description": "Estimated token budget for state plus questions in one Jev request.",
+      "title": "Maximale Jev-Anfragetokens",
+      "description": "Geschätztes Token-Budget für Zustand plus Fragen in einer Jev-Anfrage.",
       "default": 30000
     },
     "truncateHeadChars": {
       "type": "number",
-      "title": "Truncated tool result head",
-      "description": "Characters of a tool result kept when Jev decides its full output is no longer needed; 0 keeps only the note.",
+      "title": "Gekürzter Anfang von Tool-Ergebnissen",
+      "description": "Anzahl Zeichen eines Tool-Ergebnisses, die behalten werden, wenn Jev entscheidet, dass die vollständige Ausgabe nicht mehr benötigt wird; 0 behält nur den Hinweis.",
       "default": 300
     },
     "model": {
       "type": "string",
-      "title": "Jev model",
-      "description": "TypeSafe Jev model name.",
+      "title": "Jev-Modell",
+      "description": "Name des TypeSafe-Jev-Modells.",
       "default": "jev-latest"
     }
   }

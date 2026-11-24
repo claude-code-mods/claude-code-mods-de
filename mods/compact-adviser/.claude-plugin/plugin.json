@@ -18,8 +18,8 @@
   "userConfig": {
     "mode": {
       "type": "string",
-      "title": "Mode",
-      "description": "hint shows advice; auto compacts at eligible checkpoints after a first-use confirmation from /compact-adviser; off disables the adviser (Claude Code's own auto-compact is unaffected).",
+      "title": "Modus",
+      "description": "hint zeigt Hinweise; auto komprimiert an geeigneten Prüfpunkten, nachdem /compact-adviser einmalig bestätigt wurde; off deaktiviert den Berater (Claude Codes eigene automatische Komprimierung bleibt unberührt).",
       "options": [
         "hint",
         "auto",
@@ -29,40 +29,40 @@
     },
     "minContextTokens": {
       "type": "number",
-      "title": "Minimum context (tokens)",
-      "description": "A constant token count, not a percentage; no judgment below it.",
+      "title": "Minimaler Kontext (Tokens)",
+      "description": "Eine feste Token-Anzahl, kein Prozentsatz; darunter findet keine Bewertung statt.",
       "default": 40000,
       "min": 1
     },
     "contextBudgetTokens": {
       "type": "number",
-      "title": "Context budget (tokens)",
-      "description": "Optional. The context size you want compacted by: the hint floor relaxes as the context approaches the smaller of it and Claude Code's auto-compact point (or the window). 0 turns it off.",
+      "title": "Kontextbudget (Tokens)",
+      "description": "Optional. Die Kontextgröße, bei der komprimiert werden soll: Die Hinweis-Untergrenze wird gelockert, wenn sich der Kontext dem kleineren Wert aus ihr und Claude Codes Auto-Komprimierungspunkt (oder dem Fenster) nähert. 0 deaktiviert dies.",
       "default": 0,
       "min": 0
     },
     "logRequests": {
       "type": "boolean",
-      "title": "Log TypeSafe requests",
-      "description": "When on, each TypeSafe/Jev request and sanitized Jev outcome is appended to ~/.claude/compact-adviser-requests-<session-id>.jsonl. Off by default. Never logs the API key.",
+      "title": "TypeSafe-Anfragen protokollieren",
+      "description": "Wenn aktiv, wird jede TypeSafe/Jev-Anfrage und das bereinigte Jev-Ergebnis an ~/.claude/compact-adviser-requests-<session-id>.jsonl angehängt. Standardmäßig aus. Der API-Schlüssel wird nie protokolliert.",
       "default": false
     },
     "profile": {
       "type": "string",
-      "title": "Judge profile JSON",
-      "description": "Optional version-1 judge profile JSON. Empty uses shipped defaults. Invalid profiles disable advice. This does not grant auto consent.",
+      "title": "Bewerterprofil-JSON",
+      "description": "Optionales Bewerterprofil-JSON der Version 1. Leer verwendet die mitgelieferten Standardwerte. Ungültige Profile deaktivieren die Hinweise. Dies erteilt keine automatische Zustimmung.",
       "default": ""
     },
     "beforeCompactPrompt": {
       "type": "string",
-      "title": "Before-compact prompt",
-      "description": "Optional. Empty keeps automatic compaction immediate. In confirmed auto mode, a non-empty value runs as one turn, then compaction runs if that turn ends in a settled answer. A value that starts with / is a slash command (for example /stow); Claude Code does not expand slash commands or @file mentions in a plugin prompt, and it rejects a plugin prompt that starts with /. If you send your own prompt or run a command in between, or that turn is interrupted, errors, or does not finish within 5 minutes, nothing is compacted.",
+      "title": "Prompt vor der Komprimierung",
+      "description": "Optional. Leer lässt die automatische Komprimierung sofort erfolgen. Im bestätigten Auto-Modus wird ein nicht leerer Wert als ein Turn ausgeführt; danach wird komprimiert, wenn dieser Turn mit einer endgültigen Antwort endet. Ein Wert, der mit / beginnt, ist ein Slash-Befehl (zum Beispiel /stow); Claude Code erweitert Slash-Befehle oder @file-Erwähnungen nicht in einem Plugin-Prompt und lehnt einen Plugin-Prompt ab, der mit / beginnt. Wenn du dazwischen einen eigenen Prompt sendest oder einen Befehl ausführst, oder wenn dieser Turn unterbrochen wird, einen Fehler erzeugt oder nicht innerhalb von 5 Minuten abgeschlossen ist, wird nichts komprimiert.",
       "default": ""
     },
     "typesafeApiKey": {
       "type": "string",
-      "title": "TypeSafe API key",
-      "description": "Saved from /compact-adviser. Hidden in /config so the value is never shown. A non-empty TYPESAFE_API_KEY in the launch environment wins. Do not commit this value.",
+      "title": "TypeSafe-API-Schlüssel",
+      "description": "Gespeichert über /compact-adviser. In /config verborgen, damit der Wert nie angezeigt wird. Ein nicht leerer TYPESAFE_API_KEY in der Startumgebung hat Vorrang. Diesen Wert nicht committen.",
       "default": ""
     }
   }

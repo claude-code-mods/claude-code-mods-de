@@ -22,32 +22,32 @@
   "types": "./types/index.d.ts",
   "userConfig": {
     "architectPattern": {
-      "title": "Architect pattern",
-      "description": "Regular expression (case-insensitive) for the agent types and server tools that count as the on-call architect, e.g. advisor|architect|reviewer",
+      "title": "Architekt-Muster",
+      "description": "Regulärer Ausdruck (groß-/kleinschreibungsunabhängig) für Agententypen und Server-Tools, die als diensthabender Architekt gelten, z. B. advisor|architect|reviewer",
       "type": "string",
       "default": "advisor|architect"
     },
     "architectLabel": {
-      "title": "Architect label",
-      "description": "Name shown for the architect role",
+      "title": "Architekt-Beschriftung",
+      "description": "Angezeigter Name für die Architekt-Rolle",
       "type": "string",
       "default": "ARCHITECT"
     },
     "gateLabel": {
-      "title": "Gate label",
-      "description": "Name shown for the permission panel",
+      "title": "Gate-Beschriftung",
+      "description": "Angezeigter Name für das Berechtigungsfenster",
       "type": "string",
       "default": "GATE"
     },
     "panels": {
-      "title": "Panels",
-      "description": "Comma-separated panels in display order: main, architect, gate, agents, loops, receipt, log. Leave one out to hide it.",
+      "title": "Bereiche",
+      "description": "Durch Kommas getrennte Bereiche in Anzeigereihenfolge: main, architect, gate, agents, loops, receipt, log. Ein weggelassener Bereich wird ausgeblendet.",
       "type": "string",
       "default": "main,architect,gate,agents,loops,receipt,log"
     },
     "motion": {
-      "title": "Motion",
-      "description": "Animate the connectors while real work flows, or keep them still",
+      "title": "Bewegung",
+      "description": "Verbindungen animieren, während echte Arbeit läuft, oder sie ruhig lassen",
       "type": "string",
       "options": [
         "while-active",
@@ -56,32 +56,32 @@
       "default": "while-active"
     },
     "moments": {
-      "title": "Architect moments",
-      "description": "Show the inferred moment of each consult (before a plan, error repeats, before done)",
+      "title": "Architekt-Momente",
+      "description": "Den geschätzten Moment jeder Rücksprache anzeigen (vor einem Plan, wiederholten Fehlern, vor dem Abschluss)",
       "type": "boolean",
       "default": true
     },
     "matchDescriptions": {
-      "title": "Match agent descriptions",
-      "description": "Also count an agent type as the architect when its description (not just its name) matches the pattern",
+      "title": "Agentenbeschreibungen abgleichen",
+      "description": "Einen Agententyp auch dann als Architekt zählen, wenn seine Beschreibung (nicht nur sein Name) auf das Muster passt",
       "type": "boolean",
       "default": false
     },
     "maxCards": {
-      "title": "Cards before swimlanes",
-      "description": "Agent cards drawn side by side; more agents than this switch to swimlanes (1-6)",
+      "title": "Karten vor Swimlanes",
+      "description": "Agentenkarten nebeneinander zeichnen; mehr Agenten als dieser Wert schaltet auf Swimlanes um (1–6)",
       "type": "number",
       "default": 3
     },
     "paneColumns": {
-      "title": "Pane width",
-      "description": "Columns the pane asks for when docked beside a fullscreen transcript, 40 or more. Claude Code caps the dock at 45% of the terminal, and a width you dragged it to wins.",
+      "title": "Panelbreite",
+      "description": "Spalten, die das Panel neben einem vollständigen Transkript anfordert, 40 oder mehr. Claude Code begrenzt das Andocken auf 45 % des Terminals; eine per Ziehen eingestellte Breite hat Vorrang.",
       "type": "number",
       "default": 66
     },
     "layout": {
-      "title": "Layout",
-      "description": "auto: a summary of at most 8 rows when the pane sits inline above the prompt, two columns from 110 columns when docked, one column otherwise",
+      "title": "Anordnung",
+      "description": "auto: eine Zusammenfassung von höchstens 8 Zeilen, wenn das Panel inline über dem Prompt liegt, zwei Spalten ab 110 Spalten beim Andocken, sonst eine Spalte",
       "type": "string",
       "options": [
         "auto",
@@ -92,8 +92,8 @@
       "default": "auto"
     },
     "palette": {
-      "title": "Palette",
-      "description": "theme follows your Claude Code theme (light, dark, colour-blind); pastel is fixed colours tuned for dark terminals",
+      "title": "Farbpalette",
+      "description": "theme folgt deinem Claude-Code-Design (hell, dunkel, farbenblind); pastel sind feste, für dunkle Terminals abgestimmte Farben",
       "type": "string",
       "options": [
         "theme",
@@ -102,14 +102,14 @@
       "default": "theme"
     },
     "openOnStart": {
-      "title": "Open on start",
-      "description": "Open the pane when a session starts",
+      "title": "Beim Start öffnen",
+      "description": "Das Panel beim Start einer Sitzung öffnen",
       "type": "boolean",
       "default": true
     },
     "statusLine": {
-      "title": "Status line",
-      "description": "Show context, agents, consults and denials in the status line",
+      "title": "Statuszeile",
+      "description": "Kontext, Agenten, Rücksprachen und Ablehnungen in der Statuszeile anzeigen",
       "type": "boolean",
       "default": true
     }

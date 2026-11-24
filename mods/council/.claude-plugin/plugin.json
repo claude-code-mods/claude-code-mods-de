@@ -36,74 +36,74 @@
   "userConfig": {
     "pane_host": {
       "type": "string",
-      "title": "Pane opens in",
-      "description": "Where the council pane opens. claude-code draws it inside Claude Code; tmux leaves it to a tmux pane; ask asks once, the first time a run starts inside tmux, and remembers the answer (/council-pane ask forgets it). Outside tmux the pane opens here either way.",
+      "title": "Panel geöffnet in",
+      "description": "Wo das Council-Panel geöffnet wird. claude-code zeichnet es innerhalb von Claude Code; tmux überlässt es einem tmux-Pane; ask fragt einmal, beim ersten Start innerhalb von tmux, und merkt sich die Antwort (/council-pane ask forgets it vergisst sie wieder). Außerhalb von tmux öffnet sich das Panel in jedem Fall hier.",
       "default": "ask"
     },
     "collapse_when_done": {
       "type": "boolean",
-      "title": "Collapse status when done",
-      "description": "Open a finished run on its summary and the synthesis, with the seats folded below. Off keeps the live order: the seats, then the synthesis.",
+      "title": "Status nach Abschluss einklappen",
+      "description": "Ein abgeschlossener Lauf wird mit seiner Zusammenfassung und der Synthese geöffnet, die Plätze darunter eingeklappt. Aus behält die Live-Reihenfolge: zuerst die Plätze, dann die Synthese.",
       "default": true
     },
     "wake_on_async_done": {
       "type": "boolean",
-      "title": "Wake on async finish",
-      "description": "When a background council run (--async) finishes, submit a prompt so Claude fetches the result by itself. That starts a model turn and costs tokens; a failed run wakes nobody.",
+      "title": "Bei asynchronem Abschluss aufwecken",
+      "description": "Wenn ein Hintergrund-Council-Lauf (--async) endet, wird ein Prompt gesendet, damit Claude das Ergebnis selbst abruft. Das startet eine Modellrunde und kostet Tokens; ein fehlgeschlagener Lauf weckt niemanden.",
       "default": false
     },
     "council_tool": {
       "type": "boolean",
-      "title": "Council as a tool",
-      "description": "Let Claude call the council as a tool, not only through /claude-council:ask. Every call shows you the question and the providers and asks before anything is sent.",
+      "title": "Council als Werkzeug",
+      "description": "Claude darf das Council als Werkzeug aufrufen, nicht nur über /claude-council:ask. Bei jedem Aufruf werden dir die Frage und die Anbieter angezeigt und es wird nachgefragt, bevor etwas gesendet wird.",
       "default": true
     },
     "heads_up": {
       "type": "boolean",
-      "title": "Heads-up side-check",
-      "description": "Turn the heads-up side-check on in every project: while Claude works a long turn, one council seat, codex by default, rereads the last five turns, the last eight tool results and the text Claude wrote with Write or Edit, and may show one line above the prompt. Nothing asks before a send; that material leaves the machine on every check. A project's .claude/council-heads-up.json overrides this for that project and picks the seat and cadence.",
+      "title": "Hinweis-Seitenprüfung",
+      "description": "Die Hinweis-Seitenprüfung in allen Projekten aktivieren: Während Claude an einem langen Turn arbeitet, liest ein Council-Platz — standardmäßig codex — die letzten fünf Turns, die letzten acht Tool-Ergebnisse und den von Claude mit Write oder Edit geschriebenen Text erneut und zeigt unter Umständen eine Zeile über dem Prompt. Vor dem Senden wird nicht nachgefragt; dieses Material verlässt bei jeder Prüfung den Rechner. Die Datei .claude/council-heads-up.json eines Projekts überschreibt dies für dieses Projekt und legt Platz und Häufigkeit fest.",
       "default": false
     },
     "gemini_api_key": {
       "type": "string",
-      "title": "Gemini API key",
-      "description": "The key the gemini seat uses, kept in Claude Code's secure storage. The council's mod sets GEMINI_API_KEY from it for every command in the session, over a shell export.",
+      "title": "Gemini-API-Schlüssel",
+      "description": "Der Schlüssel, den der gemini-Platz verwendet, gespeichert im sicheren Speicher von Claude Code. Das Mod des Councils setzt daraus für jeden Befehl der Sitzung GEMINI_API_KEY über einen Shell-Export.",
       "sensitive": true
     },
     "openai_api_key": {
       "type": "string",
-      "title": "OpenAI API key",
-      "description": "The key the openai seat uses, kept in Claude Code's secure storage. The council's mod sets OPENAI_API_KEY from it for every command in the session, over a shell export.",
+      "title": "OpenAI-API-Schlüssel",
+      "description": "Der Schlüssel, den der openai-Platz verwendet, gespeichert im sicheren Speicher von Claude Code. Das Mod des Councils setzt daraus für jeden Befehl der Sitzung OPENAI_API_KEY über einen Shell-Export.",
       "sensitive": true
     },
     "xai_api_key": {
       "type": "string",
-      "title": "xAI API key (Grok)",
-      "description": "The key the grok seat uses, kept in Claude Code's secure storage. The council's mod sets XAI_API_KEY from it for every command in the session, over a shell export.",
+      "title": "xAI-API-Schlüssel (Grok)",
+      "description": "Der Schlüssel, den der grok-Platz verwendet, gespeichert im sicheren Speicher von Claude Code. Das Mod des Councils setzt daraus für jeden Befehl der Sitzung XAI_API_KEY über einen Shell-Export.",
       "sensitive": true
     },
     "perplexity_api_key": {
       "type": "string",
-      "title": "Perplexity API key",
-      "description": "The key the perplexity seat uses, kept in Claude Code's secure storage. The council's mod sets PERPLEXITY_API_KEY from it for every command in the session, over a shell export.",
+      "title": "Perplexity-API-Schlüssel",
+      "description": "Der Schlüssel, den der perplexity-Platz verwendet, gespeichert im sicheren Speicher von Claude Code. Das Mod des Councils setzt daraus für jeden Befehl der Sitzung PERPLEXITY_API_KEY über einen Shell-Export.",
       "sensitive": true
     },
     "kimi_api_key": {
       "type": "string",
-      "title": "Kimi API key",
-      "description": "The key the kimi seat uses, kept in Claude Code's secure storage. The council's mod sets KIMI_API_KEY from it for every command in the session, over a shell export.",
+      "title": "Kimi-API-Schlüssel",
+      "description": "Der Schlüssel, den der kimi-Platz verwendet, gespeichert im sicheren Speicher von Claude Code. Das Mod des Councils setzt daraus für jeden Befehl der Sitzung KIMI_API_KEY über einen Shell-Export.",
       "sensitive": true
     },
     "openrouter_api_key": {
       "type": "string",
-      "title": "OpenRouter API key",
-      "description": "The key every OpenRouter seat uses, kept in Claude Code's secure storage. The council's mod sets OPENROUTER_API_KEY from it for every command in the session, over a shell export.",
+      "title": "OpenRouter-API-Schlüssel",
+      "description": "Der Schlüssel, den jeder OpenRouter-Platz verwendet, gespeichert im sicheren Speicher von Claude Code. Das Mod des Councils setzt daraus für jeden Befehl der Sitzung OPENROUTER_API_KEY über einen Shell-Export.",
       "sensitive": true
     },
     "openrouter_models": {
       "type": "string",
-      "title": "OpenRouter models",
-      "description": "Model ids from openrouter.ai/models, separated by commas or spaces, such as deepseek/deepseek-v3.2,z-ai/glm-5.3. Each id becomes its own seat, openrouter-1, openrouter-2 and so on, all on the one OpenRouter key. The council's mod sets OPENROUTER_MODELS from it for every command in the session, over a shell export. Left empty, a shell export still applies; with neither, one openrouter seat runs the default model."
+      "title": "OpenRouter-Modelle",
+      "description": "Modell-IDs von openrouter.ai/models, durch Kommas oder Leerzeichen getrennt, etwa deepseek/deepseek-v3.2,z-ai/glm-5.3. Jede ID wird zu einem eigenen Platz, openrouter-1, openrouter-2 usw., alle mit dem einen OpenRouter-Schlüssel. Das Mod des Councils setzt daraus für jeden Befehl der Sitzung OPENROUTER_MODELS über einen Shell-Export. Bleibt das Feld leer, wirkt ein bestehender Shell-Export weiter; sind beide nicht gesetzt, läuft ein openrouter-Platz mit dem Standardmodell."
     }
   }
 }

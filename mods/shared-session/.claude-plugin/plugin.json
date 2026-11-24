@@ -22,8 +22,8 @@
   "userConfig": {
     "server": {
       "type": "string",
-      "title": "Share server",
-      "description": "Leave empty to share through the public server. To use your own, its https address (README: \"Host a server\"). Joining a link always uses the server in that link."
+      "title": "Freigabeserver",
+      "description": "Leer lassen, um über den öffentlichen Server freizugeben. Für einen eigenen Server dessen https-Adresse angeben (README: \"Host a server\"). Einem Link beizutreten verwendet immer den in diesem Link enthaltenen Server."
     }
   },
   "mcpServers": {

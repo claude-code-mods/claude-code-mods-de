@@ -26,7 +26,7 @@
   "userConfig": {
     "language": {
       "type": "string",
-      "title": "Language",
+      "title": "Sprache",
       "options": [
         "en",
         "ru",
@@ -37,195 +37,195 @@
         "pt"
       ],
       "default": "en",
-      "description": "The language of the labels on the map."
+      "description": "Die Sprache der Beschriftungen auf der Karte."
     },
     "coreName": {
       "type": "string",
-      "title": "Name at the centre",
+      "title": "Name in der Mitte",
       "default": "CLAUDE",
-      "description": "What the circle in the middle of the map says, up to ten characters."
+      "description": "Was der Kreis in der Mitte der Karte anzeigt, höchstens zehn Zeichen."
     },
     "memoryServers": {
       "type": "string",
       "multiple": true,
-      "title": "Memory servers",
+      "title": "Gedächtnis-Server",
       "default": [
         "memory"
       ],
-      "description": "MCP servers whose tools light the Memory station."
+      "description": "MCP-Server, deren Werkzeuge die Gedächtnis-Station aufleuchten lassen."
     },
     "memoryCommands": {
       "type": "string",
       "multiple": true,
-      "title": "Memory commands",
+      "title": "Gedächtnis-Befehle",
       "default": [],
-      "description": "Shell commands or scripts that light the Memory station. A name counts when it is the command itself or begins with it and a hyphen, an underscore or a dot."
+      "description": "Shell-Befehle oder Skripte, die die Gedächtnis-Station aufleuchten lassen. Ein Name zählt, wenn er der Befehl selbst ist oder mit ihm und einem Bindestrich, Unterstrich oder Punkt beginnt."
     },
     "memorySubcommands": {
       "type": "string",
       "multiple": true,
-      "title": "Memory subcommands",
+      "title": "Gedächtnis-Unterbefehle",
       "default": [],
-      "description": "Words after a memory command that the map may show, such as add or search. Without them a memory command goes by its own name, because the word after it may be content."
+      "description": "Wörter nach einem Gedächtnis-Befehl, die die Karte anzeigen darf, etwa add oder search. Ohne sie läuft ein Gedächtnis-Befehl unter seinem eigenen Namen, weil das Wort danach ein Inhalt sein kann."
     },
     "memoryPaths": {
       "type": "string",
       "multiple": true,
-      "title": "Memory paths",
+      "title": "Gedächtnis-Pfade",
       "default": [],
-      "description": "Parts of a path that make a file a memory. Claude Code's own memory folder always counts."
+      "description": "Pfadbestandteile, die eine Datei zum Gedächtnis machen. Der eigene Gedächtnisordner von Claude Code zählt immer."
     },
     "memoryLabels": {
       "type": "string",
       "multiple": true,
-      "title": "Memory labels",
+      "title": "Gedächtnis-Beschriftungen",
       "default": [],
-      "description": "Short names for memory tools, each written as tool=name. A tool without one goes by its own name."
+      "description": "Kurznamen für Gedächtnis-Werkzeuge, jeweils geschrieben als tool=name. Ein Werkzeug ohne Eintrag läuft unter seinem eigenen Namen."
     },
     "serverStations": {
       "type": "string",
       "multiple": true,
-      "title": "Servers on a station",
+      "title": "Server auf einer Station",
       "default": [],
-      "description": "Put an MCP server's tools on a station of the map, each written as server=station. The stations are files, shell, web, browser, agents, skills and you. Memory keeps memoryServers, which wins if a server is in both. A server without an entry, or with an unknown station, goes where the mod puts it."
+      "description": "Die Werkzeuge eines MCP-Servers auf eine Station der Karte legen, jeweils geschrieben als server=station. Die Stationen sind files, shell, web, browser, agents, skills und you. Für Gedächtnis gilt memoryServers, was Vorrang hat, wenn ein Server in beiden steht. Ein Server ohne Eintrag oder mit unbekannter Station landet dort, wo das Mod ihn hinlegt."
     },
     "hookRecords": {
       "type": "boolean",
-      "title": "Hooks add numbered records",
+      "title": "Hooks fügen nummerierte Einträge hinzu",
       "default": false,
-      "description": "Turn on if a hook of yours adds memory records numbered like [#123]: the map then shows them on the Memory station, by number only. It counts such numbers in the text of any hook, not only a memory one."
+      "description": "Einschalten, wenn einer deiner Hooks Gedächtniseinträge wie [#123] hinzufügt: Die Karte zeigt sie dann auf der Gedächtnis-Station, nur mit ihrer Nummer. Solche Nummern werden im Text jedes Hooks gezählt, nicht nur in einem Gedächtnis-Hook."
     },
     "hookReasons": {
       "type": "boolean",
-      "title": "Show why a hook refused",
+      "title": "Grund für Hook-Ablehnung anzeigen",
       "default": false,
-      "description": "Show the first line of a hook's refusal, up to 72 characters. Off, the map says only which tool was stopped: a refusal may quote what the hook found."
+      "description": "Die erste Zeile der Ablehnung eines Hooks anzeigen, höchstens 72 Zeichen. Aus: Die Karte nennt nur, welches Werkzeug gestoppt wurde; eine Ablehnung kann wiedergeben, was der Hook gefunden hat."
     },
     "guardedHooks": {
       "type": "boolean",
-      "title": "Hooks a guard skips",
+      "title": "Hooks, die eine Sperre überspringt",
       "default": true,
-      "description": "Turn off on a Team or Enterprise login where the transcript gets notices that a lot-map hook was skipped. The map then loses the Hooks station, the records a hook adds, the row of a typed slash command and the mark of a compaction; everything else stays."
+      "description": "Bei einer Team- oder Enterprise-Anmeldung ausschalten, bei der im Transkript Hinweise erscheinen, dass ein lot-map-Hook übersprungen wurde. Der Karte fehlen dann die Hooks-Station, die von einem Hook hinzugefügten Einträge, die Zeile eines eingegebenen Slash-Befehls und die Markierung einer Komprimierung; alles andere bleibt."
     },
     "openAtStart": {
       "type": "boolean",
-      "title": "Open the pane when a session starts",
+      "title": "Panel beim Start einer Sitzung öffnen",
       "default": true,
-      "description": "Off, the pane stays closed until you type /lot-map. The map is kept from the session's first call all the same, so it is whole when you open it."
+      "description": "Aus: Das Panel bleibt geschlossen, bis du /lot-map eingibst. Die Karte wird trotzdem ab dem ersten Aufruf der Sitzung geführt und ist daher vollständig, wenn du sie öffnest."
     },
     "subagentNames": {
       "type": "boolean",
-      "title": "Name subagents in the rows",
+      "title": "Subagenten in den Zeilen benennen",
       "default": false,
-      "description": "A subagent's model step says which subagent it is, by the few words it was started with, up to 40 characters. Off, it says only that it is a subagent."
+      "description": "Der Modellschritt eines Subagenten nennt, welcher Subagent es ist, anhand der wenigen Wörter, mit denen er gestartet wurde, höchstens 40 Zeichen. Aus: Es steht nur, dass es ein Subagent ist."
     },
     "contextCost": {
       "type": "boolean",
-      "title": "What each call adds to the context",
+      "title": "Was jeder Aufruf zum Kontext hinzufügt",
       "default": false,
-      "description": "Each row says about how many tokens the context grew by with its call's answer, and the map adds each station's sum to its count. An estimate: the growth of one model step, which also holds the model's own words, what hooks added and, at the start of a turn, the message, shared among that step's calls. It shows one step late, and a call whose step was the last of a turn gets none."
+      "description": "Jede Zeile nennt ungefähr, um wie viele Tokens der Kontext mit der Antwort des Aufrufs gewachsen ist, und die Karte addiert die Summe jeder Station zu ihrer Anzahl. Eine Schätzung: das Wachstum eines Modellschritts, der auch die eigenen Worte des Modells, die Ergänzungen durch Hooks und — am Anfang eines Turns — die Nachricht enthält, die auf die Aufrufe dieses Schritts verteilt wird. Die Anzeige kommt einen Schritt verspätet, und ein Aufruf, dessen Schritt der letzte eines Turns war, erhält keinen Wert."
     },
     "contextWindow": {
       "type": "string",
-      "title": "What the ring measures against",
+      "title": "Woran sich der Ring misst",
       "options": [
         "model",
         "compaction"
       ],
       "default": "model",
-      "description": "What the ring around the centre and its percentage measure the context against: model, the model's whole window, as the status line does; or compaction, the auto-compact window, such as one set with autoCompactWindow, where it is smaller than the model's. Without one, or with auto-compaction off, compaction shows the same as model."
+      "description": "Woran sich der Ring um die Mitte und sein Prozentsatz messen: model, das gesamte Fenster des Modells, wie es die Statuszeile tut; oder compaction, das Auto-Komprimierungsfenster, etwa eines mit autoCompactWindow, das kleiner ist als das des Modells. Ohne eines davon oder bei ausgeschalteter automatischer Komprimierung zeigt compaction dasselbe wie model."
     },
     "theme": {
       "type": "string",
-      "title": "Colours",
+      "title": "Farben",
       "options": [
         "auto",
         "dark",
         "light"
       ],
       "default": "auto",
-      "description": "The map's colours: dark, light, or auto, which is dark on a dark surface and light on a light one."
+      "description": "Die Farben der Karte: dark, light oder auto, was auf dunklem Grund dunkel und auf hellem Grund hell ist."
     },
     "background": {
       "type": "string",
-      "title": "Background",
+      "title": "Hintergrund",
       "options": [
         "solid",
         "transparent"
       ],
       "default": "solid",
-      "description": "The map's own background, or transparent, which lets the pane behind it show through."
+      "description": "Der eigene Hintergrund der Karte oder transparent, wodurch das dahinterliegende Panel durchscheint."
     },
     "paneBackground": {
       "type": "string",
-      "title": "Pane background",
+      "title": "Panel-Hintergrund",
       "default": "theme",
-      "description": "What the pane is painted with: theme, Claude Code's own; transparent, which lets the terminal behind it show through; or a colour written as #rrggbb."
+      "description": "Womit das Panel gemalt wird: theme, das eigene von Claude Code; transparent, wodurch das dahinterliegende Terminal durchscheint; oder eine Farbe als #rrggbb."
     },
     "colors": {
       "type": "string",
       "multiple": true,
-      "title": "Colours of your own",
+      "title": "Eigene Farben",
       "default": [],
-      "description": "Colours that replace the map's own, each written as name=#rrggbb. Names: background, node, line, spoke, text, label, faint, accent, active, error, memory, memoryActive, route. Set theme to dark or light with them."
+      "description": "Farben, die die eigenen der Karte ersetzen, jeweils geschrieben als name=#rrggbb. Namen: background, node, line, spoke, text, label, faint, accent, active, error, memory, memoryActive, route. Setze theme auf dark oder light, wenn du diese Farben verwendest."
     },
     "layout": {
       "type": "string",
-      "title": "Layout",
+      "title": "Anordnung",
       "options": [
         "you-top",
         "you-bottom"
       ],
       "default": "you-top",
-      "description": "Where you are on the map: at the top, or at the bottom with the network and the browser at the top."
+      "description": "Wo du auf der Karte stehst: oben oder unten, mit Netzwerk und Browser oben."
     },
     "motion": {
       "type": "string",
-      "title": "Motion",
+      "title": "Bewegung",
       "options": [
         "full",
         "reduced"
       ],
       "default": "full",
-      "description": "With reduced, nothing on the map flies, spreads or spins: a call lights its station and its spoke, and what changes only fades."
+      "description": "Bei reduced fliegt, breitet sich oder dreht sich nichts auf der Karte: Ein Aufruf lässt seine Station und seine Speiche aufleuchten, und Änderungen werden nur eingeblendet."
     },
     "textSize": {
       "type": "string",
-      "title": "Text size",
+      "title": "Textgröße",
       "options": [
         "caption",
         "footnote",
         "body"
       ],
       "default": "footnote",
-      "description": "The size of the rows under the map: caption is smaller, body larger. A terminal has one size and ignores it."
+      "description": "Die Größe der Zeilen unter der Karte: caption ist kleiner, body größer. Ein Terminal hat nur eine Größe und ignoriert dies."
     },
     "logRows": {
       "type": "string",
-      "title": "Rows under the map",
+      "title": "Zeilen unter der Karte",
       "options": [
         "16",
         "fill"
       ],
       "default": "16",
-      "description": "How many rows the list under the map shows: 16, or fill, as many as the pane has room for below the map, never fewer than 16. Fill is for the desktop app's docked pane; a terminal, the editor and the mobile app keep 16."
+      "description": "Wie viele Zeilen die Liste unter der Karte zeigt: 16 oder fill, nämlich so viele, wie das Panel unter der Karte Platz hat, nie weniger als 16. Fill ist für das angedockte Panel der Desktop-App; Terminal, Editor und mobile App behalten 16."
     },
     "terminalView": {
       "type": "string",
-      "title": "Terminal view",
+      "title": "Terminalansicht",
       "options": [
         "text",
         "picture",
         "braille"
       ],
       "default": "text",
-      "description": "How the map looks in a terminal: text, the rows alone; picture, the map itself above them, painted by the mod, in a terminal that shows pictures such as kitty, Ghostty or iTerm2 from 3.7.8, not in an earlier iTerm2, which keeps every frame in memory; or braille, the map above them in braille dots and letters, in any terminal whose font has braille, such as Windows Terminal."
+      "description": "Wie die Karte im Terminal aussieht: text, nur die Zeilen; picture, die Karte selbst darüber, vom Mod gemalt, in einem Terminal mit Bildunterstützung wie kitty, Ghostty oder iTerm2 ab 3.7.8, nicht in älterem iTerm2, das jedes Bild im Speicher hält; oder braille, die Karte darüber aus Braille-Punkten und Buchstaben, in jedem Terminal mit passender Schrift wie Windows Terminal."
     },
     "cellShape": {
       "type": "number",
-      "title": "Terminal cell shape",
+      "title": "Terminal-Zellenform",
       "default": 2.4,
-      "description": "For the terminal picture: how many times taller a terminal cell is than it is wide, so that the picture fills its box. About 2.4 for iTerm2's Monaco 12, about 2 for Menlo in kitty. Raise it if the map leaves an empty band below it or looks stretched tall; lower it if the band is at its right or the map looks squashed. From 1.2 to 4."
+      "description": "Für das Terminalbild: Wie viel höher eine Terminalzelle als breit ist, damit das Bild sein Feld ausfüllt. Etwa 2,4 für iTerm2 mit Monaco 12, etwa 2 für Menlo in kitty. Erhöhen, wenn die Karte unten einen leeren Streifen lässt oder gestreckt wirkt; verringern, wenn der Streifen rechts ist oder die Karte gestaucht wirkt. Von 1,2 bis 4."
     }
   }
 }

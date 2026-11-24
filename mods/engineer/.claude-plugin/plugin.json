@@ -28,14 +28,14 @@
   "userConfig": {
     "economyModel": {
       "type": "string",
-      "title": "Economy model alias",
-      "description": "The model alias the economy class resolves to for the mod's own dispatches (model-classes.md). Change it when the lineup changes.",
+      "title": "Alias für das Sparmodell",
+      "description": "Der Modellalias, auf den die Economy-Klasse für die eigenen Dispatches des Mods aufgelöst wird (model-classes.md). Bei einer Änderung der Modellliste entsprechend anpassen.",
       "default": "sonnet"
     },
     "frontierModels": {
       "type": "string",
-      "title": "Frontier model aliases",
-      "description": "Comma-separated aliases (or id fragments) that count as the frontier class for the loop guard.",
+      "title": "Aliase für Frontier-Modelle",
+      "description": "Durch Kommas getrennte Aliase (oder ID-Fragmente), die für die Loop-Sperre zur Frontier-Klasse zählen.",
       "default": "fable"
     }
   }

@@ -21,28 +21,28 @@
   "hooks": "./hooks/hooks.json",
   "userConfig": {
     "sidebar": {
-      "title": "Ledger dashboard",
+      "title": "Ledger-Übersicht",
       "type": "boolean",
       "default": true,
-      "description": "Draw the .story/ ledger in a pane beside the transcript. On by default; turn it off with /plugin configure storybloq. Projects with no .story/ directory show nothing either way (T-508, T-516)."
+      "description": "Das .story/-Ledger in einem Panel neben dem Transkript zeichnen. Standardmäßig an; mit /plugin configure storybloq ausschalten. Projekte ohne .story/-Verzeichnis zeigen in beiden Fällen nichts (T-508, T-516)."
     },
     "startupLogo": {
-      "title": "Storyfield startup logo",
+      "title": "Storyfield-Startlogo",
       "type": "boolean",
       "default": true,
-      "description": "Show a brief copper dot-wave logo before the dashboard. Turn off to show the board immediately."
+      "description": "Kurz ein kupferfarbenes Punktwellen-Logo vor der Übersicht zeigen. Ausschalten, um das Board sofort anzuzeigen."
     },
     "motion": {
-      "title": "Dashboard motion",
+      "title": "Bewegung der Übersicht",
       "type": "boolean",
       "default": true,
-      "description": "Animate startup, phase progress, story updates, activity, and the context meter. Turn off for a static dashboard that still shows current status and activity."
+      "description": "Start, Phasenfortschritt, Story-Aktualisierungen, Aktivität und den Kontextmesser animieren. Ausschalten für eine statische Übersicht, die dennoch aktuellen Status und Aktivität zeigt."
     },
     "changeHighlights": {
-      "title": "Story status highlights",
+      "title": "Hervorhebung von Story-Status",
       "type": "boolean",
       "default": true,
-      "description": "Briefly highlight changed stories and destination counts, and show Ready when a blocker clears. Requires Dashboard motion."
+      "description": "Geänderte Stories und Zielanzahlen kurz hervorheben und „Ready“ anzeigen, sobald ein Blocker behoben ist. Erfordert Übersichts-Bewegung."
     }
   },
   "metadata": {
